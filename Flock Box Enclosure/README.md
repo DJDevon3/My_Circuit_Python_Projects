@@ -2,7 +2,7 @@
 - a generic project enclosure for the adafruit feather ecosystem
 - designed for 3.5" TFT display featherwing
 - 3D printing and design by JuanOnJuan on Adafruit Discord
-- [Link to project code here](https://github.com/DJDevon3/My_Circuit_Python_Projects/tree/main/Boards/espressif/Unexpected%20Maker%20Feather%20S3/Online-Offline%20Weatherstation)
+- [Link to online-offline weatherstation code here](https://github.com/DJDevon3/My_Circuit_Python_Projects/tree/main/Boards/espressif/Unexpected%20Maker%20Feather%20S3/Online-Offline%20Weatherstation)
 
 ![](https://raw.githubusercontent.com/DJDevon3/CircuitPython/main/Flock%20Box%20Enclosure/Screenshot.JPG)
 
