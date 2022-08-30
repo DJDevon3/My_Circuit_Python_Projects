@@ -1,0 +1,20 @@
+Thanks for buying a FeatherS3!
+
+Your board has been tested and here are the results for your reference.
+
+Test Date & Time: 05/29/2022, 07:21:18 <- Australia
+
+PSRAM: 8189552 bytes
+FLASH: 12224512 KB
+VBAT Sense Check: PASS
+VBUS Sense Check: Pass
+GPIO Test: PASS
+WiFi Test: PASS
+WiFi Connection Time: 3.998 secs
+
+This board is good to ship! I hope you enjoy using it :)
+
+Cheers,
+Seon
+Unexpected Maker
+http://unexpectedmaker.com
