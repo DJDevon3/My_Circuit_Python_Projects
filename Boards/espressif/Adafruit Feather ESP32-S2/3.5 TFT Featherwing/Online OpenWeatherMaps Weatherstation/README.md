@@ -30,3 +30,4 @@ Weather Type: Clear
 Next Update in 15 minutes
 ===============================
 ```
+You can use this working example to customize the weather data you want from OpenWeatherMap (tons more data available) for your project. I'm only pulling basic data and in limited quantity because there is a limitation for how many calls you can make per day.
