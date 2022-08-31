@@ -11,7 +11,8 @@
 ## Other Requirements:
 - OpenWeatherMaps Account & API Token
 
-## Demonstration Serial Output:
+## Demonstration Serial Print Output:
+- Good for debugging or if you don't have a TFT. Pure serial output format can be helpful.
 ```py
 ===============================
 Connecting to WiFi...
