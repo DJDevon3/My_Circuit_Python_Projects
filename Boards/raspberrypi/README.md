@@ -1,6 +1,8 @@
-# My_Circuit_Python_Projects
-Circuit Python Projects by DJDevon3
+# RASPBERRYPI (RP) Boards
+Circuit Python Projects on RP boards by DJDevon3
 
-Re-organizing my projects by board>addon>project>code
+![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/raspberrypi/rp2040_screenshot.jpg)
 
-My current personal project repo uses the same name as Adafruit's Main CircuitPython. Need to free that repo name so I can clone their main without it being a confusing mess on my side.
+Raspberry Pi has become a household name and for good reason. Their boards have helped spark the imaginations of young and old the world over. Adafruit offers a wide selection of RP based boards from the Pi 3/4 to the new Feather RP2040, KB2040, and Pico W. Raspberry Pi boards run very well on Circuit Python.
+
+The projects in this section are specifically for RP based boards running Circuit Python.
