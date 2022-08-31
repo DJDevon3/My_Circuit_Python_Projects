@@ -1,8 +1,9 @@
 ![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/espressif/Adafruit%20Feather%20ESP32-S2/3.5%20TFT%20Featherwing/Online%20OpenWeatherMaps%20Weatherstation/screenshot.bmp)
 
 # Online OpenWeatherMaps Weatherstation (for ESP32-S2)
-- pulls info from OpenWeatherMaps
-- displays weather data on 3.5" TFT Featherwing
+- pulls info from OpenWeatherMaps in JSON format
+- parses JSON data to a format circuit python can display
+- displays weather data on 3.5" TFT Featherwing & serial console
 
 ## Hardware Used:
 - Adafruit Feather ESP32-S2
@@ -33,4 +34,4 @@ Weather Type: Clear
 Next Update in 15 minutes
 ===============================
 ```
-You can use this working example to customize the weather data you want from OpenWeatherMap (tons more data available) for your project. I'm only pulling basic data and in limited quantity because there is a limitation for how many calls you can make per day.
+You can use this working example to customize the weather data you want from OpenWeatherMap (tons more data available) for your project. I'm only pulling basic data and in limited quantity because there is a limitation for how many calls you can make per day. Consult the OpenWeatherMaps API Docs to see the oodles of JSON data you can pull from.
