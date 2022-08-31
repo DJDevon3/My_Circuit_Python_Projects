@@ -2,7 +2,7 @@
 - Connects to OpenWeatherMaps for location and timezone aware weather status
 - Uses bme280 I2C Stemma sensors for offline data (room temp/humidity/pressure)
 - Battery/Voltage Status on TFT Display
-- Currently crashes regularly due to hardfault handler bug.
+- Currently crashes regularly due to hardfault handler bug within S3 framework.
 
 ## As seen on Adafruit's Circuit Python Day 2022 Show & Tell (8/19/2022)
 
