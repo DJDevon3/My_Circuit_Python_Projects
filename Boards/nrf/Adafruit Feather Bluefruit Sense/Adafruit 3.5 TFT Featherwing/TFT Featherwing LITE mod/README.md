@@ -1,6 +1,6 @@
 # 3.5" TFT Featherwing LITE Mod
 
-To get display brightness on the TFT Featherwing a hardware modification is necessary. 
+To have display brightness control on the TFT Featherwing a hardware modification is necessary. 
 
 Solder the LITE pad to pin D2 with a jumper wire as shown here.
 
