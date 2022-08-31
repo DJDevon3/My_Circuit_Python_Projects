@@ -1,6 +1,4 @@
-# My_Circuit_Python_Projects
-Circuit Python Projects by DJDevon3
+# Bluefruit Sense & Airlift Featherwing
+Circuit Python Projects using both the Feather Bluefruit Sense & ESP32 Airlift Featherwing by DJDevon3
 
-Re-organizing my projects by board>addon>project>code
-
-My current personal project repo uses the same name as Adafruit's Main CircuitPython. Need to free that repo name so I can clone their main without it being a confusing mess on my side.
+![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/nrf/Adafruit%20Feather%20Bluefruit%20Sense/Adafruit%20ESP32%20Airlift%20Featherwing/airlift_featherwing_screenshot.jpg)
