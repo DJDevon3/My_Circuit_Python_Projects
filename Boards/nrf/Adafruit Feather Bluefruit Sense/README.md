@@ -1,6 +1,6 @@
-# My_Circuit_Python_Projects
-Circuit Python Projects by DJDevon3
+# NRF52840 Feather Bluefruit Sense
+Circuit Python Projects on the Feather Bluefruit Sense by DJDevon3
 
-Re-organizing my projects by board>addon>project>code
+![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/nrf/Adafruit%20Feather%20Bluefruit%20Sense/feather_bluefruit_sense_screenshot.jpg)
 
-My current personal project repo uses the same name as Adafruit's Main CircuitPython. Need to free that repo name so I can clone their main without it being a confusing mess on my side.
+The projects in this section are specifically for Bluefruit Sense running Circuit Python.
