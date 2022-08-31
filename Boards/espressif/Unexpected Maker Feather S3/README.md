@@ -1,6 +1,8 @@
-# My_Circuit_Python_Projects
-Circuit Python Projects by DJDevon3
+# Unexpected Maker Feather S3 Boards
+Circuit Python Projects on Unexpected Maker Feather ESP32-S3 board by DJDevon3
 
-Re-organizing my projects by board>addon>project>code
+With a MASSIVE 16MB flash and 8MB of PSRAM this is by far one of the biggest beasts of an ESP32 on the market. Unfortunately it also crashes regularly because ESP32-S3 support is still in beta development with Circuit Python. When S3 support becomes stable this board will handle pretty much anything you can throw at it within Circuit Python. If you're a fan of ESP based boards this one is drool worthy... when it's stable.
 
-My current personal project repo uses the same name as Adafruit's Main CircuitPython. Need to free that repo name so I can clone their main without it being a confusing mess on my side.
+![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/espressif/Unexpected%20Maker%20Feather%20S3/UM_FeatherS3_screenshot.jpg)
+
+The projects in this section are specifically for the UM Feather S3 Dev Board running Circuit Python.
