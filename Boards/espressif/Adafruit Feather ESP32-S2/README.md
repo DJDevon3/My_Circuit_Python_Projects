@@ -1,6 +1,6 @@
-# My_Circuit_Python_Projects
-Circuit Python Projects by DJDevon3
+# Adafruit Feather ESP32-S2
+Circuit Python Projects on the Adafruit ESP32-S2 Feather - 4 MB Flash + 2 MB PSRAM (no bme sensor) by DJDevon3
 
-Re-organizing my projects by board>addon>project>code
+![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/espressif/Adafruit%20Feather%20ESP32-S2/feather_esp32-s2_screenshot.jpg)
 
-My current personal project repo uses the same name as Adafruit's Main CircuitPython. Need to free that repo name so I can clone their main without it being a confusing mess on my side.
+The projects in this section are specifically for Adafruit ESP32-S2 based boards running Circuit Python.
