@@ -1,3 +1,5 @@
+![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/espressif/Adafruit%20Feather%20ESP32-S2/3.5%20TFT%20Featherwing/Online%20OpenWeatherMaps%20Weatherstation/screenshot.bmp)
+
 # Online OpenWeatherMaps Weatherstation (for ESP32-S2)
 - pulls info from OpenWeatherMaps
 - displays weather data on 3.5" TFT Featherwing
