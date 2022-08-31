@@ -1,6 +1,6 @@
-# My_Circuit_Python_Projects
-Circuit Python Projects by DJDevon3
+# Circuit Python Microcontroller Boards
+Projects running on Circuit Python capable boards. 
 
-Re-organizing my projects by board>addon>project>code
+If a project blinks, shines, glows, sparkles, or moves it's probably running Circuit Python.
 
-My current personal project repo uses the same name as Adafruit's Main CircuitPython. Need to free that repo name so I can clone their main without it being a confusing mess on my side.
+![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/boards_screenshot.jpg)
