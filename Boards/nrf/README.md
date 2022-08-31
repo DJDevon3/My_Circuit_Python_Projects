@@ -1,6 +1,6 @@
-# My_Circuit_Python_Projects
-Circuit Python Projects by DJDevon3
+# Nordic Semiconductor (NRF) Boards
+Circuit Python Projects on NRF boards by DJDevon3
 
-Re-organizing my projects by board>addon>project>code
+![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/espressif/espressif_board_screenshot.jpg)
 
-My current personal project repo uses the same name as Adafruit's Main CircuitPython. Need to free that repo name so I can clone their main without it being a confusing mess on my side.
+The projects in this section are specifically for NRF based boards running Circuit Python.
