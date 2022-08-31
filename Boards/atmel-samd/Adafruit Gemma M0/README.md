@@ -1,6 +1,6 @@
-# My_Circuit_Python_Projects
-Circuit Python Projects by DJDevon3
+# ATMEL-SAMD Boards
+Circuit Python Projects on ATMEL-SAMD boards by DJDevon3
 
-Re-organizing my projects by board>addon>project>code
+![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/atmel-samd/Adafruit%20Gemma%20M0/atmel_samd_screenshot.jpg)
 
-My current personal project repo uses the same name as Adafruit's Main CircuitPython. Need to free that repo name so I can clone their main without it being a confusing mess on my side.
+ATMEL boards were some of the first microcontroller boards to run Arduino. They were very low power and fun to play with. Later iterations with SAMD chips are powerful enough to run Circuit Python such as the M0 & M4 series. The projects in this section are specifically for SAMD boards running Circuit Python.
