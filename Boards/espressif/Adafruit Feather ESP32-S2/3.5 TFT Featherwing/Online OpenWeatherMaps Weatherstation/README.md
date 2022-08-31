@@ -8,7 +8,7 @@
 - Adafruit Feather ESP32-S2
 - Adafruit 3.5" TFT Featherwing
 
-## Other Requirements:
+## Requirement:
 - OpenWeatherMaps Account & API Token
 
 ## Demonstration Serial Print Output:
