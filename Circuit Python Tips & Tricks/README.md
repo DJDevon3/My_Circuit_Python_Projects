@@ -82,7 +82,6 @@ while True:
     current_unix_time = time.localtime(get_timestamp)
     current_struct_time = time.struct_time(current_unix_time)
     current_date = "{}".format(_format_datetime(current_struct_time))
-    # Time in seconds from when board was powered on
     
     print("Timestamp:", current_date)
     gc.collect()
