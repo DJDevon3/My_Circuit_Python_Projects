@@ -1,4 +1,10 @@
-# Unix to Struct Time Formatting
+Check out [TodBot's Circuit Python Tricks](https://github.com/todbot/circuitpython-tricks#circuitpython-tricks)
+
+# DJDevon3's Snippets
+
+These are a few common code snippets that I continually find myself looking at past projects to snag. No sense in re-inventing the wheel. 
+
+### Unix to Struct Time Formatting
 ```py
 import time
 def _format_datetime(datetime):
@@ -25,7 +31,7 @@ code.py output:
 
 `Timestamp: 08/17/2022 15:36:10`
 
-# Get Time from Online (ESP32-S2)
+### Get Time from Online (ESP32-S2)
 For boards with WiFi and no RTC
 ```py
 import gc
@@ -83,8 +89,8 @@ while True:
     time.sleep(10)
 ```
 
-# Common Secrets.py Config
-### for AdafruitIO, OpenWeatherMaps, and Time
+### Common Secrets.py Config
+for AdafruitIO, OpenWeatherMaps, and Time
 ```py
 secrets = {
     "ssid": "Your Wifi SSID",
