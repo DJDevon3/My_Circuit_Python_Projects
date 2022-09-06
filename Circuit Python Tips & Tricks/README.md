@@ -36,9 +36,8 @@ For boards with WiFi and no RTC
 ```py
 import gc
 import time
-import rtc, wifi, ssl, socketpool
+import wifi, ssl, socketpool
 import adafruit_requests
-import adafruit_ntp
 from secrets import secrets
 
 def _format_datetime(datetime):
