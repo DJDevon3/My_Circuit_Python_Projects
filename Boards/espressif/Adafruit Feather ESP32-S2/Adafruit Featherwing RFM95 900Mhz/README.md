@@ -1,6 +1,4 @@
 # Adafruit Featherwing LORA RFM95 with Feather ESP32-S2
-Project Code by DJDevon3
-
 ### Basic Example by DJDevon3 based on code by Tony Dicola.
 
 This code includes basic error handling correction the original lacked.
