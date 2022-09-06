@@ -1,3 +1,30 @@
+# Unix to Struct Time Formatting
+```py
+import time
+def _format_datetime(datetime):
+    return "{:02}/{:02}/{} {:02}:{:02}:{:02}".format(
+        datetime.tm_mon,
+        datetime.tm_mday,
+        datetime.tm_year,
+        datetime.tm_hour,
+        datetime.tm_min,
+        datetime.tm_sec,
+    )
+
+unix_time = 1660764970 # Wed Aug 17 2022 19:36:10 GMT+0000
+tz_offset_seconds = -14400  # NY Timezone
+
+get_timestamp = int(unix_time + tz_offset_seconds)
+current_unix_time = time.localtime(get_timestamp)
+current_struct_time = time.struct_time(current_unix_time)
+current_date = "{}".format(_format_datetime(current_struct_time))
+
+print("Timestamp:", current_date)
+```
+code.py output:
+
+`Timestamp: 08/17/2022 15:36:10`
+
 # Get Time from Online (ESP32-S2)
 For boards with WiFi and no RTC
 ```py
