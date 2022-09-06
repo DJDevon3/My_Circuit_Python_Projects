@@ -1,4 +1,4 @@
-Check out [TodBot's Circuit Python Tricks](https://github.com/todbot/circuitpython-tricks#circuitpython-tricks)
+Check out [TodBot's Circuit Python Tricks](https://github.com/todbot/circuitpython-tricks#circuitpython-tricks) an amazing collection of specialized code snippets for Circuit Python.
 
 # DJDevon3's Snippets
 
