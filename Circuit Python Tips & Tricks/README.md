@@ -40,6 +40,9 @@ import wifi, ssl, socketpool
 import adafruit_requests
 from secrets import secrets
 
+# Check secrets.py to adjust timezone
+tz_offset_seconds = int(secrets["timezone_offset"])
+
 def _format_datetime(datetime):
     return "{:02}/{:02}/{} {:02}:{:02}:{:02}".format(
         datetime.tm_mon,
@@ -57,6 +60,8 @@ print("Connecting to WiFi...")
 while True:
     while not wifi.radio.ipv4_address:
         try:
+            pool = socketpool.SocketPool(wifi.radio)
+            request = adafruit_requests.Session(pool, ssl.create_default_context())
             wifi.radio.enabled = False
             wifi.radio.enabled = True
             wifi.radio.connect(secrets['ssid'], secrets['password'])
@@ -67,25 +72,48 @@ while True:
         gc.collect()
     print("Connected to WiFi...")
     
-    # Connect to WorldTimeAPI
-    # Check secrets.py to adjust timezone
-    tz_offset_seconds = int(secrets["timezone_offset"])
-    # print("Getting Time from WorldTimeAPI")
-    pool = socketpool.SocketPool(wifi.radio)
-    request = adafruit_requests.Session(pool, ssl.create_default_context())
-    response = request.get("http://worldtimeapi.org/api/ip")
-    time_data = response.json()
+    while wifi.radio.ipv4_address:
+        pool = socketpool.SocketPool(wifi.radio)
+        request = adafruit_requests.Session(pool, ssl.create_default_context())
+        # Connect to WorldTimeAPI
+        # print("Getting Time from WorldTimeAPI")
+        try:
+            response = request.get("http://worldtimeapi.org/api/ip")
+            time_data = response.json()
+        except RuntimeError as e:
+            print("Time API Connection Error:", e)
+            print("Retrying in 10 seconds")
 
-    unix_time = int(time_data['unixtime'])
-    get_timestamp = int(unix_time + tz_offset_seconds)
-    current_unix_time = time.localtime(get_timestamp)
-    current_struct_time = time.struct_time(current_unix_time)
-    current_date = "{}".format(_format_datetime(current_struct_time))
+        unix_time = int(time_data['unixtime'])
+        get_timestamp = int(unix_time + tz_offset_seconds)
+        current_unix_time = time.localtime(get_timestamp)
+        current_struct_time = time.struct_time(current_unix_time)
+        current_date = "{}".format(_format_datetime(current_struct_time))
     
-    print("Timestamp:", current_date)
-    gc.collect()
-    time.sleep(10)
+        print("Timestamp:", current_date)
+        gc.collect()
+        time.sleep(10)
 ```
+code.py output:
+
+```py
+===============================
+Connecting to WiFi...
+Connected to WiFi...
+Timestamp: 09/07/2022 03:23:43
+Time API Connection Error: Sending request failed
+Retrying in 10 seconds
+Timestamp: 09/07/2022 03:23:43
+Connection Error: No network with that ssid
+Retrying in 10 seconds
+Connection Error: No network with that ssid
+Retrying in 10 seconds
+Connection Error: No network with that ssid
+Retrying in 10 seconds
+Connected to WiFi...
+Timestamp: 09/07/2022 03:25:02
+```
+Built-in error correction fails gracefully if no SSID (WiFi goes down) or time server cannot be contacted.
 
 ### Common Secrets.py Config
 for AdafruitIO, OpenWeatherMaps, and Time
