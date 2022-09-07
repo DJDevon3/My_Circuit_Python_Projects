@@ -1,9 +1,11 @@
 # Adafruit Featherwing LORA RFM95 with Feather RP2040
 ### Online Time LORA Example by DJDevon3
 
-This code includes improved error handling correction for connecting to wifi & time server.
-It will now gracefully revert back to looking for the time server if not found or WiFi if SSID not found without crashing the program (hopefully).
-This code requires a secrets.py file
+This code includes *improved* error handling correction from my original commit. 
+
+It will now gracefully revert back to looking for the time server and/or WiFi if SSID not found without crashing the program (hopefully).
+
+This example requires a secrets.py file
 
 Circuit Python 7.3.3
 
