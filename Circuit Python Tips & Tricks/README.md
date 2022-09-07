@@ -38,7 +38,28 @@ import gc
 import time
 import wifi, ssl, socketpool
 import adafruit_requests
-from secrets import secrets
+try:
+    from secrets import secrets
+except ImportError:
+    print("Secrets File Import Error")
+    raise
+    
+# Time between retry events
+# 900 = 15 mins, 1800 = 30 mins, 3600 = 1 hour
+sleep_time = 10
+
+if sleep_time < 60:
+    sleep_time_conversion = "seconds"
+    sleep_int = sleep_time
+elif 60 <= sleep_time < 3600:
+    sleep_int = sleep_time / 60
+    sleep_time_conversion = "minutes"
+elif sleep_time >= 3600:
+    sleep_int = sleep_time / 60 / 60
+    sleep_time_conversion = "hours"
+else:
+    sleep_int = sleep_time
+    sleep_time_conversion = "seconds"
 
 # Check secrets.py to adjust timezone
 tz_offset_seconds = int(secrets["timezone_offset"])
@@ -82,17 +103,17 @@ while True:
             time_data = response.json()
         except RuntimeError as e:
             print("Time API Connection Error:", e)
-            print("Retrying in 10 seconds")
+            print("Retrying in %s %s" % (int(sleep_int), sleep_time_conversion))
 
         unix_time = int(time_data['unixtime'])
         get_timestamp = int(unix_time + tz_offset_seconds)
         current_unix_time = time.localtime(get_timestamp)
         current_struct_time = time.struct_time(current_unix_time)
         current_date = "{}".format(_format_datetime(current_struct_time))
-    
+        
         print("Timestamp:", current_date)
         gc.collect()
-        time.sleep(10)
+        time.sleep(sleep_time)
 ```
 code.py output:
 
@@ -100,10 +121,11 @@ code.py output:
 ===============================
 Connecting to WiFi...
 Connected to WiFi...
-Timestamp: 09/07/2022 03:23:43
+Timestamp: 09/07/2022 03:50:49
+Timestamp: 09/07/2022 03:50:59
 Time API Connection Error: Sending request failed
 Retrying in 10 seconds
-Timestamp: 09/07/2022 03:23:43
+Timestamp: 09/07/2022 03:50:59
 Connection Error: No network with that ssid
 Retrying in 10 seconds
 Connection Error: No network with that ssid
@@ -111,9 +133,9 @@ Retrying in 10 seconds
 Connection Error: No network with that ssid
 Retrying in 10 seconds
 Connected to WiFi...
-Timestamp: 09/07/2022 03:25:02
+Timestamp: 09/07/2022 03:52:14
 ```
-Built-in error correction fails gracefully if no SSID (WiFi goes down) or time server cannot be contacted.
+Built-in error correction fails gracefully if no SSID (WiFi goes down) or time server cannot be contacted. Configurable sleep_time constant so you can easily change the duration of retry attempts. Use longer attempts for IO weather updates for example and shorter updates for retrying WiFi connection.
 
 ### Common Secrets.py Config
 for AdafruitIO, OpenWeatherMaps, and Time
