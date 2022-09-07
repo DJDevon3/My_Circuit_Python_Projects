@@ -1,8 +1,11 @@
 # Adafruit Featherwing LORA RFM95 with Feather ESP32-S2
 ### Online Time Example by DJDevon3 based on code by Tony Dicola.
 
-This code includes basic error handling correction for connecting to wifi & time server.
-This code requires a secrets.py file
+This code includes *improved* error handling correction from my original commit. 
+
+It will now gracefully revert back to looking for the time server and/or WiFi if SSID not found without crashing the program (hopefully).
+
+This example requires a secrets.py file
 
 Circuit Python 7.3.3
 
