@@ -43,11 +43,11 @@ while True:
 
     # Send 3 separate packets
     print("Time: ", now)
-    rfm9x.send(bytes("Hello\r\n", "utf-8"))
+    rfm9x.send(bytes("it was more of a fun aside than anything I'd pinned hopes and dreams on 🙂\r\n", "utf-8"))
     # Short sleep between packets can help, unecessary for high baudrate
     time.sleep(2)
-    rfm9x.send(bytes("World!\r\n", "utf-8"))
+    rfm9x.send(bytes("my partner and I have these rad Keyboard Featherwings from Solder Party and were wanting to make communicators.\r\n", "utf-8"))
     time.sleep(2)
-    rfm9x.send(bytes("Third Syn\r\n", "utf-8"))
+    rfm9x.send(bytes("might have to pick your brain about LoRa sometime. I experimented a bit using some very weird sparkfun boards (expLoRaBLE) a year or so ago, but finding libraries that were actually up to date/worked was rough.\r\n", "utf-8"))
     print("Packet Transmitted\n")
     time.sleep(60)
