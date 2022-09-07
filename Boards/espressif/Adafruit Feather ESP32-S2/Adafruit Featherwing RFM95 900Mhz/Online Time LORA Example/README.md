@@ -1,5 +1,5 @@
 # Adafruit Featherwing LORA RFM95 with Feather ESP32-S2
-### Online Time Example by DJDevon3 based on code by Tony Dicola.
+### Online Time LORA Example by DJDevon3
 
 This code includes *improved* error handling correction from my original commit. 
 
