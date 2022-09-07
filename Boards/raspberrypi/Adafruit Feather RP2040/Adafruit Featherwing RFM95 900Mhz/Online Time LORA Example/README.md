@@ -66,6 +66,6 @@ Signal Strength: -109 dB
 Received (ASCII): might have to pick your brain about LoRa sometime. I experimented a bit using some very weird sparkfun boards (expLoRaBLE) a year or so ago, but finding libraries that were actually up to date/worked was rough.
 
 ```
-I used some random chat messages pasted from discord for the msg examples. It will send/receive long messages reliably now. When no message is received it goes into a timeout mode waiting for a new message, gracefully, without crashing the program. Also, has basic emoji support 🙂🙂🙂
+I used some random chat messages pasted from discord for the msg examples. It will send/receive long messages reliably now. When no message is received it goes into a timeout mode waiting for a new message, gracefully, without crashing the program. Also, has basic emoji support 🙂 if used with Mu.
 
 The projects in this section are specifically for Adafruit RP2040 based boards running Circuit Python.
