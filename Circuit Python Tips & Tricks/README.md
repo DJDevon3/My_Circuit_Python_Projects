@@ -16,7 +16,7 @@ def _format_datetime(datetime):
         datetime.tm_min,
         datetime.tm_sec,
     )
-
+# Plug the time in seconds into unix_time example provided.
 unix_time = 1660764970 # Wed Aug 17 2022 19:36:10 GMT+0000
 tz_offset_seconds = -14400  # NY Timezone
 
@@ -30,6 +30,29 @@ print("Timestamp:", current_date)
 code.py output:
 
 `Timestamp: 08/17/2022 15:36:10`
+
+### Count Up Timer (used in sleep time events)
+```py
+sleep_time = 900
+if sleep_time < 60:
+    sleep_time_conversion = "seconds"
+    sleep_int = sleep_time
+elif 60 <= sleep_time < 3600:
+    sleep_int = sleep_time / 60
+    sleep_time_conversion = "minutes"
+elif 3600 <= sleep_time < 86400:
+    sleep_int = sleep_time / 60 / 60
+    sleep_time_conversion = "hours"
+else:
+    sleep_int = sleep_time / 60 / 60 / 24
+    sleep_time_conversion = "days"
+
+print("\nNext Update in %s %s" % (int(sleep_int), sleep_time_conversion))
+time.sleep(sleep_time)
+```
+code.py output:
+
+`Next Update in 15 minutes`
 
 ### Get Time from Online (ESP32-S2)
 For boards with WiFi and no RTC
@@ -54,12 +77,12 @@ if sleep_time < 60:
 elif 60 <= sleep_time < 3600:
     sleep_int = sleep_time / 60
     sleep_time_conversion = "minutes"
-elif sleep_time >= 3600:
+elif 3600 <= sleep_time < 86400:
     sleep_int = sleep_time / 60 / 60
     sleep_time_conversion = "hours"
 else:
-    sleep_int = sleep_time
-    sleep_time_conversion = "seconds"
+    sleep_int = sleep_time / 60 / 60 / 24
+    sleep_time_conversion = "days"
 
 # Check secrets.py to adjust timezone
 tz_offset_seconds = int(secrets["timezone_offset"])
