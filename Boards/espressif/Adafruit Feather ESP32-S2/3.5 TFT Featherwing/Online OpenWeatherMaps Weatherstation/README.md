@@ -1,4 +1,4 @@
-![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/espressif/Adafruit%20Feather%20ESP32-S2/3.5%20TFT%20Featherwing/Online%20OpenWeatherMaps%20Weatherstation/screenshot.bmp)
+![screenshot](https://user-images.githubusercontent.com/49322231/189921153-f18aa425-7e45-4438-804b-2c6da8016deb.jpg)
 
 # Online OpenWeatherMaps Weatherstation (for ESP32-S2)
 - pulls info from OpenWeatherMaps in JSON format
