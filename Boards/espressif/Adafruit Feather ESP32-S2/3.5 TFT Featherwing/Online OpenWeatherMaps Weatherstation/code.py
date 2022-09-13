@@ -4,11 +4,16 @@
 import gc
 import time
 import board
+import supervisor
 import displayio
 import terminalio
+import digitalio
 from adafruit_display_text import label
 from adafruit_bitmap_font import bitmap_font
 import adafruit_imageload
+from adafruit_bitmapsaver import save_pixels
+import adafruit_sdcard
+import storage
 import ssl
 import wifi
 import socketpool
@@ -17,9 +22,15 @@ from adafruit_lc709203f import LC709203F, PackSize
 from adafruit_hx8357 import HX8357
 
 # 3.5" TFT Featherwing is 480x320
+# Release display first, always!
 displayio.release_displays()
 DISPLAY_WIDTH = 480
 DISPLAY_HEIGHT = 320
+
+# Initialize WiFi Pool (This should always be near the top of a script!)
+# anecdata: you only want to do this once early in your code pool.
+# Highlander voice: "There can be only one pool"
+pool = socketpool.SocketPool(wifi.radio)
 
 # Time between weather updates
 # 900 = 15 mins, 1800 = 30 mins, 3600 = 1 hour
@@ -32,12 +43,20 @@ tft_dc = board.D10
 display_bus = displayio.FourWire(spi, command=tft_dc, chip_select=tft_cs)
 display = HX8357(display_bus, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT)
 
-# Create sensor object, using the board's default I2C bus.
-battery_monitor = LC709203F(board.I2C())
+# Initialize SDCard on TFT Featherwing
+cs = digitalio.DigitalInOut(board.D5)
+sdcard = adafruit_sdcard.SDCard(spi, cs)
+vfs = storage.VfsFat(sdcard)
+virtual_root = "/sd"
+storage.mount(vfs, virtual_root)
 
-# Update to match the mAh of your battery for more accurate readings.
+# Monitor voltage using onboard I2C sensor.
+battery_monitor = LC709203F(board.I2C())
+usb_sense = supervisor.runtime.serial_connected
+
+# Packsize monitor unique to S2, for higher accuracy.
 # Can be MAH100, MAH200, MAH400, MAH500, MAH1000, MAH2000, MAH3000.
-# Choose the closest match. Include "PackSize." before it, as shown.
+# Choose closest match.
 battery_monitor.pack_size = PackSize.MAH3000
 
 try:
@@ -52,26 +71,26 @@ if sleep_time < 60:
 elif 60 <= sleep_time < 3600:
     sleep_int = sleep_time / 60
     sleep_time_conversion = "minutes"
-elif sleep_time >= 3600:
+elif 3600 <= sleep_time < 86400:
     sleep_int = sleep_time / 60 / 60
     sleep_time_conversion = "hours"
 else:
-    sleep_int = sleep_time
-    sleep_time_conversion = "seconds"
+    sleep_int = sleep_time / 60 / 60 / 24
+    sleep_time_conversion = "days"
 
 # Quick Colors for Labels
-text_black = 0x000000
-text_blue = 0x0000FF
-text_cyan = 0x00FFFF
-text_gray = 0x8B8B8B
-text_green = 0x00FF00
-text_lightblue = 0x90C7FF
-text_magenta = 0xFF00FF
-text_orange = 0xFFA500
-text_purple = 0x800080
-text_red = 0xFF0000
-text_white = 0xFFFFFF
-text_yellow = 0xFFFF00
+TEXT_BLACK = 0x000000
+TEXT_BLUE = 0x0000FF
+TEXT_CYAN = 0x00FFFF
+TEXT_GRAY = 0x8B8B8B
+TEXT_GREEN = 0x00FF00
+TEXT_LIGHTBLUE = 0x90C7FF
+TEXT_MAGENTA = 0xFF00FF
+TEXT_ORANGE = 0xFFA500
+TEXT_PURPLE = 0x800080
+TEXT_RED = 0xFF0000
+TEXT_WHITE = 0xFFFFFF
+TEXT_YELLOW = 0xFFFF00
 
 # Fonts are optional
 medium_font = bitmap_font.load_font("/fonts/Arial-16.bdf")
@@ -130,87 +149,89 @@ def _format_time(datetime):
 
 # Individual customizable position labels
 # https://learn.adafruit.com/circuitpython-display-support-using-displayio/text
+hello_label = label.Label(terminalio.FONT)
+hello_label.anchor_point = (0.5, 1.0)
+hello_label.anchored_position = (DISPLAY_WIDTH/2, 15)
+hello_label.scale = (1)
+hello_label.color = TEXT_WHITE
+
 date_label = label.Label(medium_font)
-# Anchor point bottom center of text
 date_label.anchor_point = (0.0, 0.0)
-# Display width divided in half for center of display (x,y)
 date_label.anchored_position = (5, 5)
 date_label.scale = 1
-date_label.color = text_lightblue
+date_label.color = TEXT_LIGHTBLUE
 
 time_label = label.Label(medium_font)
-# Anchor point bottom center of text
 time_label.anchor_point = (0.0, 0.0)
-# Display width divided in half for center of display (x,y)
 time_label.anchored_position = (5, 25)
 time_label.scale = 2
-time_label.color = text_lightblue
+time_label.color = TEXT_LIGHTBLUE
 
 temp_label = label.Label(medium_font)
 temp_label.anchor_point = (1.0, 1.0)
 temp_label.anchored_position = (475, 145)
 temp_label.scale = 2
-temp_label.color = text_orange
+temp_label.color = TEXT_LIGHTBLUE
 
 temp_data_label = label.Label(huge_font)
 temp_data_label.anchor_point = (0.5, 1.0)
 temp_data_label.anchored_position = (DISPLAY_WIDTH / 2, 200)
 temp_data_label.scale = 1
-temp_data_label.color = text_orange
+temp_data_label.color = TEXT_LIGHTBLUE
 
 temp_data_shadow = label.Label(huge_font)
 temp_data_shadow.anchor_point = (0.5, 1.0)
 temp_data_shadow.anchored_position = (DISPLAY_WIDTH / 2 + 2, 200 + 2)
 temp_data_shadow.scale = 1
-temp_data_shadow.color = text_black
+temp_data_shadow.color = TEXT_BLACK
 
-owm_temp_data_label = label.Label(medium_font)
+owm_temp_data_label = label.Label(huge_font)
 owm_temp_data_label.anchor_point = (0.5, 1.0)
-owm_temp_data_label.anchored_position = (DISPLAY_WIDTH / 2, 100)
-owm_temp_data_label.scale = 2
-owm_temp_data_label.color = text_lightblue
+owm_temp_data_label.anchored_position = (DISPLAY_WIDTH / 2, 200)
+owm_temp_data_label.scale = 1
+owm_temp_data_label.color = TEXT_LIGHTBLUE
 
-owm_temp_data_shadow = label.Label(medium_font)
+owm_temp_data_shadow = label.Label(huge_font)
 owm_temp_data_shadow.anchor_point = (0.5, 1.0)
-owm_temp_data_shadow.anchored_position = (DISPLAY_WIDTH / 2 + 2, 100 + 2)
-owm_temp_data_shadow.scale = 2
-owm_temp_data_shadow.color = text_black
+owm_temp_data_shadow.anchored_position = (DISPLAY_WIDTH / 2 + 2, 200 + 2)
+owm_temp_data_shadow.scale = 1
+owm_temp_data_shadow.color = TEXT_BLACK
 
 humidity_label = label.Label(medium_font)
 humidity_label.anchor_point = (0.0, 1.0)
 humidity_label.anchored_position = (5, DISPLAY_HEIGHT - 23)
 humidity_label.scale = 1
-humidity_label.color = text_gray
+humidity_label.color = TEXT_GRAY
 
 humidity_data_label = label.Label(medium_font)
 humidity_data_label.anchor_point = (0.0, 1.0)
 humidity_data_label.anchored_position = (5, DISPLAY_HEIGHT)
 humidity_data_label.scale = 1
-humidity_data_label.color = text_orange
+humidity_data_label.color = TEXT_ORANGE
 
 owm_humidity_data_label = label.Label(medium_font)
 owm_humidity_data_label.anchor_point = (0.0, 1.0)
 owm_humidity_data_label.anchored_position = (5, DISPLAY_HEIGHT - 55)
 owm_humidity_data_label.scale = 1
-owm_humidity_data_label.color = text_lightblue
+owm_humidity_data_label.color = TEXT_LIGHTBLUE
 
 barometric_label = label.Label(medium_font)
 barometric_label.anchor_point = (1.0, 1.0)
 barometric_label.anchored_position = (470, DISPLAY_HEIGHT - 27)
 barometric_label.scale = 1
-barometric_label.color = text_gray
+barometric_label.color = TEXT_GRAY
 
 barometric_data_label = label.Label(medium_font)
 barometric_data_label.anchor_point = (1.0, 1.0)
 barometric_data_label.anchored_position = (470, DISPLAY_HEIGHT)
 barometric_data_label.scale = 1
-barometric_data_label.color = text_orange
+barometric_data_label.color = TEXT_ORANGE
 
 owm_barometric_data_label = label.Label(medium_font)
 owm_barometric_data_label.anchor_point = (1.0, 1.0)
 owm_barometric_data_label.anchored_position = (470, DISPLAY_HEIGHT - 55)
 owm_barometric_data_label.scale = 1
-owm_barometric_data_label.color = text_lightblue
+owm_barometric_data_label.color = TEXT_LIGHTBLUE
 
 vbat_label = label.Label(medium_font)
 vbat_label.anchor_point = (1.0, 1.0)
@@ -277,6 +298,7 @@ main_group.append(temp_group)
 main_group.append(sprite_group)
 
 # Label Display Group (foreground layer)
+text_group.append(hello_label)
 text_group.append(date_label)
 text_group.append(time_label)
 temp_group.append(temp_label)
@@ -302,7 +324,6 @@ display.show(main_group)
 # Connect to Wi-Fi
 print("\n===============================")
 print("Connecting to WiFi...")
-pool = socketpool.SocketPool(wifi.radio)
 requests = adafruit_requests.Session(pool, ssl.create_default_context())
 while not wifi.radio.ipv4_address:
     try:
@@ -317,33 +338,44 @@ while not wifi.radio.ipv4_address:
 print("Connected!\n")
 
 vbat_label.text = "{:.2f}".format(battery_monitor.cell_voltage)
+source_index = 0
 
 while True:
     gc.collect()
+    hello_label.text = "ESP32-S2 Online Weatherstation"
+    temp_label.text = "°F"
+    humidity_label.text = "Humidity"
+    barometric_label.text = "Pressure"
 
-    # Changes battery voltage color depending on charge level
-    if vbat_label.text >= "4.23":
-        vbat_label.color = text_white
+    if usb_sense:
+        vbat_label.color = TEXT_WHITE
         sprite[0] = 3
-    elif "4.10" <= vbat_label.text <= "4.22":
-        vbat_label.color = text_green
-        sprite[0] = 1
-    elif "4.00" <= vbat_label.text <= "4.09":
-        vbat_label.color = text_lightblue
-        sprite[0] = 0
-    elif "3.90" <= vbat_label.text <= "3.99":
-        vbat_label.color = text_yellow
-        sprite[0] = 5
-    elif "3.80" <= vbat_label.text <= "3.89":
-        vbat_label.color = text_orange
-        sprite[0] = 2
-    elif vbat_label.text <= "3.79":
-        vbat_label.color = text_red
-        sprite[0] = 4
-    else:
-        vbat_label.color = text_white
+    
+    if not usb_sense:
+        # Changes battery voltage color depending on charge level
+        if vbat_label.text >= "4.23":
+            vbat_label.color = TEXT_WHITE
+            sprite[0] = 3
+        elif "4.10" <= vbat_label.text <= "4.22":
+            vbat_label.color = TEXT_GREEN
+            sprite[0] = 1
+        elif "4.00" <= vbat_label.text <= "4.09":
+            vbat_label.color = TEXT_LIGHTBLUE
+            sprite[0] = 0
+        elif "3.90" <= vbat_label.text <= "3.99":
+            vbat_label.color = TEXT_YELLOW
+            sprite[0] = 5
+        elif "3.80" <= vbat_label.text <= "3.89":
+            vbat_label.color = TEXT_ORANGE
+            sprite[0] = 2
+        elif vbat_label.text <= "3.79":
+            vbat_label.color = TEXT_RED
+            sprite[0] = 4
+        else:
+            vbat_label.color = TEXT_WHITE
 
     vbat_label.text
+    # Serial print battery data for debugging if needed.
     # print("Battery Percent: {:.2f} %".format(battery_monitor.cell_percent))
     # print("Battery Voltage: {:.2f} V".format(battery_monitor.cell_voltage))
 
@@ -408,4 +440,21 @@ while True:
         time.sleep(60)
         continue
     response = None
+
+    TAKE_SCREENSHOT = False  # Set to True to take a screenshot
+    if TAKE_SCREENSHOT:
+        source_index += 1
+        print(source_index)
+        if source_index > 3:
+            print("Taking Screenshot... ")
+            save_pixels("/sd/screenshot.bmp", display)
+            print("Screenshot taken")
+            time.sleep(60.0)
+            sleep_time = 0
+        else:
+            # TAKE_SCREENSHOT = False
+            pass
+        pass
+        sleep_time = 0
+
     time.sleep(sleep_time)
