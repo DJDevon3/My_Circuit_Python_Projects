@@ -66,7 +66,8 @@ try:
 except ImportError:
     print("Secrets File Import Error")
     raise
-    
+# Initialize Wifi SocketPool
+pool = socketpool.SocketPool(wifi.radio)
 # Time between retry events
 # 900 = 15 mins, 1800 = 30 mins, 3600 = 1 hour
 sleep_time = 10
@@ -104,7 +105,6 @@ print("Connecting to WiFi...")
 while True:
     while not wifi.radio.ipv4_address:
         try:
-            pool = socketpool.SocketPool(wifi.radio)
             request = adafruit_requests.Session(pool, ssl.create_default_context())
             wifi.radio.enabled = False
             wifi.radio.enabled = True
@@ -117,7 +117,6 @@ while True:
     print("Connected to WiFi...")
     
     while wifi.radio.ipv4_address:
-        pool = socketpool.SocketPool(wifi.radio)
         request = adafruit_requests.Session(pool, ssl.create_default_context())
         # Connect to WorldTimeAPI
         # print("Getting Time from WorldTimeAPI")
