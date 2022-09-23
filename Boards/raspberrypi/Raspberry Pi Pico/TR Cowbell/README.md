@@ -3,7 +3,7 @@ TR Cowbell powered by Raspberry Pi Pico by DJDevon3
 
 ![Based on PicoStepSeq by @Todbot](https://github.com/todbot/picostepseq)
 
-My first major custom board! Project is progressing very slowly. 
+My first major custom board!!!
 
 ![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/raspberrypi/Raspberry%20Pi%20Pico/TR%20Cowbell/Pictures/IMG_0449.JPG)
 
