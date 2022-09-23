@@ -37,7 +37,7 @@ Next is to integrate the keypad library
 - Replaced dual rotary encoders with single ANO encoder wheel
 - Added breakout for ANO encoder for enclosures
 - Replaced my name on top silkscreen with TR-Cowbell, moved name to bottom silkscreen in Papyrus font.
-- Not yet ready to print v1.2 PCB as all HW tests have yet to be conducted and confirmed (Midi in/out).
+- Not yet ready to print v1.2 PCB, waiting for OSHW certification
 
 # BOM (Bill of Materials)
 ### For basic USB MIDI functionality:
