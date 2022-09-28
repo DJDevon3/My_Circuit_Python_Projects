@@ -26,9 +26,7 @@ i2c = busio.I2C(board.SCL, board.SDA)
 # https://learn.adafruit.com/adafruit-esp32-s2-feather/i2c-external-sensor
 display = segments.Seg7x4(i2c, address=(0x71, 0x72))
 display.brightness = 0.5
-# Clear the display.
 display.fill(0)
-time.sleep(2)
 
 # Time between weather updates
 # 900 = 15 mins, 1800 = 30 mins, 3600 = 1 hour
