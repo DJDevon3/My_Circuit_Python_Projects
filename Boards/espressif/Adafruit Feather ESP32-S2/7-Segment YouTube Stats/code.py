@@ -25,8 +25,6 @@ i2c = busio.I2C(board.SCL, board.SDA)
 # Recommend running "CircuitPython I2C Device Address Scan" to get addresses
 # https://learn.adafruit.com/adafruit-esp32-s2-feather/i2c-external-sensor
 display = segments.Seg7x4(i2c, address=(0x71, 0x72))
-display.brightness = 0.5
-display.fill(0)
 
 # Time between weather updates
 # 900 = 15 mins, 1800 = 30 mins, 3600 = 1 hour
@@ -112,11 +110,20 @@ while True:
         YT_response_channel_subscriberCount = response['items'][0]['statistics']['subscriberCount']
         if debug:
             print("Subscribers: ", YT_response_channel_subscriberCount)
+            
+        # Both 7-segment displays ------------------------------------------------
+        display.brightness = 0.8
+        display.fill(0)
         
-        # Static Display Subscribers on both 7-segment displays
+        # Show Views First
+        display.print(YT_response_channel_viewCount)
+        time.sleep(60)
+        display.fill(0)
+        
+        # Static Display on both 7-segment displays
         display.print(YT_response_channel_subscriberCount)
         
-        # Marquee scrolling instead, 2nd parameter is speed in seconds
+        # Marquee scrolling, 2nd parameter speed in seconds
         # display.marquee(YT_response_channel_subscriberCount, 0.9)
         
         print("Success!")
