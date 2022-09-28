@@ -23,11 +23,9 @@ pool = socketpool.SocketPool(wifi.radio)
 i2c = busio.I2C(board.SCL, board.SDA)
 display = segments.Seg7x4(i2c, address=(0x71, 0x72))
 display.brightness = 0.5
-# Clear the display.
 display.fill(0)
-time.sleep(2)
 
-# Time between weather updates
+# Time between GET requests
 # 900 = 15 mins, 1800 = 30 mins, 3600 = 1 hour
 sleep_time = 900
 
@@ -98,43 +96,45 @@ while True:
         print("===============================")
         response = requests.get(DATA_SOURCE).json()
 
-        # uncomment the 2 lines below to see full json response
+         # Print Full JSON to Serial
         full_json_response = False # Change to true to see full response
         if full_json_response:
             dump_object = json.dumps(response)
             print("JSON Dump: ", dump_object)
-        
-        # Print to Serial useful response data
+
+        # Print Debugging to Serial
         debug = True # Change to true to see more response data
         if debug:
             print("Matching Results: ", response['pageInfo']['totalResults'])
-        
+
             YT_response_channel_kind = response['kind']
             print("Response Kind: ", YT_response_channel_kind)
-        
+
             YT_response_channel_kind = response['items'][0]['kind']
             print("Request Kind: ", YT_response_channel_kind)
-        
+
             YT_response_channel_id = response['items'][0]['id']
             print("Channel ID: ", YT_response_channel_id)
-            
-        
+
+
             YT_response_channel_videoCount = response['items'][0]['statistics']['videoCount']
             print("Videos: ", YT_response_channel_videoCount)
-        
+
             YT_response_channel_viewCount = response['items'][0]['statistics']['viewCount']
             print("Views: ", YT_response_channel_viewCount)
-            
+
         YT_response_channel_subscriberCount = response['items'][0]['statistics']['subscriberCount']
         if debug:
             print("Subscribers: ", YT_response_channel_subscriberCount)
-        
+
         # Static Display Subscribers on both 7-segment displays
+        display.fill(0)
         display.print(YT_response_channel_subscriberCount)
-        
+
         # Marquee scrolling instead, 2nd parameter is speed in seconds
+        # display.fill(0)
         # display.marquee(YT_response_channel_subscriberCount, 0.9)
-        
+
         print("Success!")
         print("Next Update in %s %s" % (int(sleep_int), sleep_time_conversion))
         print("===============================")
