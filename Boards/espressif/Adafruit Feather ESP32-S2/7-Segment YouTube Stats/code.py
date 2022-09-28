@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2022 DJDevon3 for Adafruit Industries
 # SPDX-License-Identifier: MIT
-"""DJDevon3 Adafruit Feather ESP32-S2 YouTube Subscriber & View Counter"""
+# Coded for Circuit Python 8.0.x
+"""DJDevon3 Adafruit Feather ESP32-S2 YouTube Subscriber Counter"""
 import gc
 import time
 import board
@@ -21,11 +22,15 @@ pool = socketpool.SocketPool(wifi.radio)
 
 #Initialize 7-Segment Backpack
 i2c = busio.I2C(board.SCL, board.SDA)
+# Recommend running "CircuitPython I2C Device Address Scan" to get addresses
+# https://learn.adafruit.com/adafruit-esp32-s2-feather/i2c-external-sensor
 display = segments.Seg7x4(i2c, address=(0x71, 0x72))
 display.brightness = 0.5
+# Clear the display.
 display.fill(0)
+time.sleep(2)
 
-# Time between GET requests
+# Time between weather updates
 # 900 = 15 mins, 1800 = 30 mins, 3600 = 1 hour
 sleep_time = 900
 
@@ -48,20 +53,6 @@ else:
     sleep_int = sleep_time / 60 / 60 / 24
     sleep_time_conversion = "days"
 
-# Quick Colors for Labels
-TEXT_BLACK = 0x000000
-TEXT_BLUE = 0x0000FF
-TEXT_CYAN = 0x00FFFF
-TEXT_GRAY = 0x8B8B8B
-TEXT_GREEN = 0x00FF00
-TEXT_LIGHTBLUE = 0x90C7FF
-TEXT_MAGENTA = 0xFF00FF
-TEXT_ORANGE = 0xFFA500
-TEXT_PURPLE = 0x800080
-TEXT_RED = 0xFF0000
-TEXT_WHITE = 0xFFFFFF
-TEXT_YELLOW = 0xFFFF00
-
 # https://youtube.googleapis.com/youtube/v3/channels?part=statistics&forUsername=[YOUR_USERNAME]&key=[YOUR_API_KEY]
 DATA_SOURCE = (
     "https://youtube.googleapis.com/youtube/v3/channels?"
@@ -78,8 +69,6 @@ print("Connecting to WiFi...")
 requests = adafruit_requests.Session(pool, ssl.create_default_context())
 while not wifi.radio.ipv4_address:
     try:
-        wifi.radio.enabled = False
-        wifi.radio.enabled = True
         wifi.radio.connect(secrets['ssid'], secrets['password'])
     except ConnectionError as e:
         print("Connection Error:", e)
@@ -96,45 +85,42 @@ while True:
         print("===============================")
         response = requests.get(DATA_SOURCE).json()
 
-         # Print Full JSON to Serial
+        # Print Full JSON to Serial
         full_json_response = False # Change to true to see full response
         if full_json_response:
             dump_object = json.dumps(response)
             print("JSON Dump: ", dump_object)
-
+        
         # Print Debugging to Serial
         debug = True # Change to true to see more response data
         if debug:
             print("Matching Results: ", response['pageInfo']['totalResults'])
-
+        
             YT_response_channel_kind = response['kind']
             print("Response Kind: ", YT_response_channel_kind)
-
+        
             YT_response_channel_kind = response['items'][0]['kind']
             print("Request Kind: ", YT_response_channel_kind)
-
+        
             YT_response_channel_id = response['items'][0]['id']
             print("Channel ID: ", YT_response_channel_id)
-
-
+            
             YT_response_channel_videoCount = response['items'][0]['statistics']['videoCount']
             print("Videos: ", YT_response_channel_videoCount)
-
+        
             YT_response_channel_viewCount = response['items'][0]['statistics']['viewCount']
             print("Views: ", YT_response_channel_viewCount)
-
+            
         YT_response_channel_subscriberCount = response['items'][0]['statistics']['subscriberCount']
         if debug:
             print("Subscribers: ", YT_response_channel_subscriberCount)
-
+        
         # Static Display Subscribers on both 7-segment displays
-        display.fill(0)
         display.print(YT_response_channel_subscriberCount)
-
+        
         # Marquee scrolling instead, 2nd parameter is speed in seconds
-        # display.fill(0)
         # display.marquee(YT_response_channel_subscriberCount, 0.9)
-
+        
         print("Success!")
         print("Next Update in %s %s" % (int(sleep_int), sleep_time_conversion))
         print("===============================")
