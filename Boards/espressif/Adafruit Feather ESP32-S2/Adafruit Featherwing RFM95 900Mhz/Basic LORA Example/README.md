@@ -4,7 +4,7 @@
 This code includes basic error handling correction the original lacked. It splits the normal code.py off into 2 different files that will normally be used for your main transmitter and receiver pair. I did it this way so you can easily add more receivers with this type of setup. This code is still in its infancy and is a long term project for me that will receive future updates.
 
 ### Todo List
-- Add basic encryption for local P2P chat messengers (also ensures LORA mailboxes or weather sensors only communicate with you)
+- Add basic encryption for private LORAwan network. Ensures LORA mailboxes, weather sensors, chat messengers only communicate with you.
 - Ensure syn/ack works properly
 - Ensure nodes work properly
 - Automatic baudrate switching for least amount of errors and highest speed based on signal strenth/noise/distance.
