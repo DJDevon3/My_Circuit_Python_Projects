@@ -5,7 +5,7 @@ TR Cowbell powered by Raspberry Pi Pico by DJDevon3
 
 My first major custom board!!!
 
-![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/raspberrypi/Raspberry%20Pi%20Pico/TR%20Cowbell/Pictures/IMG_0449.JPG)
+![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/raspberrypi/Raspberry%20Pi%20Pico/TR%20Cowbell/Pictures/IMG_0449_oshwa.jpg)
 
 ### Version 1.0 (prototype)
 Gorgeous PCB but there are hardware problems in the initial design that had to be fixed with bodge wire. All of these issues are my fault due to adding complexity with an I2C expander design.
