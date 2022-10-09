@@ -1,7 +1,9 @@
 ### Adafruit Feather ESP32-S3 + 64x32 RGB Matrix + RGB Matrix Featherwing
 The code in here doesn't differ from the default RGB Matrix Featherwing M0/M4/RP2040 learn guide code.
 
-This was a test to confirm the combination of these components work well together. My simpletest code does not include wifi. It's a simple hardware test only.
+This was a test to confirm the combination of these components work well together. 
+
+The simpletest code does not include wifi. It's a hardware test only.
 
 Note: If you forget to hook up the external power supply to your Matrix panel only red LED's will work. Found that out the hard way. :P
 
