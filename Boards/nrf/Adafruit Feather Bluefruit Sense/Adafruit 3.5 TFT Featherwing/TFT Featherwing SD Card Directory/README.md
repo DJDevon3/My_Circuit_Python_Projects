@@ -1,7 +1,7 @@
 # Project Details
 Interact with the SD Card on the TFT Featherwing.
 
-![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/nrf/Adafruit%20Feather%20Bluefruit%20Sense/Adafruit%203.5%20TFT%20Featherwing/TFT%20Featherwing%20SD%20Card%20Directory/TFT_Output_Example.jpg
+![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/nrf/Adafruit%20Feather%20Bluefruit%20Sense/Adafruit%203.5%20TFT%20Featherwing/TFT%20Featherwing%20SD%20Card%20Directory/TFT_Output_Example.jpg)
 
 # Required Hardware:
 - Adafruit Feather (NRF52840 in this example) running Circuit Python 7.3.x
