@@ -16,5 +16,5 @@ secrets = {
     "Github_username": "Github Username",
     "Github_token": "Github Developer Token",
     "Discord_Adafruit_Channel": "327254708534116352",
-    "Discord_Authorization": "Discord Web Authorization String (not a token)"
+    "Discord_Authorization": "Discord Web Authorization String (not a token)"  # Learn how here: https://github.com/lorenz234/Discord-Data-Scraping
 }
