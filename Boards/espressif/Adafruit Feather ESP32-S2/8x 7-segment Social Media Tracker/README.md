@@ -10,7 +10,7 @@ Social Media Tracker Project
 - Discord User Account (uses web scraping, no developer account required)
 
 ### Custom adafruit_ht16k33 Library
-- Had to modify the library, by default only A-F only alphabetic characters displayed on the segments
+- Had to modify the library, by default only A-F alphabetic characters displayed on the segments
 
 ### Hardware Used:
 - 1x [Adafruit Feather ESP32-S2 4 MB Flash + 2 MB PSRAM](https://www.adafruit.com/product/5000)
