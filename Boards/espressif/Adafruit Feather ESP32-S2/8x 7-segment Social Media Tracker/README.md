@@ -4,9 +4,9 @@ Social Media Tracker Project
 ![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/espressif/Adafruit%20Feather%20ESP32-S2/8x%207-segment%20Social%20Media%20Tracker/social_media_tracker_finished.png)
 
 ### Software Requirement:
-- Youtube API Developer Account
-- Twitter API Developer Account
-- Github API Developer Account
+- Youtube API Developer Account Token
+- Twitter API Developer Account Token
+- Github API Developer Account Token
 - Discord User Account (uses web scraping, no developer account required)
 
 ### Hardware Used:
