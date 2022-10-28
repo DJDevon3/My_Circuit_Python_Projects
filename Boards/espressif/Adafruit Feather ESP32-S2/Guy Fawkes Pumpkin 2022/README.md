@@ -1,4 +1,4 @@
-# Adafruit Feather ESP32-S2 & M4 Express w/Propmaker Featherwing
+# Adafruit Feather ESP32-S2 + M4 Express w/Propmaker Featherwing
 Guy Fawkes Noods Pumpkin 2022 by DJDevon3
 
 The M4 Express w/propmaker featherwing is used solely for powering the 3W RGB LED that takes place of real candle flicker... because having a candle inside the pumpkin with all the electronics is probably a bad idea.
