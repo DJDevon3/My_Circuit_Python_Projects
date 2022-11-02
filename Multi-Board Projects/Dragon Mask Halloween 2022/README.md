@@ -5,6 +5,9 @@ A 4x microcontroller Halloween mask illumination project by DJDevon3
 
 https://user-images.githubusercontent.com/49322231/199375149-0370c1ab-0e28-4d0f-97be-19614207e7a6.MOV
 
+### Parts List
+Everything listed is what is used in the project. There's definitely room for improvement in weight savings and making things smaller with less of a rats nest.
+
 ### Microcontrollers:
 - 1x [Adafruit Gemma M0](https://www.adafruit.com/product/3501) (Controls NeoPixel rings)
 - 1x [Adafruit QT Py ESP32-S2](https://www.adafruit.com/product/5325) + [QT Py BFF](https://www.adafruit.com/product/5397) (Controls Noods)
@@ -25,6 +28,7 @@ https://user-images.githubusercontent.com/49322231/199375149-0370c1ab-0e28-4d0f-
 - 2x [6600mah Lipo batteries](https://www.adafruit.com/product/353)
 - 1x [2500mah Lipo battery](https://www.adafruit.com/product/328)
 - 1x [Micro Lipo Charger](https://www.adafruit.com/product/1304) (recommended for recharging)
+- Unknowingly went way overkill with the large batteries. They ran for 4 straight days. Recommend going with all 2500mah batteries. Will save weight too.
 
 ### Costume Apparel:
 - 1x [Dragon Skull Mask](https://www.amazon.com/dp/B095LPK6CW)
