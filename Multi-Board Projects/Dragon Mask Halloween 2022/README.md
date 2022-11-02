@@ -17,6 +17,9 @@ https://user-images.githubusercontent.com/49322231/199375149-0370c1ab-0e28-4d0f-
 - 1x 3W RGB LED from Adafruit
 - 2x GC9A01 round LCD displays from Amazon
 
+### Components:
+- 5x 68 Ohm resistors (inline on 1 lead of nood, direction doesn't matter, which end doesn't matter)
+
 ### Batteries:
 - 2x 6600mah Lipo batteries from Adafruit
 - 1x 2500mah Lipo battery from Adafruit
