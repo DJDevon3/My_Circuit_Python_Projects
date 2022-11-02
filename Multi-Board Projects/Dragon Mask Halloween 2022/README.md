@@ -1,5 +1,5 @@
 # Dragon Mask Halloween 2022
-A 3 microcontroller illumination project by DJDevon3
+A 4x microcontroller halloween mask illumination project by DJDevon3
 
 ### Hardware Used:
 - Adafruit Gemma M0 (2x 12 pixel rings)
