@@ -25,10 +25,10 @@ Everything listed is what is used in the project. There's definitely room for im
 - 5x [100 Ohm resistors](https://www.adafruit.com/product/4293) (inline on noods)
 
 ### Batteries:
-- 2x [6600mah Lipo batteries](https://www.adafruit.com/product/353)
-- 1x [2500mah Lipo battery](https://www.adafruit.com/product/328)
+- 2x [6600mah Lipo batteries](https://www.adafruit.com/product/353) (ran for 4 days in this project)
+- 1x [2500mah Lipo battery](https://www.adafruit.com/product/328) (ran for 30 hours in this project)
 - 1x [Micro Lipo Charger](https://www.adafruit.com/product/1304) (recommended for recharging)
-- Unknowingly went way overkill with the large batteries. They ran for 4 straight days. Recommend going with all 2500mah batteries. Will save weight too. The 6600mah batteries are very heavy and put a strain on my neck just from 2 hours wearing the mask.
+- Unknowingly went way overkill with the large batteries. Only needed it to last 2-3 hours on Halloween. Recommend going with all 2500mah or smaller batteries. Will save weight too. The 6600mah batteries are very heavy and put a strain on my neck after 2 hours of wearing the mask.
 
 ### Costume Apparel:
 - 1x [Dragon Skull Mask](https://www.amazon.com/dp/B095LPK6CW)
