@@ -13,7 +13,8 @@ https://user-images.githubusercontent.com/49322231/199375149-0370c1ab-0e28-4d0f-
 
 ### Lighting:
 - 2x 12 pixel rings from Adafruit
-- 5x 3V Noods from Adafruit
+- 5x 3v Noods from Adafruit
+- 1x 3W RGB LED from Adafruit
 - 2x GC9A01 round LCD displays from Amazon
 
 ### Batteries:
