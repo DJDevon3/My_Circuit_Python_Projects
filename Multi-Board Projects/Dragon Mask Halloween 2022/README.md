@@ -38,5 +38,5 @@ Everything listed is what is used in the project. There's definitely room for im
 - 1x [Stretch Mesh Fabric](https://www.amazon.com/dp/B00UHAMJ16)
 
 ### Coded in Circuit Python
-- All code and libraries used on each board is freely available here.
+- All code and libraries used on each board freely available here.
 - No circuit diagrams yet
