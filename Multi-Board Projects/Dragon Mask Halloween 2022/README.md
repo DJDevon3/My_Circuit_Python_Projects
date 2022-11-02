@@ -6,10 +6,10 @@ A 4x microcontroller Halloween mask illumination project by DJDevon3
 https://user-images.githubusercontent.com/49322231/199375149-0370c1ab-0e28-4d0f-97be-19614207e7a6.MOV
 
 ### Microcontrollers:
-- 1x [Adafruit Gemma M0](https://www.adafruit.com/product/3501) (2x 12 pixel rings)
-- 1x [Adafruit QT Py ESP32-S2](https://www.adafruit.com/product/5325) + [QT Py BFF](https://www.adafruit.com/product/5397) (noods)
-- 1x [Adafruit Feather M4 Express](https://www.adafruit.com/product/3857) + [PropMaker Featherwing](https://www.adafruit.com/product/3988) (scepter)
-- 1x [Adafruit Feather ESP32-S3](https://www.adafruit.com/product/5477) (LCD eyes)
+- 1x [Adafruit Gemma M0](https://www.adafruit.com/product/3501) (Controls NeoPixel rings)
+- 1x [Adafruit QT Py ESP32-S2](https://www.adafruit.com/product/5325) + [QT Py BFF](https://www.adafruit.com/product/5397) (Controls Noods)
+- 1x [Adafruit Feather M4 Express](https://www.adafruit.com/product/3857) + [PropMaker Featherwing](https://www.adafruit.com/product/3988) (Controls Scepter)
+- 1x [Adafruit Feather ESP32-S3](https://www.adafruit.com/product/5477) (Controls LCD eyes)
 
 ### Lighting:
 - 2x [12 NeoPixel ring](https://www.adafruit.com/product/1643) (inside top jaw)
