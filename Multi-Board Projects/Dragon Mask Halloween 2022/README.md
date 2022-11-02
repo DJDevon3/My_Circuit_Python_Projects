@@ -7,7 +7,7 @@ https://user-images.githubusercontent.com/49322231/199375149-0370c1ab-0e28-4d0f-
 
 ### Microcontrollers:
 - 1x Adafruit Gemma M0 (2x 12 pixel rings)
-- 1x Adafruit QT Py ESP32-S2 + QT Py BFF Charger (noods)
+- 1x Adafruit QT Py ESP32-S2 + QT Py BFF (noods)
 - 1x Adafruit Feather M4 Express + PropMaker Featherwing (scepter)
 - 1x Adafruit Feather ESP32-S3 (LCD eyes)
 
