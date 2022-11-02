@@ -36,3 +36,7 @@ Everything listed is what is used in the project. There's definitely room for im
 - 1x [Moon Phase Cloak with Hood](https://www.amazon.com/dp/B09BQRDHLZ)
 - 1x [Skeleton Hand Gloves](https://www.amazon.com/dp/B004UUK4IO)
 - 1x [Stretch Mesh Fabric](https://www.amazon.com/dp/B00UHAMJ16)
+
+### Coded in Circuit Python
+- All code and libraries used on each board is freely available here.
+- No circuit diagrams yet
