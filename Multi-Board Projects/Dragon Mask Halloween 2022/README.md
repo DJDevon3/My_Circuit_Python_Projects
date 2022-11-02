@@ -24,3 +24,4 @@ https://user-images.githubusercontent.com/49322231/199375149-0370c1ab-0e28-4d0f-
 - 1x thin latex mask from Amazon
 - 1x scepter from Amazon
 - 1x black cloak with hood
+- 1x roll of black mesh fabric
