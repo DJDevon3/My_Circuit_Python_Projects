@@ -8,7 +8,7 @@ Highly recommend you use a warm white LED instead of cool white LED it's easier 
 
 Code uses randomized voltages (0.0v-3.3v) for light intensity and randomized sleep duration (in milliseconds) to produce the flicker effect  
 
-65535 is the maximum intensity of 3.3 volts and 0 is 0.0 volts to the LED.
+65535 is the maximum intensity of 3.3 volts and 0 is 0.0 volts to the LED. Range of 0-65535 is equal to 0.0-3.3 volts  
 
 # Required Hardware
 - 2-pin LED
