@@ -6,6 +6,8 @@ Single-color LED candle flicker with Circuit Python using built-in modules. No e
 
 Highly recommend you use a warm white LED instead of cool white LED it's easier on the eyes.
 
+Code uses randomized voltages for light intensity and randomized sleep duration (in milliseconds) to produce the flicker effect  
+
 # Required Hardware
 - 2-pin LED
 - Any Adafruit Microcontroller
