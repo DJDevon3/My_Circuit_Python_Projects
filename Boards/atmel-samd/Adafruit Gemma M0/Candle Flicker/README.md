@@ -17,4 +17,4 @@ Code uses randomized voltages (0.0v-3.3v) for light intensity and randomized sle
 Instructions: Attach the shorter leg of the LED to the GND terminal and longer leg to any analog pin usually labeled 
 A0, A1, etc..
 
-With the Gemma M0 I'm using GND and pin D1/A0
+With the Gemma M0 I'm using GND and pin A0 for 1 LED. To add more LEDs simply add analog_out2 = AnalogOut(board.A1) for example.
