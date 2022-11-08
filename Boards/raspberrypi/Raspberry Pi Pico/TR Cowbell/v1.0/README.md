@@ -1,19 +1,43 @@
 # TR-Cowbell
-TR Cowbell v1.2 powered by Raspberry Pi Pico by DJDevon3
+TR Cowbell powered by Raspberry Pi Pico by DJDevon3
 
 ![Based on PicoStepSeq by @Todbot](https://github.com/todbot/picostepseq)
 
-![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/raspberrypi/Raspberry%20Pi%20Pico/TR%20Cowbell/Pictures/v1.2_screenshot.jpg)
+My first major custom board!!!
 
-### Version 1.2
-- Replaced dual rotary encoders with 1 encoder + 5 buttons for menu navigation
-- Added header breakout for 10 unused pins (GP0-GP9) with GND & 3V3 pins just in case. Good for adding peripherals.
-- Added Stemma I2C connector (GP26 & GP27 on I2C Bus 1) on backplane plus Stemma breakout
-- Added MCP23017 I2C addressing jumper pads near chips (1 chip is on I2C Bus 0 other is on Bus 1)
-- Added MCP23017 interrupt breakout pins
-- Reorganized MCP23017 pinouts to be in sequential order (half were backwards in 1.0)
+![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/raspberrypi/Raspberry%20Pi%20Pico/TR%20Cowbell/Pictures/IMG_0449_oshwa.jpg)
+
+### Version 1.0 (prototype)
+Gorgeous PCB but there are hardware problems in the initial design that had to be fixed with bodge wire. All of these issues are my fault due to adding complexity with an I2C expander design.
+
+![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/raspberrypi/Raspberry%20Pi%20Pico/TR%20Cowbell/Pictures/IMG_0453.jpg)
+
+### Design Screw Ups
+- Bad pull up design to MCP23017 I2C SDA & SCL pins. Pull ups were unpowered so they became pull downs, oops.
+- Backwards pinouts on MCP23017 due to using a confusing footprint from EasyEda.
+- Resistor values for switch LED's too low (4.7K too dim in daylight) changed to 500 ohm.
+### Design Happy Accidents
+- Instead of going with the impulse of putting all 16 led's on 1 chip, I split the current load of 8 LED's to both chips.
+- Very safe LED resistor value of 4.7K ensured I didn't burn out an LED or chip with high current load.
+- Pico reset switch works great
+- Encoders work but are too close together (replacing with single ANO encoder in v1.2)
+- Dark colored board makes LED's stand out more. Will likely go with purple again for v1.2
+- Obnoxiously loud name tag, I like it, it stays.
+- External SPI breakout provided easy access to 3V3 power bus and GND in case they were needed, and they were.
+
+https://user-images.githubusercontent.com/49322231/191885653-31921617-1a46-4c9c-91a2-286ba2231128.mov
+
+Finished with the hw test of the LED's and switches.
+
+Next is to integrate the keypad library
+
+### Version 1.2 (re-design phase)
+- Schematic, PCB, and BOM available on my ![TR-Cowbell EasyEDA OSHWLab Project Page](https://oshwlab.com/djdevon3/tr-cowbell)
+- Design screw ups already fixed in the v1.2 PCB layout.
+- Replaced dual rotary encoders with single ANO encoder wheel
+- Added breakout for ANO encoder for enclosures
 - Replaced my name on top silkscreen with TR-Cowbell, moved name to bottom silkscreen in Papyrus font.
-- Confirmed working with Raspberry Pi Pico & Pico W boards
+- Not yet ready to print v1.2 PCB, waiting for OSHW certification
 
 # BOM (Bill of Materials)
 ### For basic USB MIDI functionality:
@@ -21,7 +45,7 @@ TR Cowbell v1.2 powered by Raspberry Pi Pico by DJDevon3
 - 1 - Raspberry Pi Pico ([Digikey](https://www.digikey.com/en/products/detail/raspberry-pi/SC0915/13624793), [Adafruit](https://www.adafruit.com/product/4864)) OR Pi Pico W ([Digikey](https://www.digikey.com/en/products/detail/raspberry-pi/SC0918/16608263))
 - 16 - PB86A "step switch" w/ built-in LED ([Adafruit](https://www.adafruit.com/product/5519))
 - 1 - PEC11R (S-Type) Rotary Encoder ([Digikey](https://www.digikey.com/en/products/detail/bourns-inc/PEC11R-4215F-S0024/4499665))
-- 16 - LED resistor value anywhere between 400 ohm to 1000 ohm (R1-R16) ([Digikey](https://www.digikey.com/en/products/detail/yageo/CFR-12JR-52-470R/17647), [Adafruit](https://www.adafruit.com/product/2781))
+- 16 - LED resistor value anywhere between 400 to 1000 ohm (R1-R16) ([Digikey](https://www.digikey.com/en/products/detail/yageo/CFR-12JR-52-470R/17647), [Adafruit](https://www.adafruit.com/product/2781))
 - 2 - MCP2307 E/SP I2C Expander Bare Chips ([Digikey](https://www.digikey.com/en/products/detail/microchip-technology/MCP23017-E-SP/894272), [Adafruit](https://www.adafruit.com/product/732))
 - 2 - 28-pin .3" ZIF sockets for MCP23107 chips (Optional but recommended) ([Adafruit](https://www.adafruit.com/product/2205))
 - 6 - 6mm tactile button switches (Pico Reset & Navigation) ([Adafruit](https://www.adafruit.com/product/367))
@@ -43,6 +67,5 @@ on your gear, you'll need a few:
 ### Pico Headers and Headers for Breakout Boards
 - 2 - 20-pin header socket ([Digikey](https://www.digikey.com/en/products/detail/sullins-connector-solutions/PPPC201LFBN-RC/810192), [Adafruit](https://www.adafruit.com/product/5583))
 - 2 - 20-pin header pins ([Digikey](https://www.digikey.com/en/products/detail/adam-tech/PH1-20-UA/9830398), [Adafruit ](https://www.adafruit.com/product/392))
+- 1 - 4-pin female (same as above, break off 4-pin chunk)
 - You will also need enough female headers for any breakout pins (external spi display, ano encoder, mcp interrupts)
-
-
