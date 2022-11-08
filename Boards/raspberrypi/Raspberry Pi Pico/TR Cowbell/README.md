@@ -7,67 +7,13 @@ My first major custom board!!!
 
 ![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/raspberrypi/Raspberry%20Pi%20Pico/TR%20Cowbell/Pictures/v1.2_screenshot.jpg)
 
-### Version 1.0 (prototype)
-Gorgeous PCB but there are hardware problems in the initial design that had to be fixed with bodge wire. All of these issues are my fault due to adding complexity with an I2C expander design.
-
-![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/raspberrypi/Raspberry%20Pi%20Pico/TR%20Cowbell/Pictures/IMG_0453.jpg)
-
-### Design Screw Ups
-- Bad pull up design to MCP23017 I2C SDA & SCL pins. Pull ups were unpowered so they became pull downs, oops.
-- Backwards pinouts on MCP23017 due to using a confusing footprint from EasyEda.
-- Resistor values for switch LED's too low (4.7K too dim in daylight) changed to 500 ohm.
-### Design Happy Accidents
-- Instead of going with the impulse of putting all 16 led's on 1 chip, I split the current load of 8 LED's to both chips.
-- Very safe LED resistor value of 4.7K ensured I didn't burn out an LED or chip with high current load.
-- Pico reset switch works great
-- Encoders work but are too close together (replacing with single ANO encoder in v1.2)
-- Dark colored board makes LED's stand out more. Will likely go with purple again for v1.2
-- Obnoxiously loud name tag, I like it, it stays.
-- External SPI breakout provided easy access to 3V3 power bus and GND in case they were needed, and they were.
-
 https://user-images.githubusercontent.com/49322231/191885653-31921617-1a46-4c9c-91a2-286ba2231128.mov
 
-Finished with the hw test of the LED's and switches.
+### MCP23017 Notes:
+You cannot use the Adafruit Keypad library with MCP23017 chips due to a difference in the way it reads shift registers. You must instead use the MCP23017_scanner library which is a keypad library built specifically for MPC3017 chips. Think of it more as a MCP23017_Keypad library.
 
-Next is to integrate the keypad library
+If this is your first time working with the MCP23017 please note that the Circuit Python MCP23017 library expects a pin value of 0-15. They are in order of Port A on the right side of the chip from bottom to top, then top to bottom on Port B which is the left side of the chip. It's very easy to confuse the pinouts since they're in opposite logical order from what most people would consider a normal order.
 
-### Version 1.2 (re-design phase)
-- Schematic, PCB, and BOM available on my ![TR-Cowbell EasyEDA OSHWLab Project Page](https://oshwlab.com/djdevon3/tr-cowbell)
-- Design screw ups already fixed in the v1.2 PCB layout.
-- Replaced dual rotary encoders with single ANO encoder wheel
-- Added breakout for ANO encoder for enclosures
-- Replaced my name on top silkscreen with TR-Cowbell, moved name to bottom silkscreen in Papyrus font.
-- Not yet ready to print v1.2 PCB, waiting for OSHW certification
+![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/raspberrypi/Raspberry%20Pi%20Pico/TR%20Cowbell/MCP%20Diagram.jpg)
 
-# BOM (Bill of Materials)
-### For basic USB MIDI functionality:
-- 1 - "TR-Cowbell" PCB ([JLPCB](https://oshwlab.com/djdevon3/tr-cowbell))
-- 1 - Raspberry Pi Pico ([Digikey](https://www.digikey.com/en/products/detail/raspberry-pi/SC0915/13624793), [Adafruit](https://www.adafruit.com/product/4864)) OR Pi Pico W ([Digikey](https://www.digikey.com/en/products/detail/raspberry-pi/SC0918/16608263))
-- 16 - PB86A "step switch" w/ built-in LED ([Adafruit](https://www.adafruit.com/product/5519))
-- 1 - PEC11R (S-Type) Rotary Encoder ([Digikey](https://www.digikey.com/en/products/detail/bourns-inc/PEC11R-4215F-S0024/4499665))
-- 16 - LED resistor value anywhere between 400 to 1000 ohm (R1-R16) ([Digikey](https://www.digikey.com/en/products/detail/yageo/CFR-12JR-52-470R/17647), [Adafruit](https://www.adafruit.com/product/2781))
-- 2 - MCP2307 E/SP I2C Expander Bare Chips ([Digikey](https://www.digikey.com/en/products/detail/microchip-technology/MCP23017-E-SP/894272), [Adafruit](https://www.adafruit.com/product/732))
-- 2 - 28-pin .3" ZIF sockets for MCP23107 chips (Optional but recommended) ([Adafruit](https://www.adafruit.com/product/2205))
-- 6 - 6mm tactile button switches (Pico Reset & Navigation) ([Adafruit](https://www.adafruit.com/product/367))
-
-### For both USB + Serial MIDI, add:
-- 2 - 3.5mm TRS jack, SJ-3523-SMT-TR (J3, J4)
-([Digikey](https://www.digikey.com/en/products/detail/cui-devices/SJ-3523-SMT-TR/281297))
-- 1 - 6N138 optoisolator (U2) ([Digikey](https://www.digikey.com/en/products/detail/liteon/6N138/1969179))
-- 1 - 100n capacitor (C2) ([Digikey](https://www.digikey.com/en/products/detail/vishay-beyschlag-draloric-bc-components/K104K15X7RF5TL2/286538), [Adafruit](https://www.adafruit.com/product/753))
-- 1 - resistor 220 ohm (R17)
-- 1 - resistor 33 ohm (R19) (47 ohm also works)
-- 1 - resistor 10 ohm (R20)
-- 5 - resistor 4.7k ohm (R18, R21, R22, R23, R24)
-
-And if you've not used ["TRS MIDI"](https://minimidi.world/#types) and have normal 5-pin DIN MIDI jacks
-on your gear, you'll need a few:
-- Type A" MIDI adapter ([PerfectCircuit](https://www.perfectcircuit.com/make-noise-0-coast-midi-cable.html) or [Amazon](https://amzn.to/3Tb6DiU))
-
-### Pico Headers and Headers for Breakout Boards
-- 2 - 20-pin header socket ([Digikey](https://www.digikey.com/en/products/detail/sullins-connector-solutions/PPPC201LFBN-RC/810192), [Adafruit](https://www.adafruit.com/product/5583))
-- 2 - 20-pin header pins ([Digikey](https://www.digikey.com/en/products/detail/adam-tech/PH1-20-UA/9830398), [Adafruit ](https://www.adafruit.com/product/392))
-- 1 - 4-pin female (same as above, break off 4-pin chunk)
-- You will also need enough female headers for any breakout pins (external spi display, ano encoder, mcp interrupts)
-
-
+Reset should be provided 3v3 and you pull that to GND to actually reset the chip. It's easier most cases to just reset the board but in the unlikely event that you should ever need it that feature is available.
