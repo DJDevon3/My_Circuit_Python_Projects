@@ -49,7 +49,7 @@ Next is to integrate the keypad library
 - 16 - PB86A "step switch" w/ built-in LED ([Adafruit](https://www.adafruit.com/product/5519))
 - 1 - PEC11R (S-Type) Rotary Encoder ([Digikey](https://www.digikey.com/en/products/detail/bourns-inc/PEC11R-4215F-S0024/4499665))
 - 2 - Anodized Aluminum Machined Knob - Blue - 20mm Diameter ([Adafruit](https://www.adafruit.com/product/5529))
-- 16 - LED resistor value anywhere between 400 to 1000 ohm (R1-R16) ([Digikey](https://www.digikey.com/en/products/detail/yageo/CFR-12JR-52-470R/17647), [Adafruit](https://www.adafruit.com/product/2781))
+- 16 - LED resistor value anywhere between 100 to 1000 ohm (R1-R16) ([Digikey](https://www.digikey.com/en/products/detail/yageo/CFR-12JR-52-470R/17647), [Adafruit](https://www.adafruit.com/product/2781))
 - 2 - MCP2307 E/SP I2C Expander Bare Chips ([Digikey](https://www.digikey.com/en/products/detail/microchip-technology/MCP23017-E-SP/894272), [Adafruit](https://www.adafruit.com/product/732))
 - 2 - 28-pin .3" ZIF sockets for MCP23107 chips (Optional but recommended) ([Adafruit](https://www.adafruit.com/product/2205))
 - 6 - 6mm tactile button switches (Pico Reset & Navigation) ([Adafruit](https://www.adafruit.com/product/367))
