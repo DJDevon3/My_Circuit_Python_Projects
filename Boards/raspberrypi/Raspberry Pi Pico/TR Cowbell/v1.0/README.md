@@ -71,4 +71,4 @@ on your gear, you'll need a few:
 - 2 - 20-pin header socket ([Digikey](https://www.digikey.com/en/products/detail/sullins-connector-solutions/PPPC201LFBN-RC/810192), [Adafruit](https://www.adafruit.com/product/5583))
 - 2 - 20-pin header pins ([Digikey](https://www.digikey.com/en/products/detail/adam-tech/PH1-20-UA/9830398), [Adafruit ](https://www.adafruit.com/product/392))
 - 1 - 4-pin female (same as above, break off 4-pin chunk)
-- You will also need enough female headers for any breakout pins (external spi display, swd, stemma, mcp interrupts)
+- You will also need enough female headers for any breakout pins (external display, swd, stemma, mcp interrupts)
