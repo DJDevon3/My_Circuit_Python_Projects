@@ -22,3 +22,11 @@ Reset should be provided 3v3 and you pull that to GND to actually reset the chip
 This is now a known good circuit for the MCP23017 (I designed it). This will allow your chip to be detected by the microcontroller as an I2C device. You can have up to 8 chips on the same physical bus. The chip only allows for a maximum of 8 different I2C addresses via solder jumper pads (to GND). Since I'm using the Pi Pico which has 2 separate I2C busses you can have a maximum of 16 chips per microcontroller, 8 chips per bus. With 16 GPIO per chip x 16 chips = 256 GPIO maximum! My board only uses 32 on 2 chips.
 
 ![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/raspberrypi/Raspberry%20Pi%20Pico/TR%20Cowbell/MCP23017_Pullup_Diagram.PNG)
+
+### Keys with LED's
+- If your board has keys with LED's it's best to put the corresponding LED & Key on the same pin # per port.  So LED0 would be on Library Pin 8 and Switch0 would be on Library Pin 0.  8 and 0, 9 and 1, 10 and 2, etc...  This scheme is present on the TR-Cowbell
+- It's best practice to split the chip into half switches and half LED's to keep the overall max current draw to a minimum. It is possible to fry the chip if you fill it with 16 high power LED's drawing 25-30ma of current per LED for example. 
+
+### Keys without LED's
+- Though not used in my particular board design if you want to make a keyboard with the maximum amount of keys and no LED's then load up each GPIO with switches. Keyboard keys are input devices and consume no current unlike output devices like LED's so it's safe to load up all 16 with input switches.
+- If you intend on making a keyboard with MCP23017 chips a better idea is to use the mcp23017_scanner matrix class and example within the mcp23017_scanner library. You can split each GPIO as a row or column for 64 keys (8x8 grid) per chip! With a maximum of 16 chips (8 chips per I2C bus) that means the total possible amount of keys is 64 * 16 = 1024 keys!!!
