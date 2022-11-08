@@ -22,9 +22,8 @@ Gorgeous PCB but there are hardware problems in the initial design that had to b
 - Instead of going with the impulse of putting all 16 led's on 1 chip, I split the current load of 8 LED's to both chips.
 - Very safe LED resistor value of 4.7K ensured I didn't burn out an LED or chip with high current load.
 - Pico reset switch works great
-- Encoders work but are too close together (replacing with 6mm button switches in v1.2)
-- Dark colored board makes LED's stand out more. Will likely go with purple again for v1.2
-- Obnoxiously loud name tag, I like it, it stays.
+- Encoders work but are too close together (replacing 1 of them with 6mm button switches in v1.2)
+- Dark colored board makes LED's stand out more in the dark. Will likely go with purple again for v1.2
 - External SPI breakout provided easy access to 3V3 power bus and GND in case they were needed, and they were.
 
 https://user-images.githubusercontent.com/49322231/191885653-31921617-1a46-4c9c-91a2-286ba2231128.mov
