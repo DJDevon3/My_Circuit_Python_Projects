@@ -40,4 +40,4 @@ On my next revision I'm going to rename the LED nets to match the pins. LED1 cur
 - Ask in Adafruit Discord what the best PCB layout for the mcp23017_scanner matrix library expects to work with (probably diode matrix).
 
 ### Pin Confusion
-It's OK to be confused at some point about which pins go where. There are so many overlapping numbers it's quite easy to mix things up. If you're a board designer just stick with the layout I have here and you'll be OK. You can always fix pin mapping in software though you will complicate your life in using the Adafruit libraries if you do as the pin maps are intended to be used in a specific way.
+It's OK to be confused at some point about which pins go where. There are so many overlapping numbers it's quite easy to mix things up. If you're a board designer just stick with the layout I have here and you'll be OK. You can always fix pin mapping in software though you will complicate your life. I've already made that mistake in my 1.0 board design, learn from my mistake, fixed it in the v1.2 design. ;)
