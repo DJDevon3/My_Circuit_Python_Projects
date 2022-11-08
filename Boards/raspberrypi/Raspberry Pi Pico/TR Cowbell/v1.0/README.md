@@ -14,8 +14,10 @@ Gorgeous PCB but there are hardware problems in the initial design that had to b
 
 ### Design Screw Ups
 - Bad pull up design to MCP23017 I2C SDA & SCL pins. Pull ups were unpowered so they became pull downs, oops.
-- Backwards pinouts on MCP23017 due to using a confusing footprint from EasyEda.
+- Backwards pinouts on MCP23017 due to using a confusing footprint from EasyEda. Fixed by remapping pins in software.
 - Resistor values for switch LED's too low (4.7K too dim in daylight) changed to 500 ohm.
+- The board does work, just requires bodge wire in a few places.
+
 ### Design Happy Accidents
 - Instead of going with the impulse of putting all 16 led's on 1 chip, I split the current load of 8 LED's to both chips.
 - Very safe LED resistor value of 4.7K ensured I didn't burn out an LED or chip with high current load.
