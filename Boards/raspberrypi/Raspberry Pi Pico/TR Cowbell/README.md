@@ -16,6 +16,8 @@ If this is your first time working with the MCP23017 please note that the Circui
 
 ![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/raspberrypi/Raspberry%20Pi%20Pico/TR%20Cowbell/MCP%20Diagram.jpg)
 
+You can manually specify if a pin should be an INPUT (switch) or OUTPUT (led) pin `pin.direction = Direction.INPUT` There is no PWM or voltage capability only on/off by pulling a pin high or low, it's digital.
+
 Reset should be provided 3v3 and you pull that to GND to actually reset the chip. It's easier most cases to just reset the board but in the unlikely event that you should ever need it that feature is available.
 
 ### MCP23017 I2C Pull-Up Circuit
