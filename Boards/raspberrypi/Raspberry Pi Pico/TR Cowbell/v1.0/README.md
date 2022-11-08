@@ -16,6 +16,7 @@ Gorgeous PCB but there are hardware problems in the initial design that had to b
 - Bad pull up design to MCP23017 I2C SDA & SCL pins. Pull ups were unpowered so they became pull downs, oops.
 - Backwards pinouts on MCP23017 due to using a confusing footprint from EasyEda. Fixed by remapping pins in software.
 - Resistor values for switch LED's too low (4.7K too dim in daylight) changed to 500 ohm.
+- Wrong footprint for encoder, had to cut the bottom of the pins on an angle to fit into the hole.
 - Encoders work but are too close together (replacing 1 of them with 6mm button switches in v1.2)
 - The board does work, just requires bodge wire in a few places.
 
