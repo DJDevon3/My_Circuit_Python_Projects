@@ -26,7 +26,8 @@ On my next revision I'm going to rename the LED nets to match the pins. LED1 cur
 ![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/raspberrypi/Raspberry%20Pi%20Pico/TR%20Cowbell/MCP23017_Pullup_Diagram.PNG)
 
 ### Keys with LED's
-- If your board has keys with LED's (like the TR-Cowbell does) it's best to put the corresponding LED & Key on the same pin # per port.  So LED0 would be on Library Pin 8 and Switch0 would be on Library Pin 0.  8 and 0, 9 and 1, 10 and 2, etc...  This scheme is present on the TR-Cowbell.
+- If your board has keys with LED's (like the TR-Cowbell does) it's best to put the corresponding LED & Key on the same pin # per port.  So LED0 would be on Library Pin 8 and Switch0 would be on Library Pin 0.
+- Example: 8 and 0, 9 and 1, 10 and 2, etc...  This scheme is present on the TR-Cowbell.
 - This is because the main MCP23017 library has a built in way to automatically map Port A pin 0 to Port B pin 0 and so on. Specifically designed with key + led in mind. To make your life easier I highly recommend using this design.
 - Also it's best practice to split the chip into half switches and half LED's to keep the overall max current draw to a minimum. It is possible to fry the chip if you fill it with 16 high power LED's drawing 25-30ma of current per LED for example (and using no resistor). 
 - You still need to add a resistor per output LED (not required for input switches). Resistor value recommended around 500 ohm for normal 2-pin LED's. Anywhere between 100 ohm down to 1000 ohm is fine. LED starts getting too dim to see around 3K ohm.
