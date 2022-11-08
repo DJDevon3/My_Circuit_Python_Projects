@@ -2,83 +2,62 @@
 # 16 Sept 2022 - DJDevon3
 # Based on PicoStepSeq by @todbot Tod Kurt
 # https://github.com/todbot/picostepseq/
-import gc
 import time
 import board
 import busio
-import digitalio
-import rotaryio
-import adafruit_debouncer
-from adafruit_mcp230xx.mcp23017 import MCP23017
 from digitalio import Direction, Pull
+from supervisor import ticks_ms
+from adafruit_mcp230xx.mcp23017 import MCP23017
+from mcp23017_scanner import McpKeysScanner
+from multi_macropad import MultiKeypad
 
-# Initialize MCP23017
-i2c = busio.I2C(board.GP13, board.GP12)
-i2c2 = busio.I2C(board.GP11, board.GP10)
-mcp = MCP23017(i2c, address=0x26)  # Switches 1-8
-mcp2 = MCP23017(i2c2, address=0x20)  # Switches 9-16
-# Change I2C address if you set any of the A0, A1, A2
-# mcp = MCP23017(i2c, address=0x21)  # MCP23017 0x26 is w/ A0 set
+# Initialize 2 Separate Physical I2C busses
+i2c0 = busio.I2C(board.GP13, board.GP12)  # Bus I2C0
+i2c1 = busio.I2C(board.GP11, board.GP10)  # Bus I2C1
+# Initialize MCP Chip 1 Step Switches 0-7
+mcp = MCP23017(i2c0, address=0x26)
+# Initalize MCP Chip 2 Step Switches 8-15
+mcp2 = MCP23017(i2c1, address=0x20)
 
-# Acts just like digitalio.DigitalInOut class instance
-# Pins not in order from the chip which is fine
-# because you can remap them here in software anyway
-led01 = mcp.get_pin(8)
-led02 = mcp.get_pin(9)
-led03 = mcp.get_pin(10)
-led04 = mcp.get_pin(11)
-led05 = mcp.get_pin(12)
-led06 = mcp.get_pin(13)
-led07 = mcp.get_pin(14)
-led08 = mcp.get_pin(15)
-led09 = mcp2.get_pin(8)
-led10 = mcp2.get_pin(9)
-led11 = mcp2.get_pin(10)
-led12 = mcp2.get_pin(11)
-led13 = mcp2.get_pin(12)
-led14 = mcp2.get_pin(13)
-led15 = mcp2.get_pin(14)
-led16 = mcp2.get_pin(15)
+PINS = [0, 1, 2, 3, 4, 5, 6, 7]
+PINS2 = [0, 1, 2, 3, 4, 5, 6, 7]
+# Neradoc's MCPMatrixScanner
+scanner = McpKeysScanner(mcp, PINS)
+scanner2 = McpKeysScanner(mcp2, PINS2)
+all_scanner = MultiKeypad(scanner, scanner2)
 
-# As long as all pins wired to MCP GPIO
-# you can correct pinouts in software.
-sw01 = mcp.get_pin(0)
-sw02 = mcp.get_pin(1)
-sw03 = mcp.get_pin(2)
-sw04 = mcp.get_pin(3)
-sw05 = mcp.get_pin(4)
-sw06 = mcp.get_pin(5)
-sw07 = mcp.get_pin(6)
-sw08 = mcp.get_pin(7)
-sw09 = mcp2.get_pin(0)
-sw10 = mcp2.get_pin(1)
-sw11 = mcp2.get_pin(2)
-sw12 = mcp2.get_pin(3)
-sw13 = mcp2.get_pin(4)
-sw14 = mcp2.get_pin(5)
-sw15 = mcp2.get_pin(6)
-sw16 = mcp2.get_pin(7)
+# MCP1 PORT A SWITCHES (0-7)
+chip1_port_a_pins = []
+for pin in range(0, 8):
+    chip1_port_a_pins.append(mcp.get_pin(pin))
 
-led_pins = [led01, led02, led03, led04,
-            led05, led06, led07, led08,
-            led09, led10, led11, led12,
-            led13, led14, led15, led16]
+# MCP1 PORT B LEDS (8-15)
+chip1_port_b_pins = []
+for pin in range(8, 16):
+    chip1_port_b_pins.append(mcp.get_pin(pin))
 
-led_names = ["LED 1","LED 2","LED 3","LED 4",
-            "LED 5","LED 6","LED 7","LED 8",
-            "LED 9","LED 10","LED 11","LED 12",
-            "LED 13","LED 14","LED 15","LED 16"]
+# MCP2 PORT A SWITCHES (0-7)
+chip2_port_a_pins = []
+for pin in range(0, 8):
+    chip2_port_a_pins.append(mcp2.get_pin(pin))
 
-key_pins = [sw01, sw02, sw03, sw04,
-            sw05, sw06, sw07, sw08,
-            sw09, sw10, sw11, sw12,
-            sw13, sw14, sw15, sw16]
+# MCP2 PORT B LEDS (8-15)
+chip2_port_b_pins = []
+for pin in range(8, 16):
+    chip2_port_b_pins.append(mcp2.get_pin(pin))
 
-key_names = ["Switch 1","Switch 2","Switch 3","Switch 4",
-            "Switch 5","Switch 6","Switch 7","Switch 8",
-            "Switch 9","Switch 10","Switch 11","Switch 12",
-            "Switch 13","Switch 14","Switch 15","Switch 16"]
+# Combine all pins of same type into 1 list
+port_a_pins = chip1_port_a_pins + chip2_port_a_pins
+port_b_pins = chip1_port_b_pins + chip2_port_b_pins
 
+# Set all Port A Switch pins to input, with pullups!
+for pin in port_a_pins:
+    pin.direction = Direction.INPUT
+    pin.pull = Pull.UP
+
+# Set all Port B LED pins to output
+for pin in port_b_pins:
+    pin.direction = Direction.OUTPUT
 
 # midi setup
 midi_tx_pin, midi_rx_pin = board.GP16, board.GP17
@@ -86,16 +65,24 @@ midi_timeout = 0.01
 uart = busio.UART(tx=midi_tx_pin, rx=midi_rx_pin,
                   baudrate=31250, timeout=midi_timeout)
 
-
 while True:
-    for key, kname, led, lname in zip(key_pins, key_names, led_pins, led_names):
-        key.switch_to_output(value=True)
+    for key, led in zip(port_a_pins, port_b_pins):
         led.switch_to_output(value=True)
-        print(f'Key: {key} LED: {led} Key Name: {kname} LED Name: {lname} Key Fell')
-        time.sleep(.125)
-        key.switch_to_output(value=False)
         led.switch_to_output(value=False)
-        print(f'Key: {key} LED: {led} Key Name: {kname} LED Name: {lname} Key Rose')
         time.sleep(.125)
-        gc.collect
 
+        scanner.update()
+        scanner2.update()
+        while event := all_scanner.next_event():
+            key = event.key_number
+            if event.pressed:
+                print(f"Key pressed : {key}")
+                led.switch_to_output(value=True)
+                latched = True
+            if event.released & latched:
+                combine_led = event.key_number+8  # correct key_number for matching LED
+                print(f"Key latched : {key} {combine_led}")
+                print(led)
+                latched = True
+            if event.released:
+                print(f"Key released: {key}")
