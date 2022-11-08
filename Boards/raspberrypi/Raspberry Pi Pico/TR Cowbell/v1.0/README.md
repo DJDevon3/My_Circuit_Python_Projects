@@ -36,10 +36,11 @@ Next is to integrate the keypad library
 ### Version 1.2 (re-design phase)
 - Schematic, PCB, and BOM available on my ![TR-Cowbell EasyEDA OSHWLab Project Page](https://oshwlab.com/djdevon3/tr-cowbell)
 - Design screw ups already fixed in the v1.2 PCB layout.
-- Replaced dual rotary encoders with single ANO encoder wheel
-- Added breakout for ANO encoder for enclosures
+- Replaced dual rotary encoders with 1x encoder and 5x 6mm buttons.
+- Fixed encoder footprint to use proper PECL11 footprint. Fits great now!
+- Added 10 pin GPIO breakout header (all remaining unused pins) from the Pico 
 - Replaced my name on top silkscreen with TR-Cowbell, moved name to bottom silkscreen in Papyrus font.
-- Not yet ready to print v1.2 PCB, waiting for OSHW certification
+- Replaced 500 ohm resistors with 68 ohm resistors for maximum brightness. All light up no problem. Didn't have any resistors in the 100 ohm range on hand, ordered a bunch. 68 ohm is skirting it pretty close to the MCP's maximum current draw for 8x 20ma LED's.
 
 # BOM (Bill of Materials)
 ### For basic USB MIDI functionality:
