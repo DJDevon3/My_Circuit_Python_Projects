@@ -43,6 +43,6 @@ on your gear, you'll need:
 ### Pico Headers and Headers for Breakout Boards
 - 2 - 20-pin header female ([Digikey](https://www.digikey.com/en/products/detail/sullins-connector-solutions/PPPC201LFBN-RC/810192), [Adafruit](https://www.adafruit.com/product/5583))
 - 2 - 20-pin header male ([Digikey](https://www.digikey.com/en/products/detail/adam-tech/PH1-20-UA/9830398), [Adafruit ](https://www.adafruit.com/product/392))
-- You will also need enough female headers for any breakout pins (external spi display, ano encoder, mcp interrupts)
+- You will also need enough female headers for any breakout pins (GPIO breakout, swd, stemma, mcp interrupts)
 
 
