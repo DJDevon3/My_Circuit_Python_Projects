@@ -1,5 +1,7 @@
 # TR-Cowbell
-TR Cowbell v1.2 (powered by Raspberry Pi Pico) by DJDevon3
+TR Cowbell v1.2 (powered by Raspberry Pi Pico)
+Hardware Design by: DJDevon3
+Software Written by: Neradoc & DJDevon3
 
 ![Based on PicoStepSeq by @Todbot](https://github.com/todbot/picostepseq)
 
