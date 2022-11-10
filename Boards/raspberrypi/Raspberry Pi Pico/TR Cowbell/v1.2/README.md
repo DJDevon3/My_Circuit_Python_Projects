@@ -30,7 +30,7 @@ TR Cowbell v1.2 (powered by Raspberry Pi Pico) by DJDevon3
 - 2 - 3.5mm TRS jack, SJ-3523-SMT-TR (J3, J4)
 ([Digikey](https://www.digikey.com/en/products/detail/cui-devices/SJ-3523-SMT-TR/281297))
 - 1 - 6N138 optoisolator (U2) ([Digikey](https://www.digikey.com/en/products/detail/liteon/6N138/1969179))
-- 1 - 100n capacitor (C2) ([Digikey](https://www.digikey.com/en/products/detail/vishay-beyschlag-draloric-bc-components/K104K15X7RF5TL2/286538), [Adafruit](https://www.adafruit.com/product/753))
+- 1 - 0.1uF capacitor (C2) ([Digikey](https://www.digikey.com/en/products/detail/vishay-beyschlag-draloric-bc-components/K104K15X7RF5TL2/286538), [Adafruit](https://www.adafruit.com/product/753))
 - 1 - resistor 220 ohm (R17)
 - 1 - resistor 33 ohm (R19) (47 ohm also works)
 - 1 - resistor 10 ohm (R20)
