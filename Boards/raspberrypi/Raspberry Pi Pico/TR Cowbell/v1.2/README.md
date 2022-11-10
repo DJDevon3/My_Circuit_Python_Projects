@@ -37,8 +37,8 @@ TR Cowbell v1.2 (powered by Raspberry Pi Pico) by DJDevon3
 - 5 - resistor 4.7k ohm (R18, R21, R22, R23, R24)
 
 And if you've not used ["TRS MIDI"](https://minimidi.world/#types) and have normal 5-pin DIN MIDI jacks
-on your gear, you'll need a few:
-- Type A" MIDI adapter ([PerfectCircuit](https://www.perfectcircuit.com/make-noise-0-coast-midi-cable.html) or [Amazon](https://amzn.to/3Tb6DiU))
+on your gear, you'll need:
+- 2- Type A" MIDI adapter ([PerfectCircuit](https://www.perfectcircuit.com/make-noise-0-coast-midi-cable.html) or [Amazon](https://amzn.to/3Tb6DiU))
 
 ### Pico Headers and Headers for Breakout Boards
 - 2 - 20-pin header socket ([Digikey](https://www.digikey.com/en/products/detail/sullins-connector-solutions/PPPC201LFBN-RC/810192), [Adafruit](https://www.adafruit.com/product/5583))
