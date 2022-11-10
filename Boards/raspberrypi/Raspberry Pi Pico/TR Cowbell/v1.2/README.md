@@ -1,5 +1,5 @@
 # TR-Cowbell
-TR Cowbell v1.2 powered by Raspberry Pi Pico by DJDevon3
+TR Cowbell v1.2 (powered by Raspberry Pi Pico) by DJDevon3
 
 ![Based on PicoStepSeq by @Todbot](https://github.com/todbot/picostepseq)
 
@@ -7,11 +7,11 @@ TR Cowbell v1.2 powered by Raspberry Pi Pico by DJDevon3
 
 ### Version 1.2
 - Replaced dual rotary encoders with 1 encoder + 5 buttons for menu navigation
-- Added header breakout for 10 unused pins (GP0-GP9) with GND & 3V3 pins just in case. Good for adding peripherals.
+- Added header breakout for 10 unused pins (GP0-GP9). Includes GND & 3V3. Good for adding peripherals.
 - Added Stemma I2C connector (GP26 & GP27 on I2C Bus 1) on backplane plus Stemma breakout
 - Added MCP23017 I2C addressing jumper pads near chips (1 chip is on I2C Bus 0 other is on Bus 1)
 - Added MCP23017 interrupt breakout pins
-- Reorganized MCP23017 pinouts to be in sequential order (half were backwards in 1.0)
+- Reorganized MCP23017 pinouts to be in correct order for the chip design. (half were backwards in 1.0)
 - Replaced my name on top silkscreen with TR-Cowbell, moved name to bottom silkscreen in Papyrus font.
 - Confirmed working with Raspberry Pi Pico & Pico W boards
 
