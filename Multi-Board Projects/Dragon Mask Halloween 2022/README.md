@@ -25,7 +25,8 @@ Everything listed is what is used in the project. There's definitely room for im
 - 5x [Adafruit 100 Ohm resistors](https://www.adafruit.com/product/4293) (inline on noods)
 
 ### Batteries:
-- 2x [Adafruit 6600mah Lipo batteries](https://www.adafruit.com/product/353) (ran noods for 4 days, ran sceptre for 2 weeks straight)
+- 1x [Adafruit 10050mah Lipo battery](https://www.adafruit.com/product/5035) (ran scepter for 2 weeks straight)
+- 2x [Adafruit 6600mah Lipo batteries](https://www.adafruit.com/product/353) (ran noods & LCD eyes for 4 days)
 - 1x [Adafruit 2500mah Lipo battery](https://www.adafruit.com/product/328) (ran for 30 hours)
 - 1x [Adafruit Micro Lipo Charger](https://www.adafruit.com/product/1304) (recommended for recharging)
 - Went way overkill with the large batteries. Only needed it to last 2-3 hours on Halloween. Recommend going with all 2500mah or smaller batteries, will save weight too. The 6600mah batteries are very heavy and put a strain on my neck after 2 hours of wearing the mask.
