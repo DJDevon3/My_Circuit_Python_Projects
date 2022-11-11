@@ -29,7 +29,7 @@ Everything listed is what is used in the project. There's definitely room for im
 - 2x [Adafruit 6600mah Lipo batteries](https://www.adafruit.com/product/353) (ran noods & LCD eyes for 4 days)
 - 1x [Adafruit 2500mah Lipo battery](https://www.adafruit.com/product/328) (ran for 30 hours)
 - 1x [Adafruit Micro Lipo Charger](https://www.adafruit.com/product/1304) (recommended for recharging)
-- Went way overkill with the large batteries. Only needed it to last 2-3 hours on Halloween. Recommend going with all 2500mah or smaller batteries, will save weight too. The 6600mah batteries are very heavy and put a strain on my neck after 2 hours of wearing the mask.
+- Went way overkill with the batteries. Only needed it to last 2-3 hours on Halloween. Recommend going with all 2500mah or smaller batteries, will save weight too. The 6600mah batteries are very heavy and put a strain on my neck after 2 hours of wearing the mask.
 
 ### Costume Apparel:
 - 1x [Amazon Dragon Skull Mask](https://www.amazon.com/dp/B095LPK6CW)
