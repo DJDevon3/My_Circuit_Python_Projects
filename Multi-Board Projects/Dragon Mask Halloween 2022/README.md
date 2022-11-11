@@ -16,7 +16,7 @@ Everything listed is what is used in the project. There's definitely room for im
 
 ### Lighting:
 - 2x [Adafruit 12 NeoPixel ring](https://www.adafruit.com/product/1643) (inside top jaw)
-- 4x [Adafruit Green 3v Noods](https://www.adafruit.com/product/5507) (horns lighting)
+- 4x [Adafruit Green 3v Noods](https://www.adafruit.com/product/5507) (horns)
 - 1x [Adafruit Red 3v Nood](https://www.adafruit.com/product/5506) (inside bottom jaw)
 - 1x [Adafruit 3W RGB LED](https://www.adafruit.com/product/2530) (scepter)
 - 2x [Amazon GC9A01 round LCD displays](https://www.amazon.com/dp/B0919P6YHQ) (eyes)
