@@ -6,8 +6,7 @@ import asyncio
 import time
 import board
 import busio
-from digitalio import Direction, Pull
-from supervisor import ticks_ms
+from digitalio import Direction
 from adafruit_mcp230xx.mcp23017 import MCP23017
 from mcp23017_scanner import McpKeysScanner
 from multi_macropad import MultiKeypad
@@ -40,13 +39,13 @@ led_pins_per_chip = (mcp1_led_pins, mcp2_led_pins)
 led_pins = [(a, b) for a in range(2) for b in range(8)]
 
 # Set all LED pins to output
-for (m,x) in led_pins:
+for (m, x) in led_pins:
     led_pins_per_chip[m][x].direction = Direction.OUTPUT
 
 # status of the button latches
 latches = [False] * 16
 def toggle_latch(mcp, pin):
-    print(mcp, pin)
+    # print(mcp, pin)
     latches[mcp * 8 + pin] = not latches[mcp * 8 + pin]
 def get_latch(mcp, pin):
     return latches[mcp * 8 + pin]
@@ -65,11 +64,16 @@ uart = busio.UART(tx=midi_tx_pin, rx=midi_rx_pin,
 async def blink_the_leds(delay=0.125):
     while True:
         # blink all the LEDs together
-        for (x,y) in led_pins:
+        for (x, y) in led_pins:
             if not get_latch(x, y):
                 led_pins_per_chip[x][y].value = True
                 time.sleep(0.001)
                 led_pins_per_chip[x][y].value = False
+                await asyncio.sleep(delay)
+            else:
+                led_pins_per_chip[x][y].value = False
+                time.sleep(0.001)
+                led_pins_per_chip[x][y].value = True
                 await asyncio.sleep(delay)
 
 async def read_buttons():
