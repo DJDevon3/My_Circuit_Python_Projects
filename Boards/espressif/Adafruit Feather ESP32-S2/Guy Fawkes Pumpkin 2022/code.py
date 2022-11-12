@@ -1,10 +1,12 @@
+# DJDevon3 Guy Fawkes Pumpkin 2022
+# 3 pulsing noods on Adafruit Feather ESP32-S2
 import math
 import time
 import board
 import pwmio
 
-# This uses the 3 adjacent SPI pins on QtPy RP2040, but any pins will do.
-PINS = (board.SCK, board.MISO, board.MOSI) # List of pins, one per nOOd
+# PCB silkscreen labels on the S2 are SCK, MI, MO
+PINS = (board.SCK, board.MISO, board.MOSI) # One pin per Nood
 GAMMA = 1.0  # For perceptually-linear brightness
 
 # Convert pin number list to PWMOut object list
