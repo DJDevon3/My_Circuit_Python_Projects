@@ -20,5 +20,6 @@ https://user-images.githubusercontent.com/49322231/198586264-08559ed8-9f2e-40ff-
 ### Candle Flicker Circuit Design:
 Uses M4 Express + Propmaker Featherwing + 3W RGB LED for a bright LED. LED has a realistic orange/yellow flicker. Good coloring for a realistic candle flicker.
 
+![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/espressif/Adafruit%20Feather%20ESP32-S2/Guy%20Fawkes%20Pumpkin%202022/pictures/vlcsnap-2022-11-11-19h45m21s119.png)
 
 The projects in this section are specifically for Adafruit ESP32-S2 based boards running Circuit Python.
