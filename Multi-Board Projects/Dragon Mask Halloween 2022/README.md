@@ -16,7 +16,7 @@ Everything listed is what is used in the project. There's definitely room for im
 
 ### Lighting:
 - 2x [Adafruit 12 NeoPixel ring](https://www.adafruit.com/product/1643) (inside top jaw)
-- 4x [Adafruit Green 3v Noods](https://www.adafruit.com/product/5507) (horns lighting)
+- 4x [Adafruit Green 3v Noods](https://www.adafruit.com/product/5507) (horns)
 - 1x [Adafruit Red 3v Nood](https://www.adafruit.com/product/5506) (inside bottom jaw)
 - 1x [Adafruit 3W RGB LED](https://www.adafruit.com/product/2530) (scepter)
 - 2x [Amazon GC9A01 round LCD displays](https://www.amazon.com/dp/B0919P6YHQ) (eyes)
@@ -25,10 +25,11 @@ Everything listed is what is used in the project. There's definitely room for im
 - 5x [Adafruit 100 Ohm resistors](https://www.adafruit.com/product/4293) (inline on noods)
 
 ### Batteries:
-- 2x [Adafruit 6600mah Lipo batteries](https://www.adafruit.com/product/353) (ran for 4 days in this project)
-- 1x [Adafruit 2500mah Lipo battery](https://www.adafruit.com/product/328) (ran for 30 hours in this project)
+- 1x [Adafruit 10050mah Lipo battery](https://www.adafruit.com/product/5035) (ran scepter for 2 weeks straight)
+- 2x [Adafruit 6600mah Lipo batteries](https://www.adafruit.com/product/353) (ran noods & LCD eyes for 4 days)
+- 1x [Adafruit 2500mah Lipo battery](https://www.adafruit.com/product/328) (ran for 30 hours)
 - 1x [Adafruit Micro Lipo Charger](https://www.adafruit.com/product/1304) (recommended for recharging)
-- Unknowingly went way overkill with the large batteries. Only needed it to last 2-3 hours on Halloween. Recommend going with all 2500mah or smaller batteries. Will save weight too. The 6600mah batteries are very heavy and put a strain on my neck after 2 hours of wearing the mask.
+- Went way overkill with the batteries. Only needed it to last 2-3 hours on Halloween. Recommend going with all 2500mah or smaller batteries, will save weight too. The 6600mah batteries are very heavy and put a strain on my neck after 2 hours of wearing the mask.
 
 ### Costume Apparel:
 - 1x [Amazon Dragon Skull Mask](https://www.amazon.com/dp/B095LPK6CW)
