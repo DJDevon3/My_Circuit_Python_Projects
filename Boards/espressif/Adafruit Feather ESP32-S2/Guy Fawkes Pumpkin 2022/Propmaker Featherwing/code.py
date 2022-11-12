@@ -1,4 +1,4 @@
-"""Candle Flicker for PropMaker Feathering with 3W RGB LED by DJDevon3"""
+"""Pumpkin Candle Flicker for M4 Express + PropMaker Feathering + 3W RGB LED by DJDevon3"""
 import time
 import board
 import adafruit_rgbled
