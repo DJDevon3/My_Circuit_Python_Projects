@@ -17,7 +17,7 @@ https://user-images.githubusercontent.com/49322231/198586264-08559ed8-9f2e-40ff-
 
 ![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/espressif/Adafruit%20Feather%20ESP32-S2/Guy%20Fawkes%20Pumpkin%202022/pictures/vlcsnap-2022-11-11-19h43m49s925.png)
 
-All noods share a common GND. Most feathers only provide 1 GND pin so you'll need a protoboard or perfboard to solder all the GND's together or you could splice the wires into each other and then plug it into the GND pin.  The other ends of the noods are going to GPIO SCK, MISO, and MOSI but any pins will work.
+All noods share a common GND (right side of image). Most feathers only provide 1 GND pin so you'll need a protoboard or perfboard to solder all the GND's together or you could splice the wires into each other and then plug it into the GND pin.  The other ends of the noods (left side of image) are going to GPIO SCK, MISO, and MOSI but any pins will work.
 
 ![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/espressif/Adafruit%20Feather%20ESP32-S2/Guy%20Fawkes%20Pumpkin%202022/pictures/vlcsnap-2022-11-11-19h45m21s119.png)
 
