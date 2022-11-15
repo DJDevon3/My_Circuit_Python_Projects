@@ -33,27 +33,23 @@ code.py output:
 
 ## Seconds to Minutes/Hours/Days function
 ```py
-def time_calc(time):
-    if time < 60:
-        sleep_int = time
+def time_calc(input_time):
+    if input_time < 60:
+        sleep_int = input_time
         time_output = f"{sleep_int:.0f} seconds"
-        return time_output
-    elif 60 <= time < 3600:
-        sleep_int = time / 60
+    elif 60 <= input_time < 3600:
+        sleep_int = input_time / 60
         time_output = f"{sleep_int:.0f} minutes"
-        return time_output
-    elif 3600 <= time < 86400:
-        sleep_int = time / 60 / 60
+    elif 3600 <= input_time < 86400:
+        sleep_int = input_time / 60 / 60
         time_output = f"{sleep_int:.0f} hours"
-        return time_output
-    elif 86400 <= time < 432000:
-        sleep_int = time / 60 / 60 / 24
+    elif 86400 <= input_time < 432000:
+        sleep_int = input_time / 60 / 60 / 24
         time_output = f"{sleep_int:.1f} days"
-        return time_output
     else:  # if > 5 days convert float to int & display whole days
-        sleep_int = time / 60 / 60 / 24
+        sleep_int = input_time / 60 / 60 / 24
         time_output = f"{sleep_int:.0f} days"
-        return time_output
+    return time_output
 
 print("Calc Time: ", time_calc(900))  # time conversion testing
 ```
