@@ -4,7 +4,7 @@ Check out [TodBot's Circuit Python Tricks](https://github.com/todbot/circuitpyth
 
 These are a few common code snippets that I continually find myself looking at past projects to snag. No sense in re-inventing the wheel. 
 
-### Unix to Struct Time Formatting
+## Unix to Struct Time Formatting
 ```py
 import time
 def _format_datetime(datetime):
@@ -31,30 +31,33 @@ code.py output:
 
 `Timestamp: 08/17/2022 15:36:10`
 
-### Count Up Timer (used in sleep time events)
+## Seconds to Minutes/Hours/Days function
 ```py
-sleep_time = 900
-if sleep_time < 60:
-    sleep_time_conversion = "seconds"
-    sleep_int = sleep_time
-elif 60 <= sleep_time < 3600:
-    sleep_int = sleep_time / 60
-    sleep_time_conversion = "minutes"
-elif 3600 <= sleep_time < 86400:
-    sleep_int = sleep_time / 60 / 60
-    sleep_time_conversion = "hours"
-else:
-    sleep_int = sleep_time / 60 / 60 / 24
-    sleep_time_conversion = "days"
+def time_calc(input_time):
+    if input_time < 60:
+        sleep_int = input_time
+        time_output = f"{sleep_int:.0f} seconds"
+    elif 60 <= input_time < 3600:
+        sleep_int = input_time / 60
+        time_output = f"{sleep_int:.0f} minutes"
+    elif 3600 <= input_time < 86400:
+        sleep_int = input_time / 60 / 60
+        time_output = f"{sleep_int:.0f} hours"
+    elif 86400 <= input_time < 432000:
+        sleep_int = input_time / 60 / 60 / 24
+        time_output = f"{sleep_int:.1f} days"
+    else:  # if > 5 days convert float to int & display whole days
+        sleep_int = input_time / 60 / 60 / 24
+        time_output = f"{sleep_int:.0f} days"
+    return time_output
 
-print("\nNext Update in %s %s" % (int(sleep_int), sleep_time_conversion))
-time.sleep(sleep_time)
+print("Calc Time: ", time_calc(900))  # time conversion testing
 ```
 code.py output:
 
-`Next Update in 15 minutes`
+`Calc Time:  15 minutes`
 
-### Get Time from Online (ESP32-S2)
+## Get Time from Online (ESP32-S2)
 For boards with WiFi and no RTC
 ```py
 import gc
@@ -159,7 +162,7 @@ Timestamp: 09/07/2022 03:52:14
 ```
 Built-in error correction fails gracefully if no SSID (WiFi goes down) or time server cannot be contacted. Configurable sleep_time constant so you can easily change the duration of retry attempts. Use longer attempts for IO weather updates for example and shorter updates for retrying WiFi connection.
 
-### Common Secrets.py Config
+## Common Secrets.py Config
 for AdafruitIO, OpenWeatherMaps, and Time
 ```py
 secrets = {
