@@ -13,6 +13,8 @@ secrets = {
     "TW_username": "Twitter Username",
     "TW_userid": "Twitter UserID",  # numerical id not username
     "TW_bearer_token": "Twitter LOOOONG bearer token",
+    "Twitch_ClientID": "Twitch Dev App Client ID",
+    "Twitch_Client_Secret": "Twitch Dev App Client Secret"
     "Github_username": "Github Username",
     "Github_token": "Github Developer Token",
     "Discord_Adafruit_Channel": "327254708534116352",
