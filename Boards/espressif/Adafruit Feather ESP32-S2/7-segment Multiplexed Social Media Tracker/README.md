@@ -15,7 +15,8 @@ Uses 10x 7-segment clock display backpacks and multiplexer to exceed the default
 
 ### Hardware Used:
 - 1x [Adafruit Feather ESP32-S2 4 MB Flash + 2 MB PSRAM](https://www.adafruit.com/product/5000)
-- 8x [Adafruit 7-Segment Stemma Backpacks (clock style segments)](https://www.adafruit.com/product/5599) 2x each in different colors
+- 1x [Adafruit PCA9548 8-Channel Multiplexer](https://www.adafruit.com/product/5626)
+- 10x [Adafruit 7-Segment Stemma Backpacks (clock style segments)](https://www.adafruit.com/product/5599) 2x each in different colors
 - 8x [Adafruit 300mm Stemma male to male wire connectors](https://www.adafruit.com/product/5384)
 - 1x [Adafruit Stemma USB Hub](https://www.adafruit.com/product/5625)
 - 1x [Adafruit 30mm Arcade button](https://www.adafruit.com/product/3488) Recommend the ![mini-Ardcade button instead](https://www.adafruit.com/product/3431)
