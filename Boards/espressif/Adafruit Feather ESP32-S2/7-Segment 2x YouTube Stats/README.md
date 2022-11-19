@@ -1,4 +1,4 @@
-![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/espressif/Adafruit%20Feather%20ESP32-S2/7-Segment%20YouTube%20Stats/YouTube_Stats_Screenshot.JPG)
+![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/espressif/Adafruit%20Feather%20ESP32-S2/7-Segment%202x%20YouTube%20Stats/YouTube_Stats_Screenshot.JPG)
 
 # Dual 7-Segment Backpack YouTube Stats (for ESP32-S2)
 - pulls info from YouTube API in JSON format
