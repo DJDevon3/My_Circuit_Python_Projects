@@ -3,7 +3,7 @@ Social Media Tracker Project
 
 Uses 10x 7-segment clock display backpacks and multiplexer to exceed the default 8x I2C address limit
 
-![]([htial%20Media%20Tracker/social_media_tracker_finished.png](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/espressif/Adafruit%20Feather%20ESP32-S2/7-segment%20Multiplexed%20Social%20Media%20Tracker/IMG_0597.JPG)
+![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/espressif/Adafruit%20Feather%20ESP32-S2/7-segment%20Multiplexed%20Social%20Media%20Tracker/IMG_0597.JPG)
 
 ### Software Requirement:
 - Youtube API Developer Account Token
