@@ -23,6 +23,8 @@ Uses 10x 7-segment clock display backpacks and multiplexer to exceed the default
 - 1x [10x8x2.5" Shadow Box](https://www.amazon.com/gp/product/B07QJX512S) Amazon $20
 - 1x [8x10 Black Uncut Mat Boards](https://www.amazon.com/gp/product/B087Z64YL5) Amazon $15
 - 1x [Roll of static mirror film](https://www.amazon.com/gp/product/B07X7DHLXB/) Amazon $15
-### Total Project Cost: Approximately $180 (as of October 2022)
+## Total Project Cost: Approximately $200 (as of November 2022)
+
+![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/espressif/Adafruit%20Feather%20ESP32-S2/7-segment%20Multiplexed%20Social%20Media%20Tracker/IMG_0596.JPG)
 
 The projects in this section are specifically for Adafruit ESP32-S2 based boards running Circuit Python.
