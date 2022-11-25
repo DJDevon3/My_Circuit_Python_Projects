@@ -5,7 +5,7 @@ This particluar GPS module doesn't have timezone capability. It reports time in 
 
 Timezone added manually and converted to localtime. Not DST aware code. You must set timezone & DST offset yourself. 
 
-![](https://raw.githubusercontent.com/DJDevon3/CircuitPython/main/Ultimate%20GPS%20Featherwing/screenshot_connecting.bmp)
+![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/nrf/Adafruit%20Feather%20Bluefruit%20Sense/Adafruit%20Ultimate%20GPS%20Featherwing/GPS%20Offline%20Feather%20Weather/screenshot_connecting.bmp)
 
 UTC Time = 4:39 
 
@@ -13,7 +13,7 @@ The -5 GMT Timezone offset incorrectly displays localtime as 11:39 during DST.
 
 To correct this simply set Timezone offset to -4.
 
-![](https://raw.githubusercontent.com/DJDevon3/CircuitPython/main/Ultimate%20GPS%20Featherwing/screenshot_gps.bmp)
+![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/nrf/Adafruit%20Feather%20Bluefruit%20Sense/Adafruit%20Ultimate%20GPS%20Featherwing/GPS%20Offline%20Feather%20Weather/screenshot_gps.bmp)
 
 Quad Stack Demo (NRF52840 Sense, ESP32 Airlift Featherwing, 3.5" TFT Featherwing, Ultimate GPS Featherwing)
 
