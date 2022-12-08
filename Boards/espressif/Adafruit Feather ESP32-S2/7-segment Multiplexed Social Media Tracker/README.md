@@ -26,4 +26,11 @@ Uses 10x 7-segment clock display backpacks and multiplexer to exceed the default
 
 ![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/espressif/Adafruit%20Feather%20ESP32-S2/7-segment%20Multiplexed%20Social%20Media%20Tracker/IMG_0596.JPG)
 
+### HT16K33 I2C Conflict with PCA9548 Multiplexers
+Segmented backpacks shared an identical I2C address range of 0x70-0x77 with the PCA9548 multiplexers. This means you can only use a maximum of 4 multiplexers before you start running into conflicts. Here's my recommended setup that will maximize the amount of backpacks you can use.  Keep in mind this is PER I2C BUS and most of Adafruit's microcontrollers allow for 2 I2C busses so the theoretical max is 256 segment displays (128 per bus) with these multiplexers. That should obviously still be plenty for just about any project you can think of.
+
+I'm only showing half of each multiplexer channels used because... it's a ridiculously big enough graphic as it is. Hopefully you get the point of how to add tons of 7 segment displays even with the conflicting address space.
+
+![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/espressif/Adafruit%20Feather%20ESP32-S2/7-segment%20Multiplexed%20Social%20Media%20Tracker/Adafruit_Multiplexed_Backpacks.png)
+
 The projects in this section are specifically for Adafruit ESP32-S2 based boards running Circuit Python.
