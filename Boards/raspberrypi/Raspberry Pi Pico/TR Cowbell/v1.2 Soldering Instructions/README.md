@@ -19,7 +19,7 @@ With all soldering complete head over to CircuitPython.org/downloads and get the
 Demo code (including necessary libraries) are hosted here on Github in the TR Cowbell directory. All it does is blink like a sequencer. I have yet to write any functional audio code but when that happens all updates will be found in this repository. 
 
 ### TR-Cowbell Updates
-All anouncements for updates will probably made via my Mastodon account so if you haven't added me yet please do TreasureDev@Hackaday.social
+All anouncements will be made via Adafruit Discord or my Mastodon account so if you haven't added me yet please do TreasureDev@Hackaday.social Feel free to reach out to be at any time with any questions or just to chat. My door is open at all times.
 
 The beauty of Circuit Python is when there is an update
 1. It's not forced upon you. You choose if or when to update.
