@@ -12,6 +12,8 @@
 9. Rotary encoder. The large legs require a ton of solder, you'll find the small GND pins just as hard to solder as the step switch GND pins. Without a lot of heat you'll get cold joints and intermittent connection.
 10. 6mm buttons legs can only be installed in the correct orientation, kind of dummy proof, same for Pico Reset button.
 
+When you've got everything soldered up and ready then head over to CircuitPython.org/downloads and get the 8.0 beta release for the Pi Pico W. Code (including necessary libraries) and here on Github in the TR Cowbell directory.
+
 ### Issues
 1. The stemma port and stemma breakout don't work unless you bodge wire a fix. It's easier just to plug into the stacking header for pins (GP10 & GP11 for I2C bus 1) or (GP12 & GP13 for bus 0). This is why I included stacking headers for easy breakouts in case something went wrong, and it did.
 2. Some beta testers will have missing extra components as I ran out of parts. They don't detract from the function of the board via serial print. All core components required to get the board working are included.
