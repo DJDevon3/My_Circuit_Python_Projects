@@ -6,7 +6,7 @@
 3. All female header sockets & stacking headers on the Pico W.
 4. 28-pin DIP sockets and press fit the MCP23017 chips in them.
 5. Solder jump all 6 I2C address pads. The MCP chips will provide wild results if those pads are left floating unjumped. Each MCP23017 has hex address 0x20, 1 per I2C bus (a mistake since there are only 2 busses).
-6. The optoisolator chip (no DIP socket included) must be soldered directly to the board.
+6. The 8-pin optoisolator chip (no DIP socket included) must be soldered directly to the board.
 7. Do not attempt to pre-tin the pads for the TRS midi jacks. There are alignment holes. Press fit the jacks and solder in place.
 8. 4.7K and remaining resistors and small round capacitor.
 9. Rotary encoder. The large legs require a ton of solder, you'll find the small GND pins just as hard to solder as the step switch GND pins. Without a lot of heat you'll get cold joints and intermittent connection.
