@@ -3,7 +3,7 @@
 ### Soldering Sequence:
 1. Solder all 16 step switches first. The reason is due to GND trace length which requires very long heating duration, if you have a hotplate or pre-heater you could try that. I don't have one so I had to hold the iron on a GND pin for minutes sometime as the entire GND plane of the board heated up. The positive pins on the step switches heat up extremely fast. ![Step_Switch_Soldering](https://user-images.githubusercontent.com/49322231/208536970-5ecae4f0-c8e8-4ae8-b795-24cea7dcfd85.jpg)
 
-2. The 16x 500 ohm resistors are actually 68 Ohm resistors. It's all I had. If you want to substitute for different values by all means do.
+2. The 16x 500 ohm resistors are actually 68 Ohm resistors. It's all I had. 68 ohms works fine even while all lit up simultaneously for hours. It's just a bit brighter. If you want to substitute for higher resistor values for dimmer LED's by all means do.
 3. All female header sockets & stacking headers on the Pico W.
 4. 28-pin DIP sockets and press fit the MCP23017 chips in them.
 5. Solder jump all 6 I2C address pads. The MCP chips will provide wild results if those pads are left floating unjumped. Each MCP23017 has hex address 0x20, 1 per I2C bus (a mistake since there are only 2 busses).
