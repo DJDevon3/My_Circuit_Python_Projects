@@ -15,7 +15,7 @@
 ### Installing Circuit Python
 With all soldering complete head over to CircuitPython.org/downloads and get the 8.0 beta release for the Pi Pico W. 
 
-Demo code (including necessary libraries) and here on Github in the TR Cowbell directory. All it does is blink like a sequencer. I have yet to write any functional audio code but when that happens all updates will be found in this repository. 
+Demo code (including necessary libraries) are hosted here on Github in the TR Cowbell directory. All it does is blink like a sequencer. I have yet to write any functional audio code but when that happens all updates will be found in this repository. 
 
 ### TR-Cowbell Updates
 All anouncements for updates will probably made via my Mastodon account so if you haven't added me yet please do TreasureDev@Hackaday.social
