@@ -1,7 +1,7 @@
 # TR-Cowbell v1.2 Soldering
 
 ### Soldering Sequence:
-1. Solder all 16 step switches first. The reason is due to GND trace length which requires very long durations. While some the other pins on the step switches heat up extremely fast.  I will add pictures here soon to detail which pins are GND that are likely to give you the most trouble (and cold solder joints galore).
+1. Solder all 16 step switches first. The reason is due to GND trace length which requires very long heating duration, if you have a hotplate or pre-heater you could try that. I don't have one so I had to hold the iron on a GND pin for minutes sometime as the entire GND plane of the board heated up. Some the other pins on the step switches heat up extremely fast. (I will add pictures here soon) to detail which pins are GND that are likely to give you the most trouble and cold solder joints galore.
 2. The 16 500 ohm resistors
 3. All female header sockets & stacking headers on the Pico W.
 4. 28-pin DIP sockets and press fit the MCP23017 chips in them.
