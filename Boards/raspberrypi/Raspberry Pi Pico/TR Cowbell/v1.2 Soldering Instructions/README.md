@@ -2,7 +2,7 @@
 
 ### Soldering Sequence:
 1. Solder all 16 step switches first. The reason is due to GND trace length which requires very long heating duration, if you have a hotplate or pre-heater you could try that. I don't have one so I had to hold the iron on a GND pin for minutes sometime as the entire GND plane of the board heated up. Some the other pins on the step switches heat up extremely fast. (I will add pictures here soon) to detail which pins are GND that are likely to give you the most trouble and cold solder joints galore.
-2. The 16 500 ohm resistors
+2. The 16x 500 ohm resistors are actually 68 Ohm resistor. It's all I had. If you want to substitute for different values by all means do.
 3. All female header sockets & stacking headers on the Pico W.
 4. 28-pin DIP sockets and press fit the MCP23017 chips in them.
 5. Solder all 6 I2C address pads. Each MCP23017 has hex address 0x20, 1 per I2C bus (a mistake since there are only 2 busses).
