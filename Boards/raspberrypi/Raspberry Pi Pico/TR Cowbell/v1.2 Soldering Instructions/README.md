@@ -21,6 +21,11 @@ Demo code (including necessary libraries) are hosted here on Github in the TR Co
 ### TR-Cowbell Updates
 All anouncements for updates will probably made via my Mastodon account so if you haven't added me yet please do TreasureDev@Hackaday.social
 
+The beauty of Circuit Python is when there is an update
+1. It's not forced upon you. You choose if or when to update.
+2. Updates are drag & drop to the Pi Pico USB drive, simple & efficient.
+3. You can submit PR's for code examples, improvements, bugs, issues, etc.. right here through Github. Simply clone the repo and push a PR the same as you'd do for Circuit Python Github.
+
 ### Issues
 1. The stemma port and stemma breakout don't work unless you bodge wire a fix. It's easier just to plug into the stacking header for pins (GP10 & GP11 for I2C bus 1) or (GP12 & GP13 for bus 0). This is why I included stacking headers for easy breakouts in case something went wrong, and it did.
 2. Some beta testers will have missing extra components as I ran out of parts. They don't detract from the function of the board via serial print. All core components required to get the board working are included.
