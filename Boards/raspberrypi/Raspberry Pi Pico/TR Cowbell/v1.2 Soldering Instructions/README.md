@@ -13,8 +13,8 @@
 10. 6mm buttons legs can only be installed in the correct orientation, kind of dummy proof, same for Pico Reset button.
 
 ### Issues
-1. The stemma port and stemma breakout don't work unless you bodge wire a fix. It's easier just to plug into GP10 & 11 for I2C bus 1 or GP12 & 13 for bus 0. This is why I included stacking headers for easy breakouts in case something went wrong like this, and it did.
-2. Some beta testers will have missing extra components as I ran out of parts. They don't detract from the function of the board as all core components required to get the board working are included.
+1. The stemma port and stemma breakout don't work unless you bodge wire a fix. It's easier just to plug into the stacking header for pins (GP10 & GP11 for I2C bus 1) or (GP12 & GP13 for bus 0). This is why I included stacking headers for easy breakouts in case something went wrong, and it did.
+2. Some beta testers will have missing extra components as I ran out of parts. They don't detract from the function of the board via serial print. All core components required to get the board working are included.
 
 ### Extra's Info
 1. Some kits came with an SSD1306 display. There's different example code in the repo for a board with or without the display.
