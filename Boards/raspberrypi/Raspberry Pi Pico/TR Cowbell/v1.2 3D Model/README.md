@@ -1,0 +1,1 @@
+I've included a 3D model of the board for the purposes of custom enclosures. I noticed when I imported it into Fusion 360 the dimensions were about 200% bigger so please ensure the dimensions are calibrated correctly prior to beginning an enclosure design.
