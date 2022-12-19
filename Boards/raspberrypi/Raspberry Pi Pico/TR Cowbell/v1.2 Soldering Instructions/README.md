@@ -1,4 +1,4 @@
-# TR-Cowbell v.12 Soldering
+# TR-Cowbell v1.2 Soldering
 
 ### Soldering Sequence:
 1. Solder all 16 step switches first. The reason is due to GND trace length which requires very long durations. While some the other pins on the step switches heat up extremely fast.  I will add pictures here soon to detail which pins are GND that are likely to give you the most trouble (and cold solder joints galore).
