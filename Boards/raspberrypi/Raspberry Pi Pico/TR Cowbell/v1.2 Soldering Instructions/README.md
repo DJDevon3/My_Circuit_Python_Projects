@@ -17,4 +17,4 @@
 2. Some beta testers will have missing extra components as I ran out of parts. They don't detract from the function of the board as all core components required to get the board working are included.
 
 ### Extra's Info
-1. Some kits came with an SSD1306 display. There's different same code in the repo for a board with or without a display.
+1. Some kits came with an SSD1306 display. There's different example code in the repo for a board with or without the display.
