@@ -5,6 +5,8 @@ TR Cowbell powered by Raspberry Pi Pico by DJDevon3
 
 My first major custom board!!!
 
+[Wiring Diagrams available HERE](https://oshwlab.com/djdevon3/tr-cowbell)
+
 ![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/raspberrypi/Raspberry%20Pi%20Pico/TR%20Cowbell/Pictures/v1.2_screenshot.jpg)
 
 https://user-images.githubusercontent.com/49322231/191885653-31921617-1a46-4c9c-91a2-286ba2231128.mov
