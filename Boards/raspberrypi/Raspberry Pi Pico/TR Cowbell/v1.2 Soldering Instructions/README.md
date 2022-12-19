@@ -13,7 +13,7 @@
 10. 6mm buttons legs can only be installed in the correct orientation, kind of dummy proof, same for Pico Reset button.
 
 ### Installing Circuit Python
-When you've got everything soldered up and ready then head over to CircuitPython.org/downloads and get the 8.0 beta release for the Pi Pico W. 
+With all soldering complete head over to CircuitPython.org/downloads and get the 8.0 beta release for the Pi Pico W. 
 
 Demo code (including necessary libraries) and here on Github in the TR Cowbell directory. All it does is blink like a sequencer. I have yet to write any functional audio code but when that happens all updates will be found in this repository. 
 
