@@ -3,3 +3,5 @@ I've included a 3D model of the board for the purposes of custom enclosures. I n
 I will be cleaning up the model and ensuring it's sized correctly over the holidays. My next task is creating an enclosure so this is a placeholder for that but in case you want to hit the ground running and design your own at least a basic mesh is already provided.
 
 In the future I will create a diagram with exact measurements for those who prefer to design their own enclosure.
+
+![3D_Board_Model](https://user-images.githubusercontent.com/49322231/208705971-183dd22f-364e-4bf3-b1e0-4708da1949fe.PNG)
