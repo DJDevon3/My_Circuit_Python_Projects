@@ -10,4 +10,4 @@ Here are the exact board measurements in order to calibrate the 3D model if ther
 
 ![3D_Board_Measurements](https://user-images.githubusercontent.com/49322231/208709340-6aa31d6b-edfb-4e19-a8d4-53920d4a7a2a.PNG)
 
-All bottom screw holes above and below the step switches are identically spaced so setting up a repeating pattern is easy. Unfortunately the other screw holes around the perimeter of the board are not aligned and eyeballed. Some are staggered & offset from each other so you cannot use a repeating pattern on them.
+Screw holes above and below the step switches are identically spaced so setting up a repeating pattern is easy. Unfortunately the other screw holes around the perimeter of the board are not aligned and eyeballed. Some are staggered & offset from each other so you cannot use a repeating pattern on them.
