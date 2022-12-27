@@ -1,15 +1,18 @@
-# TR-Cowbell
+# TR-Cowbell Page (all versions)
 TR Cowbell powered by Raspberry Pi Pico by DJDevon3
 
 ![Based on PicoStepSeq by @Todbot](https://github.com/todbot/picostepseq)
 
 My first major custom board!!!
 
-[Wiring Diagrams available HERE](https://oshwlab.com/djdevon3/tr-cowbell)
-
 ![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/raspberrypi/Raspberry%20Pi%20Pico/TR%20Cowbell/Pictures/v1.2_screenshot.jpg)
 
 https://user-images.githubusercontent.com/49322231/191885653-31921617-1a46-4c9c-91a2-286ba2231128.mov
+
+[Wiring Diagrams available HERE](https://oshwlab.com/djdevon3/tr-cowbell) Please ensure you're looking at the correct version of the schematics & PCB for your version. v1.3 is in development and I can't guarantee it will always show the v1.2 version by default. Only the landing page of the version in github will have the correct schematic link per version. The bottom right hand corner of the schematic view shows the schematic (board) version.
+
+![TR-Cowbell_v1 2-Schematic](https://user-images.githubusercontent.com/49322231/209725513-20c01e94-87d0-4c22-b644-affb2cfb170e.jpg)
+
 
 ### MCP23017 Notes:
 You cannot use the Adafruit Keypad library with MCP23017 chips due to a difference in the way it reads shift registers. You must instead use the MCP23017_scanner library which is a keypad library built specifically for MPC23017 chips. Think of it more as a MCP23017_Keypad library.
