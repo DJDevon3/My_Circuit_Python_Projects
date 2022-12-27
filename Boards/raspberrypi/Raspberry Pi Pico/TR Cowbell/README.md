@@ -20,7 +20,7 @@ If this is your first time working with the MCP23017 please note that the Circui
 
 You can manually specify if a pin should be an INPUT (switch) or OUTPUT (led) pin `pin.direction = Direction.INPUT` There is no PWM or voltage capability only on/off by pulling a pin high or low, it's digital.
 
-Reset should be provided 3v3 and you pull that to GND to actually reset the chip. It's easier most cases to just reset the board but in the unlikely event that you should ever need a physical chip reset, that feature is built into the chip.
+Reset should be provided 3v3 and you pull that to GND to actually reset the chip. It's easier most cases to just reset the board but in the unlikely event that you should ever need a physical chip reset, that feature is built into the chip. Since it's tied to 3v3 the MCP chips reset whenever the TR-Cowbell is reset or unpowered/powered. This is by design to make things easier but if it becomes an issue for modifications you want to do in the future please realize the chip reset traces are part of the board design.
 
 ### MCP23017 I2C Pull-Up Circuit
 This is now a known good circuit for the MCP23017 (I designed it). This will allow your chip to be detected by the microcontroller as an I2C device. You can have up to 8 chips on the same physical bus. The chip only allows for a maximum of 8 different I2C addresses via solder jumper pads (to GND). Since I'm using the Pi Pico which has 2 separate I2C busses you can have a maximum of 16 chips per microcontroller in a non-matrix layout. 8 chips per bus, 2 busses. With 16 GPIO per chip x 16 chips = 256 GPIO maximum! My board only uses 32 on 2 chips.
