@@ -45,5 +45,5 @@ On my next revision I'm going to rename the LED nets to match the pins. LED1 cur
 - If you intend on making a keyboard with MCP23017 chips a better idea is to use the mcp23017_scanner matrix class and example within the mcp23017_scanner library. You can split each GPIO as a row or column for 64 keys (8x8 grid) per chip! With a maximum of 16 chips (8 chips per I2C bus) that means the total possible amount of keys is 64 * 16 = 1024 keys!!! 
 - Ask in Adafruit Discord what the best PCB layout for the mcp23017_scanner matrix library expects to work with (probably diode matrix).
 
-### Pin Confusion
-It's OK to be confused at some point about which pins go where. There are so many overlapping numbers it's quite easy to mix things up. If you're a board designer just stick with the layout I have here and you'll be OK. You can always fix pin mapping in software though you will complicate your life. I've already made that mistake in my 1.0 board design, learn from my mistake, fixed it in the v1.2 design. ;)
+### MCP23017 Pin Confusion
+It's OK to be confused at some point about which pins go where. There are so many overlapping numbers it's quite easy to mix things up. As long as all MCP pins are traced to switches and or LED's you can always fix pin mappings in software.
