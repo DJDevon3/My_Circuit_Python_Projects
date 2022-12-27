@@ -15,7 +15,7 @@ Watch FoamyGuy bring the TR-Cowbell to life! Image is link to YouTube video.
 
 
 ### MCP23017 Notes:
-You cannot use the Adafruit Keypad library with MCP23017 chips due to a difference in the way it reads shift registers. You must instead use the MCP23017_scanner library which is a keypad library built specifically for MPC23017 chips. Think of it more as a MCP23017_Keypad library.
+You cannot use the Adafruit Keypad library with MCP23017 chips due to a difference in the way it reads shift registers. You must instead use the MCP23017_scanner library (by Neradoc)which is a keypad library built specifically for MPC23017 chips. Think of it more as a MCP23017_Keypad library.
 
 If this is your first time working with the MCP23017 please note that the Circuit Python MCP23017 library expects a pin value of 0-15. They are in order of Port A on the right side of the chip from bottom to top, then top to bottom on Port B which is the left side of the chip. It's very easy to confuse the pinouts since they're in opposite logical order from what most people would consider a normal order.
 
