@@ -33,6 +33,9 @@ On my next revision I'm going to rename the LED nets to match the pins. LED1 cur
 
 ![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/raspberrypi/Raspberry%20Pi%20Pico/TR%20Cowbell/MCP23017_Pullup_Diagram.PNG)
 
+## MCP23017 I2C Addressing
+The way I laid out the addressing in v1.2 is incorrect. Each address pin (3 of them) can either be high (3v3) or low (GND).  Since I only provided jumper pads to GND it means you can only have the address of 0x20 (all 3 pads grounded).  You cannot leave any address floating (unsoldered), the MCP23017 chip will exhibit erratic behavior with a floating address pin. It will randomly change addresses leaving you scratching your head and later pulling your hair out. Each address must absolutely either be high or low.  All low is 0x20.  The reason both MCP23017's are all soldered all low on the TR-Cowbell v1.2 is because they're on 2 different I2C buses. This was a big mistake as the Pico only has 2 I2C buses, and both buses are always "in use" each by 1 MCP23017 chip. :(
+
 ### Keys with LED's
 - If your board has keys with LED's (like the TR-Cowbell does) it's best to put the corresponding LED & Key on the same pin # per port.  So LED0 would be on Library Pin 8 and Switch0 would be on Library Pin 0.
 - Example: 8 and 0, 9 and 1, 10 and 2, etc...  This scheme is present on the TR-Cowbell.
