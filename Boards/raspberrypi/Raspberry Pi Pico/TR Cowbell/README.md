@@ -9,9 +9,10 @@ TR Cowbell is a Midi Sequencer/Macropad PCB designed by DJDevon3 & powered by Ra
 Watch FoamyGuy bring the TR-Cowbell to life! Image is link to YouTube video.
 [![Foamy_Guy_TR-Cowbell](https://user-images.githubusercontent.com/49322231/209728878-aee7aa86-ee7d-4b8d-9cf7-07cdacc37603.PNG)](https://youtu.be/QR1UXm6L_6I)
 
-[Wiring Diagrams available HERE](https://oshwlab.com/djdevon3/tr-cowbell) Please ensure you're looking at the correct version of the schematics & PCB for your version. v1.3 is in development and I can't guarantee it will always show the v1.2 version by default. The bottom right hand corner of the schematic view shows the schematic (board) version.
 
-![TR-Cowbell_v1 2-Schematic](https://user-images.githubusercontent.com/49322231/209725513-20c01e94-87d0-4c22-b644-affb2cfb170e.jpg)
+Please ensure you're looking at the correct version of the schematics & PCB for your version. v1.3 is in development and I can't guarantee it will always show the v1.2 version by default. The bottom right hand corner of the schematic view shows the schematic (board) version. I use EasyEDA online editor for PCB design (like an online version of EAGLE), EasyEDA projects can be shared directly to the public via a built-in integration with OSHWLab (Open-Source Hardware Lab).
+
+[![TR-Cowbell_v1 2-Schematic](https://user-images.githubusercontent.com/49322231/209725513-20c01e94-87d0-4c22-b644-affb2cfb170e.jpg)](https://oshwlab.com/djdevon3/tr-cowbell) 
 
 
 ### MCP23017 Notes:
