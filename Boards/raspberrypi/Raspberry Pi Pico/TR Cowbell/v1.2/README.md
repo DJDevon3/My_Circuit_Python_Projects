@@ -6,6 +6,12 @@
 
 ![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/raspberrypi/Raspberry%20Pi%20Pico/TR%20Cowbell/Pictures/v1.2_screenshot.jpg)
 
+
+[TR-Cowbell v1.2 Interactive Schematic & PCB Design](https://oshwlab.com/djdevon3/tr-cowbell)
+
+![TR-Cowbell v1.2 Schematic](https://user-images.githubusercontent.com/49322231/209724851-b4f27ea0-9ad4-4217-b441-76008834c743.jpg)
+
+
 ### Version 1.2
 - Replaced dual rotary encoders with 1 encoder + 5 buttons for menu navigation
 - Added header breakout for 10 unused pins (GP0-GP9). Includes GND & 3V3. Good for adding peripherals.
