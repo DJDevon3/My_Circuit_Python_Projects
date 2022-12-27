@@ -9,7 +9,7 @@ My first major custom board!!!
 
 https://user-images.githubusercontent.com/49322231/191885653-31921617-1a46-4c9c-91a2-286ba2231128.mov
 
-[Wiring Diagrams available HERE](https://oshwlab.com/djdevon3/tr-cowbell) Please ensure you're looking at the correct version of the schematics & PCB for your version. v1.3 is in development and I can't guarantee it will always show the v1.2 version by default. Only the landing page of the version in github will have the correct schematic link per version. The bottom right hand corner of the schematic view shows the schematic (board) version.
+[Wiring Diagrams available HERE](https://oshwlab.com/djdevon3/tr-cowbell) Please ensure you're looking at the correct version of the schematics & PCB for your version. v1.3 is in development and I can't guarantee it will always show the v1.2 version by default. The bottom right hand corner of the schematic view shows the schematic (board) version.
 
 ![TR-Cowbell_v1 2-Schematic](https://user-images.githubusercontent.com/49322231/209725513-20c01e94-87d0-4c22-b644-affb2cfb170e.jpg)
 
