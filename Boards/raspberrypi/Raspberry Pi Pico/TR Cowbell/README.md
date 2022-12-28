@@ -42,7 +42,7 @@ The MCP chips do not allow for any address floating (unsoldered), the MCP23017 c
 
 The reason both MCP23017's are all soldered low on the TR-Cowbell v1.2 is because they're on 2 different I2C buses. This was a big mistake as the Pico only has 2 I2C buses, and both buses are always "in use" each by 1 MCP23017 chip. :(
 
-![MCP23017 Addressing](https://user-images.githubusercontent.com/49322231/209738364-0f30cbcf-986c-442b-9c6b-16eece0e02cd.jpg)
+![MCP23017 Addressing](https://user-images.githubusercontent.com/49322231/209738852-a7c5ebf0-e847-41f2-91fd-223725190221.jpg)
 
 To change the address on an MCP23017 both GND and 3v3 pads should have been be provided (as pictured). This is something I've already fixed in v1.3 with dip switches, no soldering of jump pads will be necessary to change the I2C address of the MCP chips in future revisions. 
 
