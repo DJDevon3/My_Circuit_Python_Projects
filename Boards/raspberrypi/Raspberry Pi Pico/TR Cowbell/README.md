@@ -36,7 +36,11 @@ On my next revision I'm going to rename the LED nets to match the pins. LED1 cur
 ## MCP23017 I2C Addressing
 The way I laid out the I2C addresses pads in v1.2 is incorrect. It definitely works for the purpose of the board but it prevents I2C expansion. 
 
-Each address signal pin (3 of them) can either be high (3v3) or low (GND). Since I only provided jumper pads to GND it means you can only have the address of 0x20 (all 3 pads grounded). You cannot leave any address floating (unsoldered), the MCP23017 chip will exhibit erratic behavior with a floating address pin. It will randomly change addresses leaving you scratching your head and later pulling your hair out. Each address must absolutely either be high or low. All low is 0x20. The reason both MCP23017's are all soldered low on the TR-Cowbell v1.2 is because they're on 2 different I2C buses. This was a big mistake as the Pico only has 2 I2C buses, and both buses are always "in use" each by 1 MCP23017 chip. :(
+Each address signal pin (3 of them) should either be high (3v3) or low (GND). I was treating it like a normal I2C device that only needed GND to change the address. I've learned the hard way that is incorrect for the MCP23017. Since I only provided jumper pads to GND it means you can only have the address of 0x20 (all 3 pads grounded). 
+
+The MCP chips do not allow for any address floating (unsoldered), the MCP23017 chip will exhibit erratic behavior with a floating address pin. It will randomly change addresses leaving you scratching your head and later pulling your hair out. Each address must absolutely either be high or low. All low is 0x20. 
+
+The reason both MCP23017's are all soldered low on the TR-Cowbell v1.2 is because they're on 2 different I2C buses. This was a big mistake as the Pico only has 2 I2C buses, and both buses are always "in use" each by 1 MCP23017 chip. :(
 
 ![MCP23017 Addressing](https://user-images.githubusercontent.com/49322231/209738364-0f30cbcf-986c-442b-9c6b-16eece0e02cd.jpg)
 
