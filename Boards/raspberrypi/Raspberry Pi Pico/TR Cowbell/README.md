@@ -42,7 +42,7 @@ The reason both MCP23017's are all soldered low (both have address 0x20) on the 
 
 ![MCP23017 Addressing](https://user-images.githubusercontent.com/49322231/209738852-a7c5ebf0-e847-41f2-91fd-223725190221.jpg)
 
-To change the address on an MCP23017 both GND and 3v3 pads should have been be provided (as pictured). This is something I've already fixed in v1.3 with dip switches, no soldering of jump pads will be necessary to change the I2C address of the MCP chips in future revisions. 
+To change the address on an MCP23017 both GND and 3v3 pads should have been be provided (as pictured). This is something I've already fixed in v1.3 with dip switches, no soldering of jump pads will be necessary to change the I2C address of the MCP chips in future revisions. As for a bodge fix to change the address on 1 of the chips means using the signal pad and running a wire to a 3v3 source. That will only change the address, ensuring both chips are on the same bus is a different issue.
 
 ![i2c_devices](https://user-images.githubusercontent.com/49322231/209739560-fe98bdec-a6be-4387-ac1d-8067821e12e9.png)
 
