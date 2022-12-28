@@ -6,7 +6,7 @@ TR Cowbell is a Midi Sequencer/Macropad PCB designed by DJDevon3 & powered by Ra
 ![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/raspberrypi/Raspberry%20Pi%20Pico/TR%20Cowbell/Pictures/v1.2_screenshot.jpg)
 
 
-Watch FoamyGuy bring the TR-Cowbell to life! Image is link to YouTube video.
+Watch FoamyGuy bring the TR-Cowbell to life with bleeps and bloops! Image is a link to his YouTube video.
 [![Foamy_Guy_TR-Cowbell](https://user-images.githubusercontent.com/49322231/209728878-aee7aa86-ee7d-4b8d-9cf7-07cdacc37603.PNG)](https://youtu.be/QR1UXm6L_6I)
 
 
