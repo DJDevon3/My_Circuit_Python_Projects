@@ -27,7 +27,7 @@ You can manually specify if a pin should be an INPUT (switch) or OUTPUT (led) pi
 Reset should be provided 3v3 and you pull that to GND to actually reset the chip. It's easier most cases to just reset the board but in the unlikely event that you should ever need a physical chip reset, that feature is built into the chip. Since it's tied to 3v3 the MCP chips reset whenever the TR-Cowbell is reset or unpowered/powered. This is by design to make things easier but if it becomes an issue for modifications you want to do in the future please realize the chip reset traces are part of the board design.
 
 ### MCP23017 I2C Pull-Up Circuit
-This is now a known good circuit for the MCP23017 (I designed it). This will allow your chip to be detected by the microcontroller as an I2C device. What I should have done is use a net label instead of a net port so both MCP chips would have used the same SDA and SCL traces. That would have chained them to the same bus.
+This is now a known good circuit for the MCP23017 (I designed it). This will allow your chip to be detected by the microcontroller as an I2C device. Only 1 of 2 MCP's are shown here but both are identical schematics except for the net port. Chip 0 is on bus 0 and chip 1 is on bus 1. What I should have done is use a net label instead of a net port so both MCP chips would have used the same SDA and SCL traces. That would have chained them to the same bus.
 
 ![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/raspberrypi/Raspberry%20Pi%20Pico/TR%20Cowbell/MCP23017_Pullup_Diagram.PNG)
 
