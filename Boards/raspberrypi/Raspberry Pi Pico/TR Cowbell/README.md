@@ -40,11 +40,17 @@ Each address signal pin (3 of them) should either be high (3v3) or low (GND). I 
 
 The MCP chips do not allow for any address floating (unsoldered), the MCP23017 chip will exhibit erratic behavior with a floating address pin. It will randomly change addresses leaving you scratching your head and later pulling your hair out. Each address must absolutely either be high or low. All low is 0x20. 
 
-The reason both MCP23017's are all soldered low on the TR-Cowbell v1.2 is because they're on 2 different I2C buses. While it does work it doesn't allow for easy I2C expansion. This was a big mistake as the Pico only has 2 I2C buses, and both buses are always "in use" each by 1 MCP23017 chip. :( You can still tap into either I2C bus using GP10 & GP11 for Bus 1 or GP12 & GP13 for Bus 0.
+The reason both MCP23017's are all soldered low on the TR-Cowbell v1.2 is because they're on 2 different I2C buses. While it does work it doesn't allow for easy I2C expansion. This was a big mistake as the Pico only has 2 I2C buses, and both buses are always "in use" each by 1 MCP23017 chip. :( 
 
 ![MCP23017 Addressing](https://user-images.githubusercontent.com/49322231/209738852-a7c5ebf0-e847-41f2-91fd-223725190221.jpg)
 
 To change the address on an MCP23017 both GND and 3v3 pads should have been be provided (as pictured). This is something I've already fixed in v1.3 with dip switches, no soldering of jump pads will be necessary to change the I2C address of the MCP chips in future revisions. 
+
+![i2c_devices](https://user-images.githubusercontent.com/49322231/209739560-fe98bdec-a6be-4387-ac1d-8067821e12e9.png)
+
+### Adding I2C Devices to the Pi Pico on the TR-Cowbell v1.2
+You can still tap into either I2C bus using GP10 & GP11 for Bus 1 or GP12 & GP13 for Bus 0. This is the reason why I included stacking headers with all kits.
+
 
 ### Keys with LED's
 - If your board has keys with LED's (like the TR-Cowbell does) it's best to put the corresponding LED & Key on the same pin # per port.  So LED0 would be on Library Pin 8 and Switch0 would be on Library Pin 0.
