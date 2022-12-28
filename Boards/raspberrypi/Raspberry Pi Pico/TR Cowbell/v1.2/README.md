@@ -11,7 +11,8 @@
 
 ![TR-Cowbell v1.2 Schematic](https://user-images.githubusercontent.com/49322231/209724851-b4f27ea0-9ad4-4217-b441-76008834c743.jpg)
 
-Here's an easy to digest pinout what the hard traces are connected to. You still want to use the Pico's GP# to access them.
+Here's an easy to digest pinout where the hard traces are connected. You still must use the Pico's GP# to access them.
+
 ![Pi_Pico_TR-Cowbell_v1 2_Pinouts](https://user-images.githubusercontent.com/49322231/209758656-4a6b348c-e658-4575-bb5c-c633fbf357ce.png)
 
 ### Version 1.2
