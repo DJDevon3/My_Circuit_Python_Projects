@@ -40,7 +40,7 @@ Each address signal pin (3 of them) should either be high (3v3) or low (GND). I 
 
 The MCP chips do not allow for any address floating (unsoldered), the MCP23017 chip will exhibit erratic behavior with a floating address pin. It will randomly change addresses leaving you scratching your head and later pulling your hair out. Each address must absolutely either be high or low. All low is 0x20. 
 
-The reason both MCP23017's are all soldered low on the TR-Cowbell v1.2 is because they're on 2 different I2C buses. This was a big mistake as the Pico only has 2 I2C buses, and both buses are always "in use" each by 1 MCP23017 chip. :(
+The reason both MCP23017's are all soldered low on the TR-Cowbell v1.2 is because they're on 2 different I2C buses. While it does work it doesn't allow for easy I2C expansion. This was a big mistake as the Pico only has 2 I2C buses, and both buses are always "in use" each by 1 MCP23017 chip. :( You can still tap into either I2C bus using GP10 & GP11 for Bus 1 or GP12 & GP13 for Bus 0.
 
 ![MCP23017 Addressing](https://user-images.githubusercontent.com/49322231/209738852-a7c5ebf0-e847-41f2-91fd-223725190221.jpg)
 
