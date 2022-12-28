@@ -11,7 +11,7 @@
 
 ![TR-Cowbell v1.2 Schematic](https://user-images.githubusercontent.com/49322231/209724851-b4f27ea0-9ad4-4217-b441-76008834c743.jpg)
 
-Here's an easy to digest pinout where the hard traces are connected. You still must use the Pico's GP# to access them. There are no board.#'s built-in like with most Adafruit boards because this board uses the stock Circuit Python Pi Pico UF2... which makes updating the Pico to the latest versions a breeze from CircuitPython.org/downloads
+Here's an easy to digest pinout where the hard traces are connected. You still must use the Pico's GP# to access them. There's board.I2C scheme on the Pico like with Adafruit boards like the Feather. The TR-Cowbell uses the stock Circuit Python Pi Pico UF2... which makes updating the Pico to the latest firmware version a breeze from CircuitPython.org/downloads
 
 ![Pi_Pico_TR-Cowbell_v1 2_Pinouts](https://user-images.githubusercontent.com/49322231/209758656-4a6b348c-e658-4575-bb5c-c633fbf357ce.png)
 
