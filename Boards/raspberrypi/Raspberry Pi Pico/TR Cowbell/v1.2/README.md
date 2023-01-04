@@ -27,7 +27,11 @@ Here's an easy to digest pinout, where hard traces are connected. You still must
 
 ### Issues
 - Stemma port & breakout are non-functional due to each MCP23017 chip using both buses. This also means the only way to use I2C is by tapping into an existing bus preferably by using a stacking header on GP10 & GP11. Currently might as well consider all I2C hardwired to pins GP10/11 and GP12/13. Working on a bodge fix.
-- MIDI Out TX is on the tip, power on ring. Sleeve is ground for both Midi ports. MIDI in RX receives cathode data from the optocoupler on the tip and the annode is the ring. However, there might be a design flaw with the way I wired the optocoupler itself. Midi in & out ports are completely untested.
+- MIDI Out TX is on the tip, power on ring. Sleeve is ground for both Midi ports. 
+- MIDI In RX receives data on the ring and cathode goes back to the tip. This might be backwards.
+- There are [2 different versions of MIDI cables out there. Type A & Type B.](https://minimidi.world/) It would be beneficial to get one of each for testing the ports or make a custom one using a standard 3.5mm stereo plug.
+- Midi In requires a Type A and Midi Out requires a Type B.
+- There might be a design flaw with the way I wired the optocoupler itself. I never got that far. Midi in & out ports are completely untested.
 
 # BOM (Bill of Materials)
 ### For basic USB MIDI functionality:
