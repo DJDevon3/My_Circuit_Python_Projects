@@ -32,5 +32,4 @@ The beauty of Circuit Python is when there is an update
 
 ### Extra's
 1. I highly recommend using the included stacking headers for easy GPIO breakouts.
-2. Some beta testers will have missing extra components as I ran out of parts. All core components required to get the board working are included.
-3. Some kits came with an SSD1306 display. There is different example code in the repo for a board with or without a display.
+2. Some beta testers will have missing extra components as I ran out of parts. All core components required to get the board working are included. Some kits came with an SSD1306 display. There is different example code in the repo for a board with or without a display.
