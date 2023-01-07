@@ -8,7 +8,7 @@ There are 3 steps that are highly recommended for all existing TR-Cowbell v1.2 o
 
 The order in which these 3 modifications are done doesn't matter as long as all 3 are done.
 
-- Trace Cut
+- Trace Cut (if you're a new owner and there's a purple blob there it's already been done for you)
 
 ![Trace Cut](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/raspberrypi/Raspberry%20Pi%20Pico/TR%20Cowbell/v1.2%20Hardware%20I2C%20Bus%20Fix/Trace_Cut.jpg)
 
