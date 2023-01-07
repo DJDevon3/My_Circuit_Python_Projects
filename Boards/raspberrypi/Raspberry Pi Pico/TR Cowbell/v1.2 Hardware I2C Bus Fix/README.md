@@ -1,4 +1,6 @@
 ### I2C Bus Fix
+[Long form YouTube video detailing the steps here](https://www.youtube.com/watch?v=9BEkuAYmjx0) if you're more comfortable seeing someone else walk through the fix.
+
 There are 3 steps that are highly recommended for all existing TR-Cowbell v1.2 owners. Any future v1.2 boards going out to new owners will already have the traces cut.
 
 The order in which these 3 modifications are done doesn't matter as long as all 3 are done.
