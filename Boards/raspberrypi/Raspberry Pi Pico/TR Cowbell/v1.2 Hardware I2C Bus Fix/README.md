@@ -26,3 +26,5 @@ This only applies to the left multiplexer chip. The right multiplexer chip shoul
 - Both multiplxers will be on a single bus. Bus I2C0. The first multiplexer will have the address 0x21 and the second will be 0x20.
 - Completely frees up I2C Bus 1 (any pin on I2C1 becomes available).
 - Allows the Stemma QT port and Stemma breakout to work on pins GP27 & GP26.
+
+### The board is now complete and ready for Circuit Python use.
