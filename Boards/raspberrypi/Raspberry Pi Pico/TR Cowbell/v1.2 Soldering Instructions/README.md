@@ -8,7 +8,7 @@
 2. The 16x 500 ohm resistors are actually 68 Ohm resistors. It's all I had. 68 ohms works fine even while all lit up simultaneously for hours. It's just a bit brighter. If you want to substitute higher resistor values for dimmer LED's by all means do.
 3. All female header sockets & stacking headers on the Pico W.
 4. Solder both 28-pin female DIP sockets to the board. When finished press fit the MCP23017 chips into them.
-5. Solder jump only the first 2 I2C address pads to GND for the left multiplexer chip (the reason why detailed in step 11). 
+5. Solder jump only the first 2 I2C address pads to GND for the left multiplexer chip (the reason why detailed in step 12). 
 6. The second multiplexer chip should have all 3 I2C address pads soldered to the GND pads.
 7. The 8-pin optoisolator chip (no DIP socket included) must be soldered directly to the board.
 8. Do not attempt to pre-tin the pads for the TRS midi jacks. There are alignment holes. Press fit the jacks and solder in place.
