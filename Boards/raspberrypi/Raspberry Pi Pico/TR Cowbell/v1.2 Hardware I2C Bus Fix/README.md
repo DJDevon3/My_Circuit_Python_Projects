@@ -11,7 +11,9 @@ The order in which these 3 modifications are done doesn't matter as long as all 
 
 ![Chip to Chip Bodge Wire](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/raspberrypi/Raspberry%20Pi%20Pico/TR%20Cowbell/v1.2%20Hardware%20I2C%20Bus%20Fix/Chip-to-chip_Bus_Fix.jpg)
 
-- I2C Address Change
+- I2C Address Change for Multiplexer Chip
+
+This only applies to the left multiplexer chip. The right multiplexer chip should have all 3 pads soldered to GND.
 
 ![I2C Address Change](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/raspberrypi/Raspberry%20Pi%20Pico/TR%20Cowbell/v1.2%20Hardware%20I2C%20Bus%20Fix/Address_Fix.jpg)
 
