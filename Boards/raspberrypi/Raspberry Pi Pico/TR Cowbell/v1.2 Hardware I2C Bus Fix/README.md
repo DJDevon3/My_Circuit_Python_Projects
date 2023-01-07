@@ -18,4 +18,4 @@ The order in which these 3 modifications are done doesn't matter as long as all 
 ### Result
 Both multiplxers will be on a single bus. Bus I2C0. The first multiplexer will have the address 0x21 and the second will be 0x20.
 
-This completely frees up I2C Bus 1 (any pin on I2C1 becomes available) plus allows the Stemma QT and Stemma breakout to work.
+This completely frees up I2C Bus 1 (any pin on I2C1 becomes available) plus allows the Stemma QT and Stemma breakout to work on pins GP27 & GP26.
