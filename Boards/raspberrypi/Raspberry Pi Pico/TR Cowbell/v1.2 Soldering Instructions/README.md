@@ -15,7 +15,7 @@
 9. 4.7K and remaining resistors and small round capacitor.
 10. Rotary encoder. The large legs require a ton of solder, you'll find the small GND pins just as hard to solder as the step switch GND pins. Without a lot of heat you'll get cold joints and intermittent connection.
 11. 6mm buttons legs can only be installed in the correct orientation, kind of dummy proof, same for Pico Reset button.
-12. After the board is complete then some [bodge fixes for the I2C bus design flaw fixes must be done](https://github.com/DJDevon3/My_Circuit_Python_Projects/tree/main/Boards/raspberrypi/Raspberry%20Pi%20Pico/TR%20Cowbell/v1.2%20Hardware%20I2C%20Bus%20Fix).
+12. After the board is complete then some [bodge fixes for the I2C bus design flaw must be done](https://github.com/DJDevon3/My_Circuit_Python_Projects/tree/main/Boards/raspberrypi/Raspberry%20Pi%20Pico/TR%20Cowbell/v1.2%20Hardware%20I2C%20Bus%20Fix).
 
 ### Installing Circuit Python
 With all soldering complete head over to CircuitPython.org/downloads and get the 8.0 beta release for the Pi Pico W. 
