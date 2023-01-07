@@ -6,7 +6,7 @@
 ![Step_Switch_Soldering](https://user-images.githubusercontent.com/49322231/208536970-5ecae4f0-c8e8-4ae8-b795-24cea7dcfd85.jpg)
 
 2. The 16x 500 ohm resistors are actually 68 Ohm resistors. It's all I had. 68 ohms works fine even while all lit up simultaneously for hours. It's just a bit brighter. If you want to substitute higher resistor values for dimmer LED's by all means do.
-3. All female header sockets & stacking headers on the Pico W.
+3. All female header sockets on the PCB & stacking headers on the Pico W. I highly recommend using the included stacking headers for easy GPIO breakouts on any pin.
 4. Solder both 28-pin female DIP sockets to the board. When finished press fit the MCP23017 chips into them.
 5. Solder jump only the first 2 I2C address pads to GND for the left multiplexer chip (the reason why detailed in step 12). 
 6. The second multiplexer chip should have all 3 I2C address pads soldered to the GND pads.
@@ -31,5 +31,4 @@ The beauty of Circuit Python is when there is an update
 3. You can submit PR's for code examples, improvements, bugs, issues, etc.. right here through Github. Simply clone the repo and push a PR the same as you'd do for Circuit Python Github.
 
 ### Extra's
-1. I highly recommend using the included stacking headers for easy GPIO breakouts.
-2. Some beta testers will have missing extra components as I ran out of parts. All core components required to get the board working are included. Some kits came with an SSD1306 display. There is different example code in the repo for a board with or without a display.
+- Some beta testers will have missing extra components as I ran out of parts. All core components required to get the board working are included. Some kits came with an SSD1306 display. There is different example code in the repo for a board with or without a display.
