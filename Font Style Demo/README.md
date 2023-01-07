@@ -8,7 +8,7 @@
 I've figured out how to create drop shadow and outline font styles from scratch using
 Adafruit's displayio tilegrid (x,y) coordinate system. This type of font styling is 100% impossible on Arduino with existing graphic libraries.
 This is just one of hundreds of reasons for everyone to port their existing Arduino sketches to circuit python.
-At least when it comes to TFT displays, graphics and GUI design, circuit python is far superior to Arduino.
+This demonstrates for TFT displays, graphics and GUI design, circuit python is far superior to Arduino.
 
 # Bitmap Font Love/Hate Relationship
 Bitmap fonts don't scale up well without pixelation and you cannot scale down a font lower than 1. 
