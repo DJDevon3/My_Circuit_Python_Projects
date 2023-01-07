@@ -1,4 +1,4 @@
-# ![](https://raw.githubusercontent.com/DJDevon3/CircuitPython/main/Flock%20Box%20Enclosure/flock_box_logo_transparent.png)
+# ![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Flock%20Box%20Enclosure/flock_box_logo_transparent.png)
 - a generic project enclosure for the adafruit feather ecosystem
 - designed for 3.5" TFT display featherwing
 - 3D printing and design by JuanOnJuan on Adafruit Discord
