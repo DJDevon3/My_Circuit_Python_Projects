@@ -16,6 +16,6 @@ The order in which these 3 modifications are done doesn't matter as long as all 
 ![I2C Address Change](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/raspberrypi/Raspberry%20Pi%20Pico/TR%20Cowbell/v1.2%20Hardware%20I2C%20Bus%20Fix/Address_Fix.jpg)
 
 ### Result
-Both multiplxers will be on a single bus. The first multiplexer will have the address 0x21 and the second will be 0x20.
+Both multiplxers will be on a single bus. Bus I2C0. The first multiplexer will have the address 0x21 and the second will be 0x20.
 
 This completely frees up I2C Bus 1 (any pin on I2C1 becomes available) plus allows the Stemma QT and Stemma breakout to work.
