@@ -1,0 +1,25 @@
+>>> help("modules")
+__future__        collections       neopixel          terminalio
+__main__          countio           neopixel_write    time
+_asyncio          digitalio         onewireio         touchio
+_bleio            displayio         os                traceback
+adafruit_bus_device                 dualbank          ps2io             ulab
+adafruit_bus_device.i2c_device      errno             pulseio           ulab
+adafruit_bus_device.spi_device      espidf            pwmio             ulab.fft
+adafruit_pixelbuf fontio            rainbowio         ulab.linalg
+aesio             framebufferio     random            ulab.numpy
+alarm             frequencyio       re                ulab.scipy
+analogio          gc                rgbmatrix         ulab.scipy.linalg
+array             getpass           rotaryio          ulab.scipy.optimize
+atexit            gifio             rtc               ulab.scipy.signal
+audiobusio        i2cperipheral     sdcardio          ulab.scipy.special
+audiocore         io                select            ulab.utils
+audiomixer        ipaddress         sharpdisplay      usb_cdc
+binascii          json              socketpool        usb_hid
+bitbangio         keypad            ssl               usb_midi
+bitmaptools       math              storage           uselect
+board             mdns              struct            vectorio
+builtins          microcontroller   supervisor        watchdog
+busio             micropython       synthio           wifi
+canio             msgpack           sys               zlib
+Plus any modules on the filesystem
