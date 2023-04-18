@@ -1,0 +1,11 @@
+AP_SSID = "Your Wifi SSID"
+AP_PASSWORD = "Your Wifi Password"
+timezone = "America/New_York" # Check http://worldtimeapi.org/timezones
+timezone_offset = "-14400" # timezone offset in seconds plus or minus
+steam_id = "xxxxxxxxxxxxxxx"
+steam_name = "Your Steam Account Name"
+steam_api_key = "xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+game_appid = "xxxxxxx"  #Game AppID
+wishlist_start_date = "2018-01-25"
+wishlist_end_date = "2023-03-25"
+special_period = "today"
