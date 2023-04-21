@@ -2,7 +2,7 @@
 There are 2 different versions of this project.
 
 ### Example of Method 2: Python Parsing
-[![YouTubeScreenshot](https://user-images.githubusercontent.com/49322231/233665179-78a3840d-c494-4081-a876-9f877222ab74.PNG)](https://www.youtube.com/watch?v=sdJcgPCqKFE)
+[![YouTubeScreenshot](https://user-images.githubusercontent.com/49322231/233666226-39a74c38-475c-45a7-a338-b4ceaca4aa9e.PNG)](https://www.youtube.com/watch?v=sdJcgPCqKFE)
 
 ### (Method 1) CSV Parsing on the Microcontroller
 - This example only parses 1 CSV file because a microcontroller cannot handle much data. 
