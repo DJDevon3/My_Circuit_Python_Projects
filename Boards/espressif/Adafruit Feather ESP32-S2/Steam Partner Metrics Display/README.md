@@ -22,4 +22,4 @@ There are 2 different versions of this project.
 - This is by far the faster and more efficient method.
 
 ### 3D Printed Enclosure
-[Download available on my Printables page](https://www.printables.com/model/443221-adafruit-alphanumeric-backpack-enclosure)
+[Downloadable STL files available on my Printables page](https://www.printables.com/model/443221-adafruit-alphanumeric-backpack-enclosure)
