@@ -28,7 +28,7 @@ There are 2 different versions of this project.
 - 1 [Adafruit Feather ESP32-S2](https://www.adafruit.com/product/5000) $17.50
 - 2 [Adafruit Alphanumeric Display Backpacks](https://www.adafruit.com/product/1912) $14x2
 - 1 [150mah Lipo Battery](https://www.adafruit.com/product/1317) $6
-- 1 [Mini Latching On/Off Switch](https://www.amazon.com/dp/B086L2GPGX) $11
+- 1 [Mini Latching On/Off Switch (50 pieces)](https://www.amazon.com/dp/B086L2GPGX) $11
 - 1 [Polymaker Dual-Silk PLA (Blue-Green)](https://www.amazon.com/dp/B0BF55RCF5) $30
 - -------------------------
 - Cost: $92.50
