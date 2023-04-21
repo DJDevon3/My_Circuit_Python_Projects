@@ -20,3 +20,6 @@ There are 2 different versions of this project.
 - Exports a .json file to Adafruit Feather ESP32-S2 microcontroller as a 200 byte file which it can parse instantly.
 - Displays updated data on alphanumeric display
 - This is by far the faster and more efficient method.
+
+### 3D Printed Enclosure
+[Download available on my Printables page](https://www.printables.com/model/443221-adafruit-alphanumeric-backpack-enclosure)
