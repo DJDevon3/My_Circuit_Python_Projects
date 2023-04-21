@@ -1,4 +1,4 @@
-## Windows Task Scheduler & Batch Script Setup
+## (Method 1) Windows Task Scheduler & Batch Script Setup
 - This method will use the microcontroller to parse a CSV file for 1 game title
 
 ### Create a Scheduled Task
