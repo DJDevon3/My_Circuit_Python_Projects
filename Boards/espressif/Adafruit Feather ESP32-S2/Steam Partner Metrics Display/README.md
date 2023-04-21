@@ -16,6 +16,7 @@ There are 2 different versions of this project.
 - This example downloads & parses 10 CSV files (as a demo). 
 - Uses a task scheduled batch script which executes a python CSV parsing script.
 - Required: user logged into Steam Partner portal using MSEdge with the appropriate permissions to download the metric data
+- Required: Python installed on the PC with batch script configured to the Python launch location
 - Exports a .json file to Adafruit Feather ESP32-S2 microcontroller as a 200 byte file which it can parse instantly.
 - Displays output on alphanumeric display
 - This is by far the faster and more efficient method.
