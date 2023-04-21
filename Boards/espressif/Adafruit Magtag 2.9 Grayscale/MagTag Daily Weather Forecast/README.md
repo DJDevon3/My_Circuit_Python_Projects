@@ -9,4 +9,4 @@ I absolutely love my Magtag. Its deep sleep ability is unrivaled among any devic
 
 With a 10000mah battery (triple 18650 pack) it ran for 3 months without needing a recharge, updating the weather once per day.
 
-Thief River Falls is Digikey's HQ
+Thief River Falls, Minnesota is Digikey's HQ
