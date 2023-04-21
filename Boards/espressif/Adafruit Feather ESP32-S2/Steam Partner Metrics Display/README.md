@@ -1,9 +1,8 @@
 # Steam Partner Metrics Display Demo
-
-![vlcsnap-2023-04-01-14h19m02s748](https://user-images.githubusercontent.com/49322231/232206766-70ba77bf-ca96-45cc-a6e1-faad5edabf66.png)
-
-
 There are 2 different versions of this project.
+
+### Example of Method 2: Python Parsing
+[![YouTubeScreenshot](https://user-images.githubusercontent.com/49322231/233665179-78a3840d-c494-4081-a876-9f877222ab74.PNG)](https://www.youtube.com/watch?v=sdJcgPCqKFE)
 
 ### (Method 1) CSV Parsing on the Microcontroller
 - This example only parses 1 CSV file because a microcontroller cannot handle much data. 
@@ -21,6 +20,3 @@ There are 2 different versions of this project.
 - Exports a .json file to Adafruit Feather ESP32-S2 microcontroller as a 200 byte file which it can parse instantly.
 - Displays updated data on alphanumeric display
 - This is by far the faster and more efficient method.
-
-### Example of Method 2: Python CSV Parsing
-[YouTube Demo](https://www.youtube.com/watch?v=sdJcgPCqKFE)
