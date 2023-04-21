@@ -30,5 +30,10 @@ There are 2 different versions of this project.
 - 1 [150mah Lipo Battery](https://www.adafruit.com/product/1317) $6
 - 1 [Mini Latching On/Off Switch](https://www.amazon.com/dp/B086L2GPGX) $11
 - 1 [Polymaker Dual-Silk PLA (Blue-Green)](https://www.amazon.com/dp/B0BF55RCF5) $30
+- -------------------------
 - Cost: $92.50
 - Total Cost with S&H: $115
+- -------------------------
+- Code Development time: 20 hours
+- 3D Modeling time: 30 hours
+- 3D printing time per device: 7 hours
