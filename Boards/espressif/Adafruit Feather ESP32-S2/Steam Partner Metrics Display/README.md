@@ -23,3 +23,12 @@ There are 2 different versions of this project.
 
 ### 3D Printed Enclosure
 [Downloadable STL files available on my Printables page](https://www.printables.com/model/443221-adafruit-alphanumeric-backpack-enclosure)
+
+### Bill of Materials
+- 1 [Adafruit Feather ESP32-S2](https://www.adafruit.com/product/5000) $17.50
+- 2 [Adafruit Alphanumeric Display Backpacks](https://www.adafruit.com/product/1912) $14x2
+- 1 [150mah Lipo Battery](https://www.adafruit.com/product/1317) $6
+- 1 [Mini Latching On/Off Switch](https://www.amazon.com/dp/B086L2GPGX) $11
+- 1 [Polymaker Dual-Silk PLA (Blue-Green)](https://www.amazon.com/dp/B0BF55RCF5) $30
+- Cost: $92.50
+- Total Cost with S&H: $115
