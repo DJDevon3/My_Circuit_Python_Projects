@@ -10,7 +10,7 @@ There are 2 different versions of this project.
 - Uses a task scheduled batch script to download the report
 - Required: user logged into Steam Partner portal using MSEdge with the appropriate permissions to download the metric data
 - Exports 1 CSV file to the Adafruit Feather ESP32-S2 microcontroller which it then parses (this can take a long time).
-- Displays output on alphanumeric display
+- Displays updated data on alphanumeric display
 
 ### (Method 2) CSV Parsing with Python, Export JSON to Microcontroller
 - This example downloads & parses 10 CSV files (as a demo). 
@@ -19,7 +19,7 @@ There are 2 different versions of this project.
 - Required: user logged into Steam Partner portal using MSEdge with the appropriate permissions to download the metric data
 - Required: Python installed on the PC with batch script configured to the Python launch location
 - Exports a .json file to Adafruit Feather ESP32-S2 microcontroller as a 200 byte file which it can parse instantly.
-- Displays output on alphanumeric display
+- Displays updated data on alphanumeric display
 - This is by far the faster and more efficient method.
 
 ### Example of Method 2: Python CSV Parsing
