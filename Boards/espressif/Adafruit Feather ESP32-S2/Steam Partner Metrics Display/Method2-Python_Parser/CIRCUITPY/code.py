@@ -1,39 +1,37 @@
-# SPDX-FileCopyrightText: 2022 DJDevon3
+# SPDX-FileCopyrightText: 2023 DJDevon3
 # SPDX-License-Identifier: MIT
 # Coded for Circuit Python 8.0
-# DJDevon3 Steam_CSV_Wishlist_Parser
+# JSON_File_Parser
+
 import os
 import time
 import board
 import busio
 import json
 from adafruit_ht16k33 import segments
-import adafruit_tca9548a
 
-# Reads a specifically named CSV file /CSV/SteamWishlists_xxxxxx_all.csv
-# File is updated daily by the batch script so it's always the same filename
-# with updated data and moved to this device's CSV directory.
+# Reads JSON file /JSON/Wishlists.json
+# File is updated daily by accompanying Windows batch script
+# Ensure batch script is pointing at USB drive letter for CIRCUITPY device
 
 Wishlist_path = "/JSON/Wishlists.json"  # directory for CSV's just in case
 
 # Initialize I2C 14-Segment Display
-i2c = board.I2C()
-display = segments.Seg14x4(board.I2C())
-tca = adafruit_tca9548a.TCA9548A(i2c)
-blue = segments.Seg14x4(tca[0], address=(0x71,0x72))
+i2c = board.STEMMA_I2C()
+blue = segments.Seg14x4(i2c, address=(0x71,0x72))
 blue.brightness = 0.5
 
 with open(Wishlist_path, 'r') as openfile:
     json_object = json.load(openfile)
 
-print_all = True  # Show full JSON response (for debugging)
+print_all = True  # Show full JSON serial response (for debugging)
 if print_all:
     print(json_object)
 
 while True:
-    # Show on blue 14-Segment Display
+    # Show on blue alphanumeric display
     blue.fill(0)
-    blue.marquee("ALL TIME ADDS", loop=False)  # Intentionally generic demo
+    blue.marquee("ALL TIME ADDS", loop=False)  # Intentionally generic
     time.sleep(3)
 
     blue.fill(0)
