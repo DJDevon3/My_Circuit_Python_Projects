@@ -14,7 +14,7 @@ from adafruit_ht16k33 import segments
 # File is updated daily by accompanying Windows batch script
 # Ensure batch script is pointing at USB drive letter for CIRCUITPY device
 
-Wishlist_path = "/JSON/Wishlists.json"  # directory for CSV's just in case
+Wishlist_path = "/JSON/Wishlists.json"  # directory for JSON file just in case
 
 # Initialize I2C 14-Segment Display
 i2c = board.STEMMA_I2C()
