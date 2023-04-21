@@ -34,7 +34,7 @@ https://user-images.githubusercontent.com/49322231/227807810-f3f5ae5a-ba3e-4756-
 ### HT16K33 I2C Conflict with PCA9548 Multiplexers
 Segmented backpacks shared an identical I2C address range of 0x70-0x77 with the PCA9548 multiplexers. This means you can only use a maximum of 4 multiplexers before you start running into conflicts. Here's my recommended setup that will maximize the amount of backpacks you can use.  Keep in mind this is PER I2C BUS. Most of Adafruit's microcontrollers allow for 2 I2C busses so you would basically multiply what you see in the graphic times four. The theoretical maximum amount of devices is in the hundreds. Obviously, that should be plenty for just about any project you can think of and if it's not then what in the heck are you building!?!? You'll run into power delivery issues long before you max out the I2C bus communication limit.
 
-### Below Example Image
+### Example of Maximum Multiplexer Arrangement
 I'm only showing half of each multiplexer channels used because... it's a ridiculously big enough graphic as it is. Hopefully you get the point of how to add tons of 7 segment displays even with the conflicting address space. The maximum amount of devices with this setup is 256 backpacks using 2 I2C buses.
 
 ![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/espressif/Adafruit%20Feather%20ESP32-S2/7-segment%20Multiplexed%20Social/Adafruit_Multiplexed_Backpacks.png)
