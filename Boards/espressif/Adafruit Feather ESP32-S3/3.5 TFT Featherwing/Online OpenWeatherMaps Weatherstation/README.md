@@ -1,4 +1,5 @@
-![screenshot](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/espressif/Adafruit%20Feather%20ESP32-S3/3.5%20TFT%20Featherwing/Online%20OpenWeatherMaps%20Weatherstation/demo_screenshot.bmp)
+![demo_screenshot](https://user-images.githubusercontent.com/49322231/233815371-19b1c5f6-cf27-47f6-a292-5fcefac40acc.jpg)
+
 - Labels in blue are from online data (Adafruit HQ in NY), orange is local sensors (Florida).
 - Default online lat/lon is set to Adafruit HQ location
 
