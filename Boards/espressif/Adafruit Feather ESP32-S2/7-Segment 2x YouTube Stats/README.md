@@ -1,9 +1,9 @@
-![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/espressif/Adafruit%20Feather%20ESP32-S2/7-Segment%202x%20YouTube%20Stats/YouTube_Stats_Screenshot.JPG)
-
 # Dual 7-Segment Backpack YouTube Stats (for ESP32-S2)
 - pulls info from YouTube API in JSON format
 - parses JSON data to a format circuit python can display
 - displays your channel data on double 7-segment backpack display (from Adafruit)
+
+![YouTube_Stats_Screenshot](https://user-images.githubusercontent.com/49322231/233680295-88db7074-7cb7-42c8-a014-0a88cd4438e2.JPG)
 
 ## Hardware Used:
 - [1 Adafruit Feather ESP32-S2](https://www.adafruit.com/product/5000)

@@ -1,7 +1,7 @@
 # Adafruit Feather ESP32-S2
 Social Media Tracker Project
 
-![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/espressif/Adafruit%20Feather%20ESP32-S2/7-segment%208x%20Social%20Media%20Tracker/social_media_tracker_finished.png)
+![social_media_tracker_finished](https://user-images.githubusercontent.com/49322231/233679856-40594bbd-f7d9-4849-871c-4ca76fb4e0ff.png)
 
 ### Software Requirement:
 - Youtube API Developer Account Token
