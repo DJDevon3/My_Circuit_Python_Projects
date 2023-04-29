@@ -179,10 +179,10 @@ secrets = {
 ```
 
 ## Common Settings.toml Config (Circuit Python 8.0+)
-Circuit Python now uses a Settings.toml file (also created web workflow automatically)
+Circuit Python now uses a Settings.toml file (also creates web workflow automatically)
 ```py
-AP_SSID = "Your Wifi SSID"
-AP_PASSWORD = "Your WiFi Password"
+AP_SSID = "Your Wifi SSID"  # Special variable recognized by web workflow
+AP_PASSWORD = "Your WiFi Password"  # Special variable recognized by web workflow
 timezone = "America/New_York" # Check http://worldtimeapi.org/timezones
 aio_username = "Your AdafruitIO Username"
 aio_key = "Your AdafruitIO Token"
