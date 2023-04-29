@@ -179,7 +179,7 @@ secrets = {
 ```
 
 ## Common Settings.toml Config (Circuit Python 8.0+)
-Circuit Python now uses a Settings.toml file (hidden file type by some OS's)
+Circuit Python now uses a Settings.toml file (also created web workflow automatically)
 ```py
 AP_SSID = "Your Wifi SSID"
 AP_PASSWORD = "Your WiFi Password"
