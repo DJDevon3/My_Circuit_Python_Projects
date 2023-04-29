@@ -1,4 +1,4 @@
-![demo_screenshot](https://user-images.githubusercontent.com/49322231/233815371-19b1c5f6-cf27-47f6-a292-5fcefac40acc.jpg)
+![screenshot](https://user-images.githubusercontent.com/49322231/235323187-4bcce094-0927-4b9e-b5cf-2646f0b6944d.jpg)
 
 - Labels in blue are from online data (Adafruit HQ in NY), orange is local sensors (Florida).
 - Default online lat/lon is set to Adafruit HQ location
