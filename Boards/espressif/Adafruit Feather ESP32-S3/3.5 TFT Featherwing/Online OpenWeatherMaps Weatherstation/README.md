@@ -39,13 +39,13 @@ Attempting to GET Weather!
 
 ===============================
 OpenWeather Success
-Timestamp: 2023/04/16 03:40
-Sunrise: 06:15
-Sunset: 19:35
-Temp: 58.3
-Pressure: 1011
+Timestamp: 2023/04/29 16:44
+Sunrise: 05:57
+Sunset: 19:49
+Temp: 51.89
+Pressure: 1010
 Humidity: 93
-Weather Type: Mist
+Weather Type: Rain
 
 Next Update in 15 minutes
 ===============================
