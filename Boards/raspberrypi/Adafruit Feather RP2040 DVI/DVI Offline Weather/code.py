@@ -33,7 +33,7 @@ TEXT_RED = 0xFF0000
 TEXT_WHITE = 0xFFFFFF
 TEXT_YELLOW = 0xFFFF00
 
-# Fonts are optional
+# Fonts
 medium_font = bitmap_font.load_font("/fonts/Arial-16.bdf")
 huge_font = bitmap_font.load_font("/fonts/GoodTimesRg-Regular-80.bdf")
 
@@ -144,18 +144,17 @@ def hide_warning():
 
 while True:
     hello_label.text = "Adafruit Feather RP2040 DVI Offline Weather"
-
+    
     # Account for PCB heating bias, gets slightly hotter as ambient increases
     temperature = dps310.temperature * 1.8 + 32
     temperature = round(temperature, 1)
     pressure = dps310.pressure
-
+    
     # print("Temp: ", temperature) # biased reading
     # Attempt to fix bias board heating
     display_temperature = temperature - 9.3
-    # print("Temp Scalar DEFAULT: ")
     # print(f"Actual Temp: {display_temperature:.1f}")
-
+    
     temp_label.text = "°F"
     temp_data_shadow.text = f"{display_temperature:.1f}"
     temp_data_label.text = f"{display_temperature:.1f}"
