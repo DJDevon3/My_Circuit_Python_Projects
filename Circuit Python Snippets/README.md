@@ -57,6 +57,57 @@ code.py output:
 
 `Calc Time:  15 minutes`
 
+## Temp sensor bias adjustment (BME280)
+```py
+# Account for PCB heating bias, gets slightly hotter as ambient increases
+    temperature = bme280.temperature * 1.8 + 32
+    temperature = round(temperature, 1)
+    print("Temp: ", temperature) # biased reading
+    if temperature >= 110.0:
+        display_temperature = temperature -8
+        print("Temp Scalar Over 110: ")
+    elif 100.0 <= temperature <= 109.9:
+        display_temperature = temperature -7
+        print("Temp Scalar 100: ")
+    elif 90.0 <= temperature <= 99.9:
+        display_temperature = temperature -6
+        print("Temp Scalar 90: ")
+    elif 82.0 <= temperature <= 89:
+        display_temperature = temperature -5
+        print("Temp Scalar 82: ")
+    # biased 81.0 needs to be 79
+    elif 81.0 <= temperature <= 81.9:
+        display_temperature = temperature -3.2
+        print("Temp Scalar 81: ")
+    # biased 80.9 needs to be 78
+    elif 80.0 <= temperature <= 80.9:
+        display_temperature = temperature -3
+        print("Temp Scalar 80: ")
+    elif 79.0 <= temperature <= 79.9:
+        display_temperature = temperature -2.7
+        print("Temp Scalar 79: ")
+    elif 70.0 <= temperature <= 78.9:
+        display_temperature = temperature -2.5
+        print("Temp Scalar 70: ")
+    elif 60.0 <= temperature <= 69.9:
+        display_temperature = temperature -2
+        print("Temp Scalar 60: ")
+    elif 50.0 <= temperature <= 59.9:
+        display_temperature = temperature -1
+        print("Temp Scalar 50: ")
+    else:
+        display_temperature = temperature
+        print("Temp Scalar DEFAULT: ")
+
+    print(f"Actual Temp: {display_temperature:.1f}")
+```
+ Output:
+ ```py
+Temp:  80.6
+Temp Scalar 80: 
+Actual Temp: 77.6
+```
+
 ## Get Time from Online (ESP32-S2)
 For boards with WiFi and no RTC
 ```py
@@ -179,10 +230,10 @@ secrets = {
 ```
 
 ## Common Settings.toml Config (Circuit Python 8.0+)
-Circuit Python now uses a Settings.toml file (hidden file type by some OS's)
+Circuit Python now uses a Settings.toml file (also creates web workflow automatically)
 ```py
-AP_SSID = "Your Wifi SSID"
-AP_PASSWORD = "Your WiFi Password"
+AP_SSID = "Your Wifi SSID"  # Special variable recognized by web workflow
+AP_PASSWORD = "Your WiFi Password"  # Special variable recognized by web workflow
 timezone = "America/New_York" # Check http://worldtimeapi.org/timezones
 aio_username = "Your AdafruitIO Username"
 aio_key = "Your AdafruitIO Token"
@@ -271,3 +322,4 @@ if TAKE_SCREENSHOT:
     print("Screenshot Taken")
     time.sleep(180.0)
 ```
+

@@ -1,7 +1,10 @@
-![demo_screenshot](https://user-images.githubusercontent.com/49322231/233815371-19b1c5f6-cf27-47f6-a292-5fcefac40acc.jpg)
-
+![screenshot](https://user-images.githubusercontent.com/49322231/235323187-4bcce094-0927-4b9e-b5cf-2646f0b6944d.jpg)
 - Labels in blue are from online data (Adafruit HQ in NY), orange is local sensors (Florida).
-- Default online lat/lon is set to Adafruit HQ location
+- Default online lat/lon is set to Adafruit HQ location, ideally you'd also this this to your location
+ 
+ Storm Warning Example:
+ This is a screenshot from a local weatherstation (not included in the script) just the weatherstation's website screenshot to show the storm warning I built in does in fact work well for a notification of incoming storms.
+![Capture](https://user-images.githubusercontent.com/49322231/235323256-1daa61f0-caa2-432b-9cb6-3666e063a1fc.JPG)
 
 # Online/Offline OpenWeatherMaps Weatherstation (for ESP32-S3)
 - pulls info from OpenWeatherMaps in JSON format to display
@@ -36,13 +39,13 @@ Attempting to GET Weather!
 
 ===============================
 OpenWeather Success
-Timestamp: 2023/04/16 03:40
-Sunrise: 06:15
-Sunset: 19:35
-Temp: 58.3
-Pressure: 1011
+Timestamp: 2023/04/29 16:44
+Sunrise: 05:57
+Sunset: 19:49
+Temp: 51.89
+Pressure: 1010
 Humidity: 93
-Weather Type: Mist
+Weather Type: Rain
 
 Next Update in 15 minutes
 ===============================
