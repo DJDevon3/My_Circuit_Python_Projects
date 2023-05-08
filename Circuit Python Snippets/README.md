@@ -103,9 +103,9 @@ code.py output:
 ```
  Output:
  ```py
-Temp:  80.8
+Temp:  80.6
 Temp Scalar 80: 
-Temperature Adjustment : 77.8
+Actual Temp: 77.6
 ```
 
 ## Get Time from Online (ESP32-S2)
