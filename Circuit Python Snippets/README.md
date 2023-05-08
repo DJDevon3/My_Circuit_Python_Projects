@@ -99,7 +99,7 @@ code.py output:
         display_temperature = temperature
         print("Temp Scalar DEFAULT: ")
 
-    print(f"{display_temperature:.1f}")
+    print(f"Actual Temp: {display_temperature:.1f}")
 ```
  Output:
  ```py
