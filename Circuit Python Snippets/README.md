@@ -72,14 +72,20 @@ code.py output:
     elif 90.0 <= temperature <= 99.9:
         display_temperature = temperature -6
         print("Temp Scalar 90: ")
-    elif 82.0 <= temperature <= 89:
-        display_temperature = temperature -5
+    elif 84.0 <= temperature <= 89.9:
+        display_temperature = temperature -2
+        print("Temp Scalar 84: ")
+    elif 83.0 <= temperature <= 83.9:
+        display_temperature = temperature -3
+        print("Temp Scalar 83: ")
+    elif 82.0 <= temperature <= 82.9:
+        display_temperature = temperature -3.1
         print("Temp Scalar 82: ")
-    # biased 81.0 needs to be 79
+    # biased 81.0 biased needs to be 79
     elif 81.0 <= temperature <= 81.9:
         display_temperature = temperature -3.2
         print("Temp Scalar 81: ")
-    # biased 80.9 needs to be 78
+    # biased 80.9 biased needs to be 78
     elif 80.0 <= temperature <= 80.9:
         display_temperature = temperature -3
         print("Temp Scalar 80: ")
