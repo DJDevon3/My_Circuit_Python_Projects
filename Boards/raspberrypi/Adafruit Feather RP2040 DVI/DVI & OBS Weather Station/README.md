@@ -57,7 +57,7 @@ I have an HDMI splitter so it also outputs to a 3rd 1080p monitor but that is un
 - ![Screenshot_2023-05-12_08-27-44](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/2623a372-945e-4ac0-979d-1bf3a2b1e796)
 
 This is just a demonstration of using the Feather DVI + HDMI Capture + OBS. 
-You can use this method to create practically any combination of data sources you want without resorting to a huge MQTT or python Requests project.
+You can use this method to create practically any combination of data sources you want.
 It takes a while to manually place elements and text labels where you want using X/Y coordinates. 
 This can really extend the possibilities of what Circuit Python is capable of heading into the future. 
 
