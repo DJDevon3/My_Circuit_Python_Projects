@@ -23,7 +23,7 @@ Example of project final output:
 - Install & lauch OBS studio
 
 ### OBS Layering Advice
-- OBS Layers sources from top to bottom (top source being the top most layer)
+- OBS Layers sources from top to bottom (top source being the top most layer). You can re-order your sources (layers) with drag & drop.
 
 ### OBS Sources Setup
 - Add HDMI capture source (appears as "USB Video" device)
