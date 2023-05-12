@@ -58,8 +58,8 @@ I have an HDMI splitter so it also outputs to a 3rd 1080p monitor but that is un
 
 This is just a demonstration of using the Feather DVI + HDMI Capture + OBS. 
 You can use this method to create practically any combination of data sources you want.
-It takes a while to manually place elements and text labels where you want using X/Y coordinates. 
-This can really extend the possibilities of what Circuit Python is capable of heading into the future. 
+It takes time to manually place elements and text labels using X/Y coordinates. 
+DVI/HDMI extends the possibilities of what Circuit Python is capable of heading into the future. 
 
 ## Notes
 - Please keep in mind the output of the Feather RP2040 DVI is 320x240 then upscaled to 1080p. The upscale is about 4x to 5x the normal output. Fonts will look a little blocky when upscaled.
