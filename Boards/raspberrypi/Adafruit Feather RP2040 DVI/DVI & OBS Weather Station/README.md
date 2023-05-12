@@ -12,7 +12,7 @@
 - OBS studio streaming software
 
 Example of project final output:
-![Screenshot_2023-05-12_08-27-44](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/2623a372-945e-4ac0-979d-1bf3a2b1e796)
+[![Watch the video](https://img.youtube.com/vi/05BcstyL144/maxresdefault.jpg)](https://youtu.be/05BcstyL144)
 
 
 ### Setup
