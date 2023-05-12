@@ -43,6 +43,7 @@ I have an HDMI splitter so it also outputs to a 3rd 1080p monitor but that is un
 
 - Right-click on Source > Blending Mode > Subtract
 - This will blend the AdafruitIO dashboard onto the animated radar background
+- Blending will change the colors of elements as they'll be blended with the background colors. I've created some additive font colors in code.py that might help with blended font colors.
 ![AdafruitIO_Capture_Blending_Mode](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/9f7528a3-b510-42a4-8ff7-9e1b9dc1bf91)
 
 - Also add Blending Mode > Subtract to your HDMI capture (Feather DVI) source
