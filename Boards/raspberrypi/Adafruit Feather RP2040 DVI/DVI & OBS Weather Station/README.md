@@ -49,7 +49,7 @@ I have an HDMI splitter so it also outputs to a 3rd 1080p monitor but that is un
 ![HDMI_Capture_Blending_Mode](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/8b9ccf63-d809-47be-b83e-7fb305cdd3b7)
 
 ### 2nd Monitor example:
-- This is approximately what your 2nd monitor will look like. You cannot minimize the individual windows or they will not appear in the OBS output. 
+- This is approximately what your 2nd monitor will look like. 
 ![Monitor2_Screenshot](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/d97c2ac9-bf47-4480-aec9-26e87e68917f)
 
 ## Final Output
