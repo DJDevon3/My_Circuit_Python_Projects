@@ -1,15 +1,15 @@
 ## Feather RP2040 DVI & OBS Weather Station Overlay example
 
 ### Hardware Required:
-- Adafruit Feather RP2040 DVI
-- HDMI Capture Dongle
+- [Adafruit Feather RP2040 DVI](https://www.adafruit.com/product/5710)
+- [HDMI Capture Adapter](https://www.adafruit.com/product/4669)
 
 ### Optional Hardware Used:
-- DPS310 (temperature & pressure) Sensor
-- AHT20 (temperature & humidity) Sensor
+- [DPS310 (temperature & pressure) Sensor](https://www.adafruit.com/product/4494)
+- [AHT20 (temperature & humidity) Sensor](https://www.adafruit.com/product/4566)
 
 ### Software Required:
-- OBS studio streaming software
+- [OBS studio streaming software (Free)](https://obsproject.com/)
 
 Example of project final output:
 [![Watch the video](https://img.youtube.com/vi/05BcstyL144/maxresdefault.jpg)](https://youtu.be/05BcstyL144)
