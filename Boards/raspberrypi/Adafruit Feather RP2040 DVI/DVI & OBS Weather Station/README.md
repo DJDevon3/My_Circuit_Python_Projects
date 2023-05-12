@@ -31,14 +31,14 @@ Example of project final output:
 I have an HDMI splitter so it also outputs to a 3rd 1080p monitor but that is unnecessary just to capture the source from the HDMI dongle.
 ![Screenshot_2023-05-12_07-34-23](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/29d07055-537e-43f6-a384-8129e752276b)
 
-### Add Source > Window Capture (National Weather Service Radar)
+### Add Source > Window Capture (National Weather Service Radar browser window)
 - Add crop/pad filter 
 ![Crop-Pad_Background](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/870499eb-62a1-434c-86c2-4e4f5e2bf976)
 
 - Using crop/pad it's now cleanly cropped and displaying only the area we want to share
 ![Crop-Pad_Background_Settings](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/4e8607d9-6faf-4cf7-a62b-ef2d321b61b0)
 
-- Add Source > Window Capture (adafruitIO Dashboard)
+- Add Source > Window Capture (adafruitIO Dashboard browser window)
 ![AdafruitIO_Capture](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/37088f15-fe4d-4c7a-8513-dec5c07d3091)
 
 - Right-click on Source > Blending Mode > Subtract
