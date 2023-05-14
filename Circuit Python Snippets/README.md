@@ -57,90 +57,6 @@ code.py output:
 
 `Calc Time:  15 minutes`
 
-## Temp sensor bias adjustment (BME280)
-```py
-# Account for PCB heating bias, gets slightly hotter as ambient increases
-    temperature = bme280.temperature * 1.8 + 32
-    temperature = round(temperature, 1)
-    print("Temp: ", temperature) # biased reading
-    if temperature >= 110.0:
-        display_temperature = temperature -8
-        print("Temp Scalar Over 110: ")
-    elif 100.0 <= temperature <= 109.9:
-        display_temperature = temperature -7
-        print("Temp Scalar 100: ")
-    elif 90.0 <= temperature <= 99.9:
-        display_temperature = temperature -6
-        print("Temp Scalar 90: ")
-    elif 84.0 <= temperature <= 89.9:
-        display_temperature = temperature -2
-        print("Temp Scalar 84: ")
-    elif 83.0 <= temperature <= 83.9:
-        display_temperature = temperature -3
-        print("Temp Scalar 83: ")
-    elif 82.0 <= temperature <= 82.9:
-        display_temperature = temperature -3.1
-        print("Temp Scalar 82: ")
-    # biased 81.0 biased needs to be 79
-    elif 81.0 <= temperature <= 81.9:
-        display_temperature = temperature -3.2
-        print("Temp Scalar 81: ")
-    # biased 80.9 biased needs to be 78
-    elif 80.0 <= temperature <= 80.9:
-        display_temperature = temperature -3
-        print("Temp Scalar 80: ")
-    elif 79.0 <= temperature <= 79.9:
-        display_temperature = temperature -2.7
-        print("Temp Scalar 79: ")
-    elif 70.0 <= temperature <= 78.9:
-        display_temperature = temperature -2.5
-        print("Temp Scalar 70: ")
-    elif 60.0 <= temperature <= 69.9:
-        display_temperature = temperature -2
-        print("Temp Scalar 60: ")
-    elif 50.0 <= temperature <= 59.9:
-        display_temperature = temperature -1
-        print("Temp Scalar 50: ")
-    else:
-        display_temperature = temperature
-        print("Temp Scalar DEFAULT: ")
-
-    print(f"Actual Temp: {display_temperature:.1f}")
-```
- Output:
- ```py
-Temp:  80.6
-Temp Scalar 80: 
-Actual Temp: 77.6
-```
-
-## Temp Sensor Logarithm Bias Adjust (BME280)
-```py
-import ulab.numpy as np
-# Initialize BME280 Sensor
-i2c = board.STEMMA_I2C()  # uses board.SCL and board.SDA
-bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c)
-display_temperature = 0
-# Define the input range and output range
-input_range = [82.0, 110.0]
-output_range = [82.0 - 3.1, 110.0 - 8.0]
-while True:
-    # By default BME280 increases approximately 0.1 per 1 degree over 50F due to PCB heating
-    # This logarithm is a work in progress
-    temperature = bme280.temperature * 1.8 + 32
-    temperature = round(temperature, 1)
-    print("Temp: ", temperature) # biased reading
-    display_temperature = np.interp(temperature, input_range, output_range)
-    print(f"Actual Temp: {display_temperature[0]:.1f}")
-```
-Output:
-```py
-Temp:  83.1
-# Biased temp compared against mercury thermometers is 96% accurate
-Actual Temp: 79.8
-# Actual temp compared against mercury thermometers is 99.1% accurate
-```
-
 ## Get Time from Online (ESP32-S2)
 For boards with WiFi and no RTC
 ```py
@@ -245,6 +161,90 @@ Connected to WiFi...
 Timestamp: 09/07/2022 03:52:14
 ```
 Built-in error correction fails gracefully if no SSID (WiFi goes down) or time server cannot be contacted. Configurable sleep_time constant so you can easily change the duration of retry attempts. Use longer attempts for IO weather updates for example and shorter updates for retrying WiFi connection.
+
+## Temp sensor bias adjustment (BME280)
+```py
+# Account for PCB heating bias, gets slightly hotter as ambient increases
+    temperature = bme280.temperature * 1.8 + 32
+    temperature = round(temperature, 1)
+    print("Temp: ", temperature) # biased reading
+    if temperature >= 110.0:
+        display_temperature = temperature -8
+        print("Temp Scalar Over 110: ")
+    elif 100.0 <= temperature <= 109.9:
+        display_temperature = temperature -7
+        print("Temp Scalar 100: ")
+    elif 90.0 <= temperature <= 99.9:
+        display_temperature = temperature -6
+        print("Temp Scalar 90: ")
+    elif 84.0 <= temperature <= 89.9:
+        display_temperature = temperature -2
+        print("Temp Scalar 84: ")
+    elif 83.0 <= temperature <= 83.9:
+        display_temperature = temperature -3
+        print("Temp Scalar 83: ")
+    elif 82.0 <= temperature <= 82.9:
+        display_temperature = temperature -3.1
+        print("Temp Scalar 82: ")
+    # biased 81.0 biased needs to be 79
+    elif 81.0 <= temperature <= 81.9:
+        display_temperature = temperature -3.2
+        print("Temp Scalar 81: ")
+    # biased 80.9 biased needs to be 78
+    elif 80.0 <= temperature <= 80.9:
+        display_temperature = temperature -3
+        print("Temp Scalar 80: ")
+    elif 79.0 <= temperature <= 79.9:
+        display_temperature = temperature -2.7
+        print("Temp Scalar 79: ")
+    elif 70.0 <= temperature <= 78.9:
+        display_temperature = temperature -2.5
+        print("Temp Scalar 70: ")
+    elif 60.0 <= temperature <= 69.9:
+        display_temperature = temperature -2
+        print("Temp Scalar 60: ")
+    elif 50.0 <= temperature <= 59.9:
+        display_temperature = temperature -1
+        print("Temp Scalar 50: ")
+    else:
+        display_temperature = temperature
+        print("Temp Scalar DEFAULT: ")
+
+    print(f"Actual Temp: {display_temperature:.1f}")
+```
+ Output:
+ ```py
+Temp:  80.6
+Temp Scalar 80: 
+Actual Temp: 77.6
+```
+
+## Temp Sensor Logarithm Bias Adjust (BME280)
+```py
+import ulab.numpy as np
+# Initialize BME280 Sensor
+i2c = board.STEMMA_I2C()  # uses board.SCL and board.SDA
+bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c)
+display_temperature = 0
+# Define the input range and output range
+input_range = [82.0, 110.0]
+output_range = [82.0 - 3.1, 110.0 - 8.0]
+while True:
+    # By default BME280 increases approximately 0.1 per 1 degree over 50F due to PCB heating
+    # This logarithm is a work in progress
+    temperature = bme280.temperature * 1.8 + 32
+    temperature = round(temperature, 1)
+    print("Temp: ", temperature) # biased reading
+    display_temperature = np.interp(temperature, input_range, output_range)
+    print(f"Actual Temp: {display_temperature[0]:.1f}")
+```
+Output:
+```py
+Temp:  83.1
+# Biased temp compared against mercury thermometers is 96% accurate
+Actual Temp: 79.8
+# Actual temp compared against mercury thermometers is 99.1% accurate
+```
 
 ## Common Secrets.py Config (Circuit Python 6 & 7 to 8.0 beta)
 for AdafruitIO, OpenWeatherMaps, and Time
