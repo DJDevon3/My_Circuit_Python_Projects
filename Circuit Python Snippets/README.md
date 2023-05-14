@@ -114,6 +114,33 @@ Temp Scalar 80:
 Actual Temp: 77.6
 ```
 
+## Temp Sensor Logarithm Bias Adjust (BME280)
+```py
+import ulab.numpy as np
+# Initialize BME280 Sensor
+i2c = board.STEMMA_I2C()  # uses board.SCL and board.SDA
+bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c)
+display_temperature = 0
+# Define the input range and output range
+input_range = [82.0, 110.0]
+output_range = [82.0 - 3.1, 110.0 - 8.0]
+while True:
+    # By default BME280 increases approximately 0.1 per 1 degree over 50F due to PCB heating
+    # This logarithm is a work in progress
+    temperature = bme280.temperature * 1.8 + 32
+    temperature = round(temperature, 1)
+    print("Temp: ", temperature) # biased reading
+    display_temperature = np.interp(temperature, input_range, output_range)
+    print(f"Actual Temp: {display_temperature[0]:.1f}")
+```
+Output:
+```py
+Temp:  83.1
+# Biased temp compared against mercury thermometers is 96% accurate
+Actual Temp: 79.8
+# Actual temp compared against mercury thermometers is 99.1% accurate
+```
+
 ## Get Time from Online (ESP32-S2)
 For boards with WiFi and no RTC
 ```py
