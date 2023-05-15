@@ -246,8 +246,8 @@ Actual Temp: 79.8
 # Actual temp compared against mercury thermometers is 99.1% accurate
 ```
 
-### Temp sensor data points (for my own reference)
-# Hard to see exact measurement on mercury thermometer (best guess)
+## Temp sensor data points (for my own reference)
+### Hard to see exact measurement on mercury thermometer (best guess)
 - 81.4 = 78
 - 80.6 = 77
 
