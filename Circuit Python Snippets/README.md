@@ -252,7 +252,7 @@ Actual Temp: 79.8
 ### Unbiased BME280 vs Mercury Thermometer
 - 84.6 = 82
 - 83.8 = 81
-- 82.7 - 80
+- 82.7 = 80
 - 82.4 = 80
 - 82.0 = 79
 - 81.9 = 79
