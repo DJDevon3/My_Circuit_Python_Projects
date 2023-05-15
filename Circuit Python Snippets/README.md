@@ -248,7 +248,9 @@ Actual Temp: 79.8
 
 ## Temp sensor data points (for my own reference)
 ### Hard to see exact measurement on mercury thermometer (best guess)
+- 81.9 = 79
 - 81.4 = 78
+- 80.9 = 78
 - 80.6 = 77
 
 ## Common Secrets.py Config (Circuit Python 6 & 7 to 8.0 beta)
