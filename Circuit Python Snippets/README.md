@@ -242,7 +242,7 @@ while True:
 Output:
 ```py
 Temp:  83.1
-# Biased temp compared against mercury thermometers is 96% accurate
+# Unbiased temp compared against mercury thermometers is 96% accurate
 Actual Temp: 79.8
 # Actual temp compared against mercury thermometers is 99.1% accurate
 ```
