@@ -246,6 +246,11 @@ Actual Temp: 79.8
 # Actual temp compared against mercury thermometers is 99.1% accurate
 ```
 
+### Temp sensor data points (for my own reference)
+# Hard to see exact measurement on mercury thermometer (best guess)
+- 81.4 = 78
+- 80.6 = 77
+
 ## Common Secrets.py Config (Circuit Python 6 & 7 to 8.0 beta)
 for AdafruitIO, OpenWeatherMaps, and Time
 ```py
