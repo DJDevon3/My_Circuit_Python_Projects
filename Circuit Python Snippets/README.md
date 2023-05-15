@@ -236,6 +236,7 @@ while True:
     temperature = bme280.temperature * 1.8 + 32
     temperature = round(temperature, 1)
     print("Temp: ", temperature) # biased reading
+    # ulab.numpy interpolation
     display_temperature = np.interp(temperature, input_range, output_range)
     print(f"Actual Temp: {display_temperature[0]:.1f}")
 ```
