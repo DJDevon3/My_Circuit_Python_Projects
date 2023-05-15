@@ -250,6 +250,7 @@ Actual Temp: 79.8
 
 ## Temp sensor data points (for my own reference)
 ### Unbiased BME280 vs Mercury Thermometer
+- 85.3 = 82
 - 85.1 = 82
 - 84.9 = 82
 - 84.8 = 82
