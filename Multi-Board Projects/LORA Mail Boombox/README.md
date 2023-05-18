@@ -3,7 +3,10 @@
 
 ![LORA Mail Boombox](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Multi-Board%20Projects/LORA%20Mail%20Boombox/images/LORA_Mailbox.gif)
 
-https://user-images.githubusercontent.com/49322231/225203161-4cb2f4e5-e049-4c58-9a29-a5da44fb2272.MOV
+
+
+https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/8d6273b3-8286-40cb-bdbf-7f93723185fa
+
 
 # BOM (Bill of Materials)
 
