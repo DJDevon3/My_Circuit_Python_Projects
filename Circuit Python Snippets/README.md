@@ -141,7 +141,7 @@ while True:
         gc.collect()
         time.sleep(sleep_time)
 ```
-code.py output:
+code.py example output: (shows different wifi status & graceful fails)
 
 ```py
 ===============================
