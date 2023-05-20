@@ -52,6 +52,7 @@ def time_calc(input_time):
     return time_output
 
 print("Calc Time: ", time_calc(900))  # time conversion testing
+# print("Board Uptime: ", time_calc(time.monotonic())) # example for board uptime
 ```
 code.py output:
 
