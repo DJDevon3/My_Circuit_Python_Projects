@@ -376,7 +376,8 @@ TAKE_SCREENSHOT = False  # Set to True to take a screenshot
 if TAKE_SCREENSHOT:
     print("Taking Screenshot... ")
     save_pixels("/sd/screenshot.bmp", display)
-    print("Screenshot Taken")
-    time.sleep(180.0)
+    print("Screenshot Saved")
+    storage.umount(vfs)
+    print("SD Card Unmounted")  # unsafe to remove SD card until you see this message
 ```
 
