@@ -11,4 +11,6 @@ Rechargeable BLE controlled RGB LED candle by DJDevon3
 
 ![BLE Candle Wiring](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/nrf/ItsyBitsy%20NRF52840%20Express/BLE%20Candle/Candle_Wiring.jpg)
 
+![Bluefruit_Connect](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/2c49af98-d2c8-4f42-8c47-211fbf07a992)
+
 The projects in this section are specifically for NRF based boards running Circuit Python.
