@@ -14,7 +14,8 @@ Controlled with Adafruit Connect mobile app by DJDevon3
 ![Bluefruit_Connect](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/2c49af98-d2c8-4f42-8c47-211fbf07a992)
 
 ## Fritzing Wiring Diagram
-Not exact because there's no ItsyBitsy NRF52840 or Cedar Grove Adapter Board in their parts database.
+Not exact because there's no ItsyBitsy NRF52840 or Cedar Grove Adapter Board in their parts database. All of the pin names are the same but in different locations.
+
 ![Candle_Fritzing](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/b5e6db22-3c4b-41d0-a3e4-15d4fb31d38c)
 
 The projects in this section are specifically for NRF based boards running Circuit Python.
