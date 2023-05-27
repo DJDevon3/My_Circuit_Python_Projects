@@ -29,6 +29,6 @@ Switch goes to the EN (enable) pin which will turn the board off regardless if i
 
 Can only recharge battery while on. You can turn LED off during recharging or not, up to you, it has pass-through charging.
 
-![Candle_Fritzing](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/b5e6db22-3c4b-41d0-a3e4-15d4fb31d38c)
+![Candle_Fritzing](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/b5f15513-a911-4709-99e3-c70a4253f7a0)
 
 The projects in this section are specifically for NRF based boards running Circuit Python.
