@@ -21,7 +21,7 @@ Not exact because there's no ItsyBitsy NRF52840 or Cedar Grove Adapter Board in 
 
 All of the pin names are the same but in different locations.
 
-Switch goes to the EN (enable) pin which will turn the board off regardless if it's battery powered or not. Can only recharge battery while on.
+Switch goes to the EN (enable) pin which will turn the board off regardless if it's battery powered or not. Can only recharge battery while on (turn LED off during recharging or not, up to you).
 
 ![Candle_Fritzing](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/b5e6db22-3c4b-41d0-a3e4-15d4fb31d38c)
 
