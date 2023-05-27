@@ -10,6 +10,8 @@ Controlled with Adafruit Connect mobile app by DJDevon3
 
 ![BLE Candle](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/nrf/ItsyBitsy%20NRF52840%20Express/BLE%20Candle/Candle.jpg)
 
+Ignore these wiring colors. Forgot I had a common anode (not common cathode) so the wiring colors are backwards.
+
 ![BLE Candle Wiring](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/nrf/ItsyBitsy%20NRF52840%20Express/BLE%20Candle/Candle_Wiring.jpg)
 
 ![Bluefruit_Connect](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/2c49af98-d2c8-4f42-8c47-211fbf07a992)
