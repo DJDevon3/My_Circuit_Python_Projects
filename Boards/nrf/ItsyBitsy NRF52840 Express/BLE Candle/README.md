@@ -1,5 +1,5 @@
-# ItsyBitsy NRF52840 Projects
-Rechargeable BLE controlled RGB LED candle by DJDevon3
+# Rechargeable BLE Candle
+Controlled with Adafruit Connect mobile app by DJDevon3
 
 ## Hardware Used:
 - [Adafruit ItsyBitsy NRF52840 Express](https://www.adafruit.com/product/4481)
