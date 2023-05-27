@@ -14,6 +14,10 @@ Ignore these wiring colors. Forgot I had a common anode (not common cathode) so 
 
 ![BLE Candle Wiring](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/nrf/ItsyBitsy%20NRF52840%20Express/BLE%20Candle/Candle_Wiring.jpg)
 
+![IMG_0963](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/64a7c783-afdc-409b-b8f6-2bb536821ba1)
+
+![IMG_0964](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/3f2749fe-e61a-4156-8403-cd54f1c7534c)
+
 ![Bluefruit_Connect](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/2c49af98-d2c8-4f42-8c47-211fbf07a992)
 
 ## Fritzing Wiring Diagram
