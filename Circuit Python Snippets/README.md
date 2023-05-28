@@ -4,7 +4,7 @@ Check out [TodBot's Circuit Python Tricks](https://github.com/todbot/circuitpyth
 
 These are a few common code snippets that I continually find myself looking at past projects to snag. No sense in re-inventing the wheel. 
 
-## Unix to Struct Time Formatting
+## Unix to Struct Time Formatting (with timezone offset)
 ```py
 import time
 def _format_datetime(datetime):
