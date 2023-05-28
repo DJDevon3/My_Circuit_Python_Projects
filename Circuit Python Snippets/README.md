@@ -61,14 +61,14 @@ def time_calc(input_time):
 
 print("Calc Time: ", time_calc(900))  # time conversion testing
 print("Board Uptime: ", time_calc(time.monotonic())) # example for board uptime
-print("Next Update in: ", time_calc(sleep_time))
+print("Next Update: ", time_calc(sleep_time))
 time.sleep(sleep_time)
 ```
 code.py output:
 ```py
 Calc Time:  15 minutes
 Board Uptime: 1.2 days
-Next Update in: 30 minutes
+Next Update: 30 minutes
 ```
 
 ## Get Time from Online (ESP32-S2)
