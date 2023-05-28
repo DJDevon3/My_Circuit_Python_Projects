@@ -26,7 +26,7 @@ print(f"Unix Timezone Time: {get_timestamp}")
 current_struct_time = time.localtime(get_timestamp)
 print(f"Current Struct Time: {current_struct_time}")
 current_date = "{}".format(_format_datetime(current_struct_time))
-print("Timestamp:", current_date)
+print(f"Timestamp: {current_date}")
 ```
 code.py output:
 ```py
