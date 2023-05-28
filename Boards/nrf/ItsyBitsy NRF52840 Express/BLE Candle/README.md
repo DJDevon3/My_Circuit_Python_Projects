@@ -31,6 +31,8 @@ Not exact because there's no ItsyBitsy NRF52840 or Cedar Grove Adapter Board in 
 
 All of the pin names are the same but in different locations.
 
+This uses a 4-pin common anode RGB LED. The annode leg is the longest and should go to 3V.
+
 Switch goes to the EN (enable) pin which will turn the board off regardless if it's battery powered or not. 
 
 Can only recharge battery while on. You can turn LED off during recharging or not, up to you, it has pass-through charging.
