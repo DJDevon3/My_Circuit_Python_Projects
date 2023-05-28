@@ -19,8 +19,8 @@ def _format_datetime(datetime):
 # Plug the time in seconds into unix_time example provided.
 unix_time = 1660764970 # Wed Aug 17 2022 19:36:10 GMT+0000
 tz_offset_seconds = -14400  # NY Timezone
-
 print(f"Unix Time: {unix_time}")
+
 get_timestamp = int(unix_time) + int(tz_offset_seconds)
 print(f"Unix Timezone Time: {get_timestamp}")
 current_struct_time = time.localtime(get_timestamp)
