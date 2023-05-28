@@ -39,7 +39,7 @@ Timestamp: 08/17/2022 15:36:10
 ## Seconds to Minutes/Hours/Days function (good for sleep or update functions)
 ```py
 import time
-# 1800 = 15 mins, 1800 = 30 mins, 3600 = 1 hour
+# 900 = 15 mins, 1800 = 30 mins, 3600 = 1 hour
 sleep_time = 900
 def time_calc(input_time):
     if input_time < 60:
