@@ -36,8 +36,11 @@ Current Struct Time: struct_time(tm_year=2022, tm_mon=8, tm_mday=17, tm_hour=15,
 Timestamp: 08/17/2022 15:36:10
 ```
 
-## Seconds to Minutes/Hours/Days function
+## Seconds to Minutes/Hours/Days function (good for sleep or update functions)
 ```py
+import time
+# 1800 = 15 mins, 1800 = 30 mins, 3600 = 1 hour
+sleep_time = 900
 def time_calc(input_time):
     if input_time < 60:
         sleep_int = input_time
@@ -57,11 +60,16 @@ def time_calc(input_time):
     return time_output
 
 print("Calc Time: ", time_calc(900))  # time conversion testing
-# print("Board Uptime: ", time_calc(time.monotonic())) # example for board uptime
+print("Board Uptime: ", time_calc(time.monotonic())) # example for board uptime
+print("Next Update in : ", time_calc(sleep_time))
+time.sleep(sleep_time)
 ```
 code.py output:
-
-`Calc Time:  15 minutes`
+```py
+Calc Time:  15 minutes
+Board Uptime: 1949  # in seconds
+Next Update in : 30 minutes
+```
 
 ## Get Time from Online (ESP32-S2)
 For boards with WiFi and no RTC
