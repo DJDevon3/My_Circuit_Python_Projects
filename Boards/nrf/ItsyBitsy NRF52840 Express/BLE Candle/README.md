@@ -8,6 +8,12 @@ Controlled with Adafruit Connect mobile app by DJDevon3
 - [Repurposed dead LED candle from Amazon](https://www.amazon.com/gp/product/B077WT8FKV)
 - Common Anode 3mm 4-Pin RGB LED
 
+### Candle Effects
+- Solid Color Picker
+- Flicker
+- Rainbow
+- Pulse
+
 ![BLE Candle](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/nrf/ItsyBitsy%20NRF52840%20Express/BLE%20Candle/Candle.jpg)
 
 Ignore the wiring colors. They are not indicative of polarity.
