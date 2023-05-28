@@ -67,7 +67,7 @@ time.sleep(sleep_time)
 code.py output:
 ```py
 Calc Time:  15 minutes
-Board Uptime: 1949  # in seconds
+Board Uptime: 1.2 days
 Next Update in: 30 minutes
 ```
 
