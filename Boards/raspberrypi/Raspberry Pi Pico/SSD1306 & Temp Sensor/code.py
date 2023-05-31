@@ -8,9 +8,9 @@ import board
 import displayio
 import busio
 import terminalio
-import adafruit_displayio_ssd1306 as ssd1306
 from adafruit_display_text import label
 from adafruit_bme280 import basic as adafruit_bme280
+import adafruit_displayio_ssd1306 as ssd1306
 
 # Reinitalizes display upon any soft reboot or hard reset
 displayio.release_displays()
@@ -57,25 +57,25 @@ TEXT_YELLOW = 0xFFFF00
 hello_label = label.Label(terminalio.FONT)
 hello_label.anchor_point = (0.0, 0.0)
 hello_label.anchored_position = (0, 0)
-hello_label.scale = (1)
+hello_label.scale = 1
 hello_label.color = TEXT_WHITE
 
 temp_label = label.Label(terminalio.FONT)
 temp_label.anchor_point = (0.0, 0.0)
 temp_label.anchored_position = (0, 10)
-temp_label.scale = (1)
+temp_label.scale = 1
 temp_label.color = TEXT_WHITE
 
 humidity_label = label.Label(terminalio.FONT)
 humidity_label.anchor_point = (0.0, 0.0)
 humidity_label.anchored_position = (0, 20)
-humidity_label.scale = (1)
+humidity_label.scale = 1
 humidity_label.color = TEXT_WHITE
 
 pressure_label = label.Label(terminalio.FONT)
 pressure_label.anchor_point = (1.0, 1.0)
 pressure_label.anchored_position = (ssd_width, 10)
-pressure_label.scale = (1)
+pressure_label.scale = 1
 pressure_label.color = TEXT_WHITE
 
 # Create DisplayIO Group Layer
