@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2023 DJDevon3
+# SPDX-FileCopyrightText: 2023 DJDevon3 & Ventrue
 #
 # SPDX-License-Identifier: MIT
 # ItsyBitsy NRF52840 Bluefruit Connect Rechargable RGB LED Candle
@@ -32,7 +32,7 @@ uart_service = UARTService()
 advertisement = ProvideServicesAdvertisement(uart_service)
 
 # 4-pin RGB LED PWM Control with 0-255 scale
-def PWM_RGB(rcycle, gcycle, bcycle):  # (0-255) scale
+def PWM_Solid(rcycle, gcycle, bcycle):  # (0-255) scale
     PINS[0].duty_cycle = 65535-int(rcycle/255*65535)
     PINS[1].duty_cycle = 65535-int(gcycle/255*65535)
     PINS[2].duty_cycle = 65535-int(bcycle/255*65535)
@@ -48,7 +48,7 @@ def pulse(delay):  # delay between steps
         PINS[1].duty_cycle = 65535-int(i/255*65535)
         PINS[2].duty_cycle = 65535-int(i/255*65535)
         time.sleep(delay)
-    
+
 def map_value(value, in_min, in_max, out_min, out_max):
     out_range = out_max - out_min
     in_range = in_max - in_min
@@ -56,7 +56,7 @@ def map_value(value, in_min, in_max, out_min, out_max):
 
 def constrain(value, floor, ceiling):
     return max(floor, min(value, ceiling))
-    
+
 random_low = 0
 random_high = 255
 # Flicker values must be between 0-255 for translation
@@ -71,14 +71,18 @@ def yellow_flicker():
     PINS[2].duty_cycle = 65535-int(0/255*65535)
     time.sleep(rand_sleep)
 
-def colorwheel(delay):
-    for pin in PINS:
-        for i in range(0, 255, 1):  # start, stop, steps
-            pin.duty_cycle = 65535-int(i/255*65535)
+def RGB_Cycle(delay):
+    for i in range(0, 255, 1):  # start, stop, steps
+        full_range=colorwheel(i)
+        blue_fade=full_range&255
+        green_fade=(full_range>>8)&255
+        red_fade=(full_range>>16)&255
+        # print(f"RainbowIO: {full_range} {red_fade} {green_fade} {blue_fade}")
+        PINS[0].duty_cycle = 65535-int(red_fade/255*65535)
         time.sleep(delay)
-    for pin in PINS:
-        for i in range(255, 0, -1):
-            pin.duty_cycle = 65535-int(i/255*65535)
+        PINS[1].duty_cycle = 65535-int(green_fade/255*65535)
+        time.sleep(delay)
+        PINS[2].duty_cycle = 65535-int(blue_fade/255*65535)
         time.sleep(delay)
 
 def change_speed(mod, old_speed):
@@ -91,26 +95,26 @@ def animate():
     if mode == 2:
         pulse(0.01)
     elif mode == 3:
-        colorwheel(1)
+        RGB_Cycle(0.005)
     elif mode == 4:
-        PWM_RGB(user_color[0],user_color[1],user_color[2])
-    return 
+        PWM_Solid(user_color[0],user_color[1],user_color[2])
+    return
 
 # User input vars
-mode = 1  # 1=flicker, 2=pulse, 3=colorwheel, 4=ColorPicker
+mode = 1  # 1=flicker, 2=pulse, 3=RGB_Cycle, 4=solid
 # user_color is selected using Adafruit Bluefruit Connect App
 user_color = (127, 0, 0)
 speed = 6.0
 wait = 0.097
 
 while True:
-    PWM_RGB(255, 50, 0)  # Set to orange by default
+    PWM_Solid(255, 50, 0)  # Set to orange by default
     ble.start_advertising(advertisement)
     while not ble.connected:
         # Animate while disconnected
         ble_led.value = False
         time.sleep(1)
-        
+
     # While BLE is connected
     while ble.connected:
         if uart_service.in_waiting:
@@ -119,11 +123,11 @@ while True:
             # Ignore malformed packets.
             except ValueError:
                 continue
-                
+
             if isinstance(packet, ColorPacket):
                 user_color = packet.color
-                PWM_RGB(user_color[0], user_color[1], user_color[2])
-                
+                PWM_Solid(user_color[0], user_color[1], user_color[2])
+
             # Received ButtonPacket
             elif isinstance(packet, ButtonPacket):
                 if packet.pressed:
@@ -133,24 +137,24 @@ while True:
                     elif packet.button == ButtonPacket.DOWN:
                         speed, wait = change_speed(-1, speed)
                         print(packet.button)
-                    # flicker
+                    # Yellow Flicker
                     elif packet.button == ButtonPacket.BUTTON_1:
                         mode = 1
                         print("Mode: ", mode)
                         yellow_flicker()
-                    # rainbow
+                    # Pulse
                     elif packet.button == ButtonPacket.BUTTON_2:
                         mode = 2
                         print("Mode: ", mode)
-                    # larsen
+                    # RGB_Cycle
                     elif packet.button == ButtonPacket.BUTTON_3:
                         mode = 3
                         print("Mode: ", mode)
-                    # solid
+                    # PWM_Solid
                     elif packet.button == ButtonPacket.BUTTON_4:
                         mode = 4
                         print("Mode: ", mode)
-                        
+
         # Animate while connected
         animate()
         ble_led.value = True
