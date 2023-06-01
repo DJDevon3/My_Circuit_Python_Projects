@@ -71,7 +71,7 @@ def yellow_flicker():
     PINS[2].duty_cycle = 65535-int(0/255*65535)
     time.sleep(rand_sleep)
 
-def RGB_Cycle(delay):
+def Rainbow_Fade(delay):
     for i in range(0, 255, 1):  # start, stop, steps
         full_range=colorwheel(i)
         blue_fade=full_range&255
@@ -95,13 +95,13 @@ def animate():
     if mode == 2:
         pulse(0.01)
     elif mode == 3:
-        RGB_Cycle(0.005)
+        Rainbow_Fade(0.005)
     elif mode == 4:
         PWM_Solid(user_color[0],user_color[1],user_color[2])
     return
 
 # User input vars
-mode = 1  # 1=flicker, 2=pulse, 3=RGB_Cycle, 4=solid
+mode = 1  # 1=flicker, 2=pulse, 3=Rainbow_Fade, 4=solid
 # user_color is selected using Adafruit Bluefruit Connect App
 user_color = (127, 0, 0)
 speed = 6.0
@@ -146,7 +146,7 @@ while True:
                     elif packet.button == ButtonPacket.BUTTON_2:
                         mode = 2
                         print("Mode: ", mode)
-                    # RGB_Cycle
+                    # Rainbow_Fade
                     elif packet.button == ButtonPacket.BUTTON_3:
                         mode = 3
                         print("Mode: ", mode)
