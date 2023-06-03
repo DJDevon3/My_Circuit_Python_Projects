@@ -262,26 +262,64 @@ Actual Temp: 79.8
 # Actual temp compared against mercury thermometers is 99.1% accurate
 ```
 
-## Temp sensor data points (for my own reference)
-### Unbiased BME280 vs Mercury Thermometer
-- 87.2 = 83
-- 87.0 = 83
-- 86.5 = 83
-- 86.2 = 83
-- 85.5 = 82
-- 85.3 = 82
-- 85.1 = 82
-- 84.9 = 82
-- 84.8 = 82
-- 84.6 = 82
-- 83.8 = 81
-- 82.7 = 80
-- 82.4 = 80
-- 82.0 = 79
-- 81.9 = 79
-- 81.4 = 78
-- 80.9 = 78
-- 80.6 = 77
+## DisplayIO Show/Hide Popup (code by Neradoc)
+```py
+# 3.5" TFT Featherwing is 480x320
+displayio.release_displays()
+DISPLAY_WIDTH = 480
+DISPLAY_HEIGHT = 320
+
+warning_label = label.Label(terminalio.FONT)
+warning_label.anchor_point = (0.5, 1.0)
+warning_label.anchored_position = (DISPLAY_WIDTH/2, DISPLAY_HEIGHT - 35)
+warning_label.scale = (3)
+warning_label.color = TEXT_RED
+
+warning_text_label = label.Label(terminalio.FONT)
+warning_text_label.anchor_point = (0.5, 1.0)
+warning_text_label.anchored_position = (DISPLAY_WIDTH/2, DISPLAY_HEIGHT - 5)
+warning_text_label.scale = (2)
+warning_text_label.color = TEXT_RED
+
+# Warning label RoundRect
+roundrect = RoundRect(int(DISPLAY_WIDTH/2-140), int(DISPLAY_HEIGHT-75), 280, 75, 10, fill=0x0, outline=0xFFFFFF, stroke=1)
+
+main_group = displayio.Group()
+# Add warning popup group
+main_group.append(warning_group)
+warning_group.append(roundrect)
+warning_group.append(warning_label)
+warning_group.append(warning_text_label)
+display.show(main_group)
+
+def show_warning(title, text):
+    warning_label.text = title
+    warning_text_label.text = text
+    warning_group.hidden = False
+def hide_warning():
+    warning_group.hidden = True
+    
+while True:
+pressure = bme280.pressure  # designed for BME280 Pressure sensor
+# Warnings based on local sensors
+    if pressure <= 919: # pray you never see this message
+        show_warning("HOLY SHIT", "Seek Shelter!")
+    elif 920 <= pressure <= 979:
+        show_warning("DANGER", "Major Hurricane")
+    elif 980 <= pressure <= 989:
+        show_warning("DANGER", "Minor Hurricane")
+    elif 990 <= pressure <= 1001:
+        show_warning("WARNING", "Tropical Storm")
+    elif 1002 <= pressure <= 1010:  # sudden gusty downpours
+        show_warning("CAUTION", "Low Pressure System")
+    elif 1018 >= pressure <= 1025:  #sudden light cold rain
+        show_warning("CAUTION", "High Pressure System")
+    elif pressure >= 1026:
+        show_warning("WARNING", "Hail & Tornados?")
+    else:
+        hide_warning() # Normal pressures: 1111-1017 (no message)
+```
+
 
 ## Common Secrets.py Config (Circuit Python 6 & 7 to 8.0 beta)
 for AdafruitIO, OpenWeatherMaps, and Time
@@ -372,7 +410,7 @@ If you're not installing WipperSnapper and using Circuit Python continue reading
 
 ## Screenshot (Bitmap Saver)
 - Requires bitmap_saver library & SD Card (either built into a device or as a module)
-- After it says "Screenshot Taken" you have 120 seconds to remove the SD card, transfer the image to your PC, and reinsert the SD card back into the microcontroller otherwise the script will crash and you'll have to reboot the microcontroller.  You can set it to whatever time value you want. I find 3 minutes to be sufficient.
+- Updated code to unmount SD card after screenshot to avoid data corruption
 ```py
 import adafruit_sdcard
 import storage
