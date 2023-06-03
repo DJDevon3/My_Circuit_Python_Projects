@@ -260,7 +260,7 @@ Actual Temp: 79.8
 # Actual temp compared against mercury thermometers is 99.1% accurate
 ```
 
-## DisplayIO Show/Hide Popup (code by Neradoc)
+## DisplayIO Show/Hide Popup (function by Neradoc)
 ```py
 # 3.5" TFT Featherwing is 480x320
 displayio.release_displays()
