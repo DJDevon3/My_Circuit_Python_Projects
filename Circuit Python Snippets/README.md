@@ -244,7 +244,7 @@ input_range = [80.0, 81.0, 82.0, 82.7, 83.0, 110.0]
 output_range = [80.0 - 3.3, 81.0 - 3.2, 82.0 - 3.1, 82.7 - 3.0, 83.0 - 2.95, 110.0 - 8.0]
 while True:
     # By default BME280 increases approximately 0.1 per 1 degree over 50F due to PCB heating
-    # This logarithm is a work in progress
+    # This logarithm is a work in progress (untested over 85F)
     temperature = bme280.temperature * 1.8 + 32
     temperature = round(temperature, 1)
     print("Temp: ", temperature) # biased reading
