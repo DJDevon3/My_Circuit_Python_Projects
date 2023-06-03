@@ -318,6 +318,9 @@ pressure = bme280.pressure  # designed for BME280 Pressure sensor
         hide_warning() # Normal pressures: 1111-1017 (no message)
 ```
 
+![pressure_warning](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/f8dd297c-9ff0-41eb-8bde-cdd1092f2ced)
+
+
 
 ## Common Secrets.py Config (Circuit Python 6 & 7 to 8.0 beta)
 for AdafruitIO, OpenWeatherMaps, and Time
