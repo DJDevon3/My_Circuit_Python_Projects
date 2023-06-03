@@ -176,7 +176,7 @@ Timestamp: 09/07/2022 03:52:14
 ```
 Built-in error correction fails gracefully if no SSID (WiFi goes down) or time server cannot be contacted. Configurable sleep_time constant so you can easily change the duration of retry attempts. Use longer attempts for IO weather updates for example and shorter updates for retrying WiFi connection.
 
-## Temp sensor bias adjustment (BME280)
+## Temp sensor bias adjustment (BME280) (obsolete vs logarithm adjust)
 ```py
 # Account for PCB heating bias, gets slightly hotter as ambient increases
     temperature = bme280.temperature * 1.8 + 32
