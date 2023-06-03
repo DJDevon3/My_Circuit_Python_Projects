@@ -200,11 +200,9 @@ Built-in error correction fails gracefully if no SSID (WiFi goes down) or time s
     elif 82.0 <= temperature <= 82.9:
         display_temperature = temperature -3.1
         print("Temp Scalar 82: ")
-    # biased 81.0 biased needs to be 79
     elif 81.0 <= temperature <= 81.9:
         display_temperature = temperature -3.2
         print("Temp Scalar 81: ")
-    # biased 80.9 biased needs to be 78
     elif 80.0 <= temperature <= 80.9:
         display_temperature = temperature -3
         print("Temp Scalar 80: ")
