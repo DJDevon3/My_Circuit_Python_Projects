@@ -16,23 +16,23 @@ def _format_datetime(datetime):
         datetime.tm_min,
         datetime.tm_sec,
     )
-# Plug the time in seconds into unix_time example provided.
+# Plug in your unix time here
 unix_time = 1660764970 # Wed Aug 17 2022 19:36:10 GMT+0000
 tz_offset_seconds = -14400  # NY Timezone
 print(f"Unix Time: {unix_time}")
 
-get_timestamp = int(unix_time) + int(tz_offset_seconds)
-print(f"Unix Timezone Time: {get_timestamp}")
-current_struct_time = time.localtime(get_timestamp)
-print(f"Current Struct Time: {current_struct_time}")
-current_date = "{}".format(_format_datetime(current_struct_time))
-print(f"Timestamp: {current_date}")
+local_unix_time = int(unix_time) + int(tz_offset_seconds)
+print(f"Your Local Unix Time: {local_unix_time}")
+current_struct_time = time.localtime(local_unix_time)
+print(f"Struct Time Format: {current_struct_time}") 
+final_timestamp = "{}".format(_format_datetime(current_struct_time))
+print(f"Timestamp: {final_timestamp}")
 ```
 code.py output:
 ```py
-Unix Time: 1660764970
-Unix Timezone Time: 1660750570
-Current Struct Time: struct_time(tm_year=2022, tm_mon=8, tm_mday=17, tm_hour=15, tm_min=36, tm_sec=10, tm_wday=2, tm_yday=229, tm_isdst=-1)
+Unix Time: 1660764970 
+Your Local Unix Time: 1660750570 
+Struct Time Format: struct_time(tm_year=2022, tm_mon=8, tm_mday=17, tm_hour=15, tm_min=36, tm_sec=10, tm_wday=2, tm_yday=229, tm_isdst=-1)
 Timestamp: 08/17/2022 15:36:10
 ```
 
