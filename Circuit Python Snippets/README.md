@@ -299,7 +299,7 @@ def hide_warning():
     
 while True:
 pressure = bme280.pressure  # designed for BME280 Pressure sensor
-# Warnings based on local sensors
+# Pressure based warning popups
     if pressure <= 919: # pray you never see this message
         show_warning("HOLY SHIT", "Seek Shelter!")
     elif 920 <= pressure <= 979:
