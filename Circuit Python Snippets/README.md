@@ -322,8 +322,7 @@ pressure = bme280.pressure  # designed for BME280 Pressure sensor
 
 
 
-## Common Secrets.py Config (Circuit Python 6 & 7 to 8.0 beta)
-for AdafruitIO, OpenWeatherMaps, and Time
+## Common Secrets.py Config (does not initate web workflow)
 ```py
 secrets = {
     "ssid": "Your Wifi SSID",
@@ -338,8 +337,7 @@ secrets = {
     }
 ```
 
-## Common Settings.toml Config (Circuit Python 8.0+)
-Circuit Python now uses a Settings.toml file (also creates web workflow automatically)
+## Common Settings.toml Config (automatically initiates web workflow on port 80)
 ```py
 AP_SSID = "Your Wifi SSID"  # Special variable recognized by web workflow
 AP_PASSWORD = "Your WiFi Password"  # Special variable recognized by web workflow
