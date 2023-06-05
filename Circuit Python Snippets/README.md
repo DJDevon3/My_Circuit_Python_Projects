@@ -339,9 +339,8 @@ secrets = {
 
 ## Common Settings.toml Config (automatically initiates web workflow on port 80)
 ```py
-AP_SSID = "Your Wifi SSID"  # Special variable recognized by web workflow
-AP_PASSWORD = "Your WiFi Password"  # Special variable recognized by web workflow
-timezone = "America/New_York" # Check http://worldtimeapi.org/timezones
+CIRCUITPY_WIFI_SSID = "Your Wifi SSID"  # Special variable recognized by web workflow
+CIRCUITPY_WIFI_PASSWORD = "Your WiFi Password"  # Special variable recognized by web workflow
 aio_username = "Your AdafruitIO Username"
 aio_key = "Your AdafruitIO Token"
 openweather_token = "Your OpenWeatherMaps Token"
