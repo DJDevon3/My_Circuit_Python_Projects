@@ -16,23 +16,23 @@ def _format_datetime(datetime):
         datetime.tm_min,
         datetime.tm_sec,
     )
-# Plug the time in seconds into unix_time example provided.
+# Plug in your unix time here
 unix_time = 1660764970 # Wed Aug 17 2022 19:36:10 GMT+0000
 tz_offset_seconds = -14400  # NY Timezone
 print(f"Unix Time: {unix_time}")
 
-get_timestamp = int(unix_time) + int(tz_offset_seconds)
-print(f"Unix Timezone Time: {get_timestamp}")
-current_struct_time = time.localtime(get_timestamp)
-print(f"Current Struct Time: {current_struct_time}")
-current_date = "{}".format(_format_datetime(current_struct_time))
-print(f"Timestamp: {current_date}")
+local_unix_time = int(unix_time) + int(tz_offset_seconds)
+print(f"Your Local Unix Time: {local_unix_time}")
+current_struct_time = time.localtime(local_unix_time)
+print(f"Struct Time Format: {current_struct_time}") 
+final_timestamp = "{}".format(_format_datetime(current_struct_time))
+print(f"Timestamp: {final_timestamp}")
 ```
 code.py output:
 ```py
-Unix Time: 1660764970
-Unix Timezone Time: 1660750570
-Current Struct Time: struct_time(tm_year=2022, tm_mon=8, tm_mday=17, tm_hour=15, tm_min=36, tm_sec=10, tm_wday=2, tm_yday=229, tm_isdst=-1)
+Unix Time: 1660764970 
+Your Local Unix Time: 1660750570 
+Struct Time Format: struct_time(tm_year=2022, tm_mon=8, tm_mday=17, tm_hour=15, tm_min=36, tm_sec=10, tm_wday=2, tm_yday=229, tm_isdst=-1)
 Timestamp: 08/17/2022 15:36:10
 ```
 
@@ -176,7 +176,7 @@ Timestamp: 09/07/2022 03:52:14
 ```
 Built-in error correction fails gracefully if no SSID (WiFi goes down) or time server cannot be contacted. Configurable sleep_time constant so you can easily change the duration of retry attempts. Use longer attempts for IO weather updates for example and shorter updates for retrying WiFi connection.
 
-## Temp sensor bias adjustment (BME280)
+## Temp sensor bias adjustment (BME280) (obsolete vs logarithm adjust)
 ```py
 # Account for PCB heating bias, gets slightly hotter as ambient increases
     temperature = bme280.temperature * 1.8 + 32
@@ -200,11 +200,9 @@ Built-in error correction fails gracefully if no SSID (WiFi goes down) or time s
     elif 82.0 <= temperature <= 82.9:
         display_temperature = temperature -3.1
         print("Temp Scalar 82: ")
-    # biased 81.0 biased needs to be 79
     elif 81.0 <= temperature <= 81.9:
         display_temperature = temperature -3.2
         print("Temp Scalar 81: ")
-    # biased 80.9 biased needs to be 78
     elif 80.0 <= temperature <= 80.9:
         display_temperature = temperature -3
         print("Temp Scalar 80: ")
@@ -246,7 +244,7 @@ input_range = [80.0, 81.0, 82.0, 82.7, 83.0, 110.0]
 output_range = [80.0 - 3.3, 81.0 - 3.2, 82.0 - 3.1, 82.7 - 3.0, 83.0 - 2.95, 110.0 - 8.0]
 while True:
     # By default BME280 increases approximately 0.1 per 1 degree over 50F due to PCB heating
-    # This logarithm is a work in progress
+    # This logarithm is a work in progress (untested over 85F)
     temperature = bme280.temperature * 1.8 + 32
     temperature = round(temperature, 1)
     print("Temp: ", temperature) # biased reading
@@ -262,29 +260,69 @@ Actual Temp: 79.8
 # Actual temp compared against mercury thermometers is 99.1% accurate
 ```
 
-## Temp sensor data points (for my own reference)
-### Unbiased BME280 vs Mercury Thermometer
-- 87.2 = 83
-- 87.0 = 83
-- 86.5 = 83
-- 86.2 = 83
-- 85.5 = 82
-- 85.3 = 82
-- 85.1 = 82
-- 84.9 = 82
-- 84.8 = 82
-- 84.6 = 82
-- 83.8 = 81
-- 82.7 = 80
-- 82.4 = 80
-- 82.0 = 79
-- 81.9 = 79
-- 81.4 = 78
-- 80.9 = 78
-- 80.6 = 77
+## DisplayIO Show/Hide Popup (function by Neradoc)
+```py
+# 3.5" TFT Featherwing is 480x320
+displayio.release_displays()
+DISPLAY_WIDTH = 480
+DISPLAY_HEIGHT = 320
 
-## Common Secrets.py Config (Circuit Python 6 & 7 to 8.0 beta)
-for AdafruitIO, OpenWeatherMaps, and Time
+warning_label = label.Label(terminalio.FONT)
+warning_label.anchor_point = (0.5, 1.0)
+warning_label.anchored_position = (DISPLAY_WIDTH/2, DISPLAY_HEIGHT - 35)
+warning_label.scale = (3)
+warning_label.color = TEXT_RED
+
+warning_text_label = label.Label(terminalio.FONT)
+warning_text_label.anchor_point = (0.5, 1.0)
+warning_text_label.anchored_position = (DISPLAY_WIDTH/2, DISPLAY_HEIGHT - 5)
+warning_text_label.scale = (2)
+warning_text_label.color = TEXT_RED
+
+# Warning label RoundRect
+roundrect = RoundRect(int(DISPLAY_WIDTH/2-140), int(DISPLAY_HEIGHT-75), 280, 75, 10, fill=0x0, outline=0xFFFFFF, stroke=1)
+
+main_group = displayio.Group()
+# Add warning popup group
+main_group.append(warning_group)
+warning_group.append(roundrect)
+warning_group.append(warning_label)
+warning_group.append(warning_text_label)
+display.show(main_group)
+
+def show_warning(title, text):
+    warning_label.text = title
+    warning_text_label.text = text
+    warning_group.hidden = False
+def hide_warning():
+    warning_group.hidden = True
+    
+while True:
+pressure = bme280.pressure  # designed for BME280 Pressure sensor
+# Pressure based warning popups
+    if pressure <= 919: # pray you never see this message
+        show_warning("HOLY SHIT", "Seek Shelter!")
+    elif 920 <= pressure <= 979:
+        show_warning("DANGER", "Major Hurricane")
+    elif 980 <= pressure <= 989:
+        show_warning("DANGER", "Minor Hurricane")
+    elif 990 <= pressure <= 1001:
+        show_warning("WARNING", "Tropical Storm")
+    elif 1002 <= pressure <= 1010:  # sudden gusty downpours
+        show_warning("CAUTION", "Low Pressure System")
+    elif 1018 >= pressure <= 1025:  #sudden light cold rain
+        show_warning("CAUTION", "High Pressure System")
+    elif pressure >= 1026:
+        show_warning("WARNING", "Hail & Tornados?")
+    else:
+        hide_warning() # Normal pressures: 1111-1017 (no message)
+```
+
+![pressure_warning](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/f8dd297c-9ff0-41eb-8bde-cdd1092f2ced)
+
+
+
+## Common Secrets.py Config (does not initate web workflow)
 ```py
 secrets = {
     "ssid": "Your Wifi SSID",
@@ -299,12 +337,10 @@ secrets = {
     }
 ```
 
-## Common Settings.toml Config (Circuit Python 8.0+)
-Circuit Python now uses a Settings.toml file (also creates web workflow automatically)
+## Common Settings.toml Config (automatically initiates web workflow on port 80)
 ```py
-AP_SSID = "Your Wifi SSID"  # Special variable recognized by web workflow
-AP_PASSWORD = "Your WiFi Password"  # Special variable recognized by web workflow
-timezone = "America/New_York" # Check http://worldtimeapi.org/timezones
+CIRCUITPY_WIFI_SSID = "Your Wifi SSID"  # Special variable recognized by web workflow
+CIRCUITPY_WIFI_PASSWORD = "Your WiFi Password"  # Special variable recognized by web workflow
 aio_username = "Your AdafruitIO Username"
 aio_key = "Your AdafruitIO Token"
 openweather_token = "Your OpenWeatherMaps Token"
@@ -372,7 +408,7 @@ If you're not installing WipperSnapper and using Circuit Python continue reading
 
 ## Screenshot (Bitmap Saver)
 - Requires bitmap_saver library & SD Card (either built into a device or as a module)
-- After it says "Screenshot Taken" you have 120 seconds to remove the SD card, transfer the image to your PC, and reinsert the SD card back into the microcontroller otherwise the script will crash and you'll have to reboot the microcontroller.  You can set it to whatever time value you want. I find 3 minutes to be sufficient.
+- Updated code to unmount SD card after screenshot to avoid data corruption
 ```py
 import adafruit_sdcard
 import storage
