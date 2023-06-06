@@ -16,7 +16,7 @@
 # Purpose:
 - Combined with a large 10000mah battery this serves as a real-time environment station during a power outage.
 - This device has been through a hurricane in 2021 and 2 hurricanes in 2022.
-- This not an early warning device, it's a danger level device during a hurricane.
+- This is not designed as an early warning device, it's a danger level device during a hurricane.
 - As barometric pressure drops the strength of damage in a hurricane is often higher
 - The BME280 barometric sensor on this device in particular is extremely accurate.
 
