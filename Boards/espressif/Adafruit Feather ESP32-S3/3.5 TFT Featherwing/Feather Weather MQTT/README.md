@@ -46,7 +46,7 @@ Next Update:  15 minutes
 ```
 
 # AdafruitIO Dashboard Example:
-![Feather Weather AdafruitIO](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/a4dc7df2-4ec1-4d8e-885e-ebaf9d97369c)
+![Feather Weather AdafruitIO](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/5d2ee2b0-95f7-40b2-9dbd-8542a8e40aeb)
 
 
 You can use this working example to customize the weather data you want from OpenWeatherMap (tons more data available) for your project. I'm only pulling basic data and in limited quantity because there is a limitation for how many calls you can make per day. Consult the OpenWeatherMaps & AdafruitIO API Docs.
