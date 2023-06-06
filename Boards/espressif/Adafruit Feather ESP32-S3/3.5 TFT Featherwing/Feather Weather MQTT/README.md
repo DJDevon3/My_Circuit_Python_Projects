@@ -10,7 +10,7 @@
 - Default online lat/lon is set to Adafruit HQ location, ideally you'd also this this to your location
  
  # Pressure Warning Correlation:
- This is a screenshot from a website screenshot to show the built-in storm warning messages work very well.
+ This is a screenshot from a radar website to show the built-in storm warning messages work very well.
 ![Capture](https://user-images.githubusercontent.com/49322231/235323256-1daa61f0-caa2-432b-9cb6-3666e063a1fc.JPG)
 
 # Purpose:
