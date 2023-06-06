@@ -533,7 +533,7 @@ while True:
         show_warning("WARNING", "Tropical Storm")
     elif 1002 <= pressure <= 1010:  # sudden gusty downpours
         show_warning("CAUTION", "Low Pressure System")
-    elif 1018 >= pressure <= 1025:  #sudden light cold rain
+    elif 1018 <= pressure <= 1025:  #sudden light cold rain
         show_warning("CAUTION", "High Pressure System")
     elif pressure >= 1026:
         show_warning("WARNING", "Hail & Tornados?")
