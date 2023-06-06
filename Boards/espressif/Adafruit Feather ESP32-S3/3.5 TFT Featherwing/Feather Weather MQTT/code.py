@@ -55,8 +55,8 @@ aio_key = os.getenv('aio_key')
 mqtt_topic = aio_username + '/g/default'
 
 # Creates & Publishes to default AdafruitIO group
-feed_01 = "BME280-RealTemp"
-feed_02 = "BME280-Unbiased"
+feed_01 = "BME280-Unbiased"
+feed_02 = "BME280-RealTemp"
 feed_03 = "BME280-Pressure"
 feed_04 = "BME280-Humidity"
 
