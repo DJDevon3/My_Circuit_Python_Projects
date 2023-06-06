@@ -148,7 +148,6 @@ DATA_SOURCE += "&exclude=hourly,daily"
 DATA_SOURCE += "&appid=" + OWKEY
 DATA_SOURCE += "&units=imperial"
 
-
 def _format_datetime(datetime):
     return "{:02}/{:02}/{} {:02}:{:02}:{:02}".format(
         datetime.tm_mon,
@@ -159,14 +158,12 @@ def _format_datetime(datetime):
         datetime.tm_sec,
     )
 
-
 def _format_date(datetime):
     return "{:02}/{:02}/{:02}".format(
         datetime.tm_year,
         datetime.tm_mon,
         datetime.tm_mday,
     )
-
 
 def _format_time(datetime):
     return "{:02}:{:02}".format(
@@ -430,20 +427,6 @@ io.on_unsubscribe = unsubscribe
 io.on_publish = publish
 io.on_message = message
 
-# Connect to Wi-Fi
-print("\n===============================")
-print("Connecting to WiFi...")
-requests = adafruit_requests.Session(pool, ssl.create_default_context())
-while not wifi.radio.ipv4_address:
-    try:
-        wifi.radio.connect(os.getenv('CIRCUITPY_WIFI_SSID'), os.getenv('CIRCUITPY_WIFI_PASSWORD'))
-    except ConnectionError as e:
-        print("Connection Error:", e)
-        print("Retrying in 10 seconds")
-    time.sleep(10)
-    gc.collect()
-print("Connected!\n")
-
 try:
     vbat_label.text = f"{battery_monitor.cell_voltage:.2f}"
 except (ValueError, RuntimeError, OSError) as e:
@@ -457,7 +440,6 @@ input_range = [80.0, 81.0, 82.0, 82.7, 83.0, 110.0]
 output_range = [80.0 - 3.3, 81.0 - 3.2, 82.0 - 3.1, 82.7 - 2.99, 83.0 - 2.94, 110.0 - 8.0]
 
 while True:
-    gc.collect()
     hello_label.text = "ESP32-S3 MQTT Feather Weather"
     debug_OWM = False  # Set to True for Serial Print Debugging
 
@@ -539,120 +521,136 @@ while True:
         show_warning("WARNING", "Hail & Tornados?")
     else:
         hide_warning() # Normal pressures: 1111-1017 (no message)
-
-    try:
-        if debug_OWM:
-            print("Attempting to GET Weather!")
-            # Uncomment line below to print API URL with all data filled in
-            # print("Full API GET URL: ", DATA_SOURCE)
-            print("\n===============================")
-        response = requests.get(DATA_SOURCE).json()
-
-        # uncomment the 2 lines below to see full json response
-        # dump_object = json.dumps(response)
-        # print("JSON Dump: ", dump_object)
-        if int(response['current']['dt']) == "KeyError: example":
-            print("Unable to retrive data due to key error")
-            print("most likely OpenWeather Throttling for too many API calls per day")
-        else:
-            if debug_OWM:
-                print("OpenWeather Success")
-
-        get_timestamp = int(response['current']['dt'] + int(tz_offset_seconds))
-        current_unix_time = time.localtime(get_timestamp)
-        current_struct_time = time.struct_time(current_unix_time)
-        current_date = "{}".format(_format_date(current_struct_time))
-        current_time = "{}".format(_format_time(current_struct_time))
-
-        sunrise = int(response['current']['sunrise'] + int(tz_offset_seconds))
-        sunrise_unix_time = time.localtime(sunrise)
-        sunrise_struct_time = time.struct_time(sunrise_unix_time)
-        sunrise_time = "{}".format(_format_time(sunrise_struct_time))
-
-        sunset = int(response['current']['sunset'] + int(tz_offset_seconds))
-        sunset_unix_time = time.localtime(sunset)
-        sunset_struct_time = time.struct_time(sunset_unix_time)
-        sunset_time = "{}".format(_format_time(sunset_struct_time))
-
-        owm_temp = response['current']['temp']
-        owm_pressure = response['current']['pressure']
-        owm_humidity = response['current']['humidity']
-        weather_type = response['current']['weather'][0]['main']
-
-        if debug_OWM:
-            print("Timestamp:", current_date + " " + current_time)
-            print("Sunrise:", sunrise_time)
-            print("Sunset:", sunset_time)
-            print("Temp:", owm_temp)
-            print("Pressure:", owm_pressure)
-            print("Humidity:", owm_humidity)
-            print("Weather Type:", weather_type)
-
-            print("\nNext Update in %s %s" % (int(sleep_int), sleep_time_conversion))
-            print("===============================")
-
-        gc.collect()
-        date_label.text = current_date
-        time_label.text = current_time
-        owm_temp_data_shadow.text = f"{owm_temp:.1f}"
-        owm_temp_data_label.text = f"{owm_temp:.1f}"
-        owm_humidity_data_label.text = f"{owm_humidity:.1f} %"
-        owm_barometric_data_label.text = f"{owm_pressure:.1f}"
-
-    except (ValueError, RuntimeError, gaierror) as e:
-        print("Failed to get OWM data, retrying\n", e)
-        time.sleep(240)
-        continue
-    response = None
-
-    # Connect to Adafruit IO
-    print("Connecting to Adafruit IO...")
-    try:
-        io.connect()
-    except (ValueError, RuntimeError, AdafruitIO_MQTTError) as e:
-        print("Failed to connect, retrying\n", e)
-
-    if (time.monotonic() - last) >= sleep_time:
-        value = temperature
-        mqtt_humidity = round(bme280.relative_humidity, 1)
-        mqtt_pressure = round(pressure, 1)
+        
+    # Connect to Wi-Fi
+    print("\n===============================")
+    print("Connecting to WiFi...")
+    requests = adafruit_requests.Session(pool, ssl.create_default_context())
+    while not wifi.radio.ipv4_address:
         try:
-            print(f"Publishing {feed_01}: {value} | {feed_02}: {display_temperature} | {feed_03}: {mqtt_pressure} | {feed_03}: {mqtt_humidity}")
-            io.publish(feed_01, value)
-            io.publish(feed_02, display_temperature)
-            io.publish(feed_03, mqtt_pressure)
-            io.publish(feed_04, mqtt_humidity)
-        except (ValueError, RuntimeError, ConnectionError, OSError, MMQTTException) as e:
-            print("io.publish Error: \n", e)
+            wifi.radio.connect(os.getenv('CIRCUITPY_WIFI_SSID'), os.getenv('CIRCUITPY_WIFI_PASSWORD'))
+        except ConnectionError as e:
+            print("Connection Error:", e)
+            print("Retrying in 10 seconds")
+        time.sleep(10)
+        gc.collect()
+    print("Connected!\n")
+    
+    while wifi.radio.ipv4_address:
+        try:
+            if debug_OWM:
+                print("Attempting to GET Weather!")
+                # Uncomment line below to print API URL with all data filled in
+                # print("Full API GET URL: ", DATA_SOURCE)
+                print("\n===============================")
+            response = requests.get(DATA_SOURCE).json()
+
+            # uncomment the 2 lines below to see full json response
+            # dump_object = json.dumps(response)
+            # print("JSON Dump: ", dump_object)
+            if int(response['current']['dt']) == "KeyError: example":
+                print("Unable to retrive data due to key error")
+                print("most likely OpenWeather Throttling for too many API calls per day")
+            else:
+                if debug_OWM:
+                    print("OpenWeather Success")
+
+            get_timestamp = int(response['current']['dt'] + int(tz_offset_seconds))
+            current_unix_time = time.localtime(get_timestamp)
+            current_struct_time = time.struct_time(current_unix_time)
+            current_date = "{}".format(_format_date(current_struct_time))
+            current_time = "{}".format(_format_time(current_struct_time))
+
+            sunrise = int(response['current']['sunrise'] + int(tz_offset_seconds))
+            sunrise_unix_time = time.localtime(sunrise)
+            sunrise_struct_time = time.struct_time(sunrise_unix_time)
+            sunrise_time = "{}".format(_format_time(sunrise_struct_time))
+
+            sunset = int(response['current']['sunset'] + int(tz_offset_seconds))
+            sunset_unix_time = time.localtime(sunset)
+            sunset_struct_time = time.struct_time(sunset_unix_time)
+            sunset_time = "{}".format(_format_time(sunset_struct_time))
+
+            owm_temp = response['current']['temp']
+            owm_pressure = response['current']['pressure']
+            owm_humidity = response['current']['humidity']
+            weather_type = response['current']['weather'][0]['main']
+
+            if debug_OWM:
+                print("Timestamp:", current_date + " " + current_time)
+                print("Sunrise:", sunrise_time)
+                print("Sunset:", sunset_time)
+                print("Temp:", owm_temp)
+                print("Pressure:", owm_pressure)
+                print("Humidity:", owm_humidity)
+                print("Weather Type:", weather_type)
+
+                print("\nNext Update in %s %s" % (int(sleep_int), sleep_time_conversion))
+                print("===============================")
+
+            gc.collect()
+            date_label.text = current_date
+            time_label.text = current_time
+            owm_temp_data_shadow.text = f"{owm_temp:.1f}"
+            owm_temp_data_label.text = f"{owm_temp:.1f}"
+            owm_humidity_data_label.text = f"{owm_humidity:.1f} %"
+            owm_barometric_data_label.text = f"{owm_pressure:.1f}"
+
+        except (ValueError, RuntimeError, gaierror) as e:
+            print("Failed to get OWM data, retrying\n", e)
+            time.sleep(240)
+            continue
+        response = None
+
+        # Connect to Adafruit IO
+        print("Connecting to Adafruit IO...")
+        try:
+            io.connect()
+        except (ValueError, RuntimeError, AdafruitIO_MQTTError) as e:
+            print("Failed to connect, retrying\n", e)
+
+        if (time.monotonic() - last) >= sleep_time:
+            value = temperature
+            mqtt_humidity = round(bme280.relative_humidity, 1)
+            mqtt_pressure = round(pressure, 1)
+            try:
+                print(f"Publishing {feed_01}: {value} | {feed_02}: {display_temperature} | {feed_03}: {mqtt_pressure} | {feed_03}: {mqtt_humidity}")
+                io.publish(feed_01, value)
+                io.publish(feed_02, display_temperature)
+                io.publish(feed_03, mqtt_pressure)
+                io.publish(feed_04, mqtt_humidity)
+            except (ValueError, RuntimeError, ConnectionError, OSError, MMQTTException) as e:
+                print("io.publish Error: \n", e)
+                time.sleep(60)
+                continue
+            last = time.monotonic()
+        #io.disconnect()
+
+        try:
+            debug_NOAA = False
+            url = 'https://radar.weather.gov/ridge/standard/SOUTHEAST_0.gif'
+            r = requests.get(url)
+            if debug_NOAA:
+                print(r.status_code)
+                print(r.headers)
+                print(len(r.content))
+                print("Content Type: ", r.headers.get('content-type'))
+                print("Object URL: ", r)
+            with open('/sd/SOUTHEAST_0.gif', 'wb') as fp:
+                fp.write(r.content)
+            if debug_NOAA:
+                print("Wrote File: /sd/SOUTHEAST_0.gif")
+
+        except (ValueError, RuntimeError) as e:
+            print("Failed to get NOAA data, retrying\n", e)
             time.sleep(60)
             continue
-        last = time.monotonic()
-    #io.disconnect()
+        r = None
 
-    try:
-        debug_NOAA = False
-        url = 'https://radar.weather.gov/ridge/standard/SOUTHEAST_0.gif'
-        r = requests.get(url)
-        if debug_NOAA:
-            print(r.status_code)
-            print(r.headers)
-            print(len(r.content))
-            print("Content Type: ", r.headers.get('content-type'))
-            print("Object URL: ", r)
-        with open('/sd/SOUTHEAST_0.gif', 'wb') as fp:
-            fp.write(r.content)
-        if debug_NOAA:
-            print("Wrote File: /sd/SOUTHEAST_0.gif")
-
-    except (ValueError, RuntimeError) as e:
-        print("Failed to get NOAA data, retrying\n", e)
-        time.sleep(60)
-        continue
-    r = None
-
-    print("Next Update: ", time_calc(sleep_time))
-    print("===============================")
-    gc.collect()
+        print("Next Update: ", time_calc(sleep_time))
+        print("===============================")
+        gc.collect()
+        time.sleep(sleep_time)
 
     TAKE_SCREENSHOT = False  # Set to True to take a screenshot
     # You have sleep amount of time to remove SD card, transfer to PC, and return it
@@ -665,5 +663,3 @@ while True:
         storage.umount(vfs)
         print("SD Card Unmounted")  # unsafe to remove SD card until you see this message
         time.sleep(120)
-
-    time.sleep(sleep_time)
