@@ -75,6 +75,7 @@ This one is meant for finished & refined scripts not debugging.
 It will update every 15 minutes regardless if you attempt to save in between that time or not.
 Strict update timer only, no interference.
 ```py
+import time
 # 900 = 15 mins, 1800 = 30 mins, 3600 = 1 hour
 sleep_time = 900
 def time_calc(input_time):
