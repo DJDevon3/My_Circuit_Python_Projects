@@ -71,6 +71,9 @@ Board Uptime: 1.2 days
 Next Update: 30 minutes
 ```
 ## Timer update example with time_calc
+This one is meant for finished & refined scripts not debugging.
+It will update every 15 minutes regardless if you attempt to save in between that time or not.
+Strict update timer only, no interference.
 ```py
 # 900 = 15 mins, 1800 = 30 mins, 3600 = 1 hour
 sleep_time = 900
@@ -109,8 +112,8 @@ time.sleep(sleep_time)
 ```
 code.py output
 ```py
-Last Updated:  5 seconds
-Next Update:  15 minutes
+Last Updated:  3 minutes
+Next Update:  12 minutes
 ```
 
 ## Get Time from Online (ESP32-S2)
