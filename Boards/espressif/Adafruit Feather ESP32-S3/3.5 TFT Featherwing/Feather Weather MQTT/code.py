@@ -74,6 +74,7 @@ display = HX8357(display_bus, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT)
 # Initialize BME280 Sensor
 i2c = board.STEMMA_I2C()  # uses board.SCL and board.SDA
 bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c)
+# Manually set or automate sea_level_pressure if you don't live in Florida.
 bme280.sea_level_pressure = bme280.pressure
 # print("Altitude = %0.2f meters" % bme280.altitude)
 
@@ -646,16 +647,15 @@ while True:
             time.sleep(60)
             continue
         r = None
-
-        print("Next Update: ", time_calc(sleep_time))
+        last_update = time.monotonic() - last
+        print("Last Updated: ", time_calc(last_update))
+        update_time = sleep_time - last_update
+        print("Next Update: ", time_calc(update_time))
         print("===============================")
         gc.collect()
         time.sleep(sleep_time)
 
     TAKE_SCREENSHOT = False  # Set to True to take a screenshot
-    # You have sleep amount of time to remove SD card, transfer to PC, and return it
-    # Otherwise it will crash next reload and board will need to be restarted
-    # Good for taking screenshots of your pretty display
     if TAKE_SCREENSHOT:
         print("Taking Screenshot... ")
         save_pixels("/sd/screenshot.bmp", display)
