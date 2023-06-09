@@ -74,6 +74,8 @@ display = HX8357(display_bus, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT)
 # Initialize BME280 Sensor
 i2c = board.STEMMA_I2C()  # uses board.SCL and board.SDA
 bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c)
+bme280.sea_level_pressure = bme280.pressure
+# print("Altitude = %0.2f meters" % bme280.altitude)
 
 # Initialize SDCard on TFT Featherwing
 cs = digitalio.DigitalInOut(board.D5)
@@ -436,8 +438,8 @@ last = 0
 display_temperature = 0
 # Define the input range and output range
 # This might be affected by high ambient humidity?
-input_range = [80.0, 81.0, 82.0, 82.7, 83.0, 110.0]
-output_range = [80.0 - 3.3, 81.0 - 3.2, 82.0 - 3.1, 82.7 - 2.99, 83.0 - 2.94, 110.0 - 8.0]
+input_range = [80.0, 110.0]
+output_range = [80.0 - 3.0, 110.0 - 8.0]
 
 while True:
     hello_label.text = "ESP32-S3 MQTT Feather Weather"
@@ -489,39 +491,40 @@ while True:
 
     # Account for PCB heating bias, gets slightly hotter as ambient increases
     temperature = bme280.temperature * 1.8 + 32
-    temperature = round(temperature, 2)
+    temp_round = round(temperature, 2)
     print("Temp: ", temperature) # biased reading
     display_temperature = np.interp(temperature, input_range, output_range)
     display_temperature = round(display_temperature[0], 2)
     print(f"Actual Temp: {display_temperature:.1f}")
-    pressure = bme280.pressure
     # pressure = 1000  # Manually set to debug warning message
+    mqtt_humidity = round(bme280.relative_humidity, 1)
+    mqtt_pressure = round(bme280.pressure, 1)
 
     temp_data_shadow.text = f"{display_temperature:.1f}"
     temp_data_label.text = f"{display_temperature:.1f}"
     humidity_label.text = "Humidity"
-    humidity_data_label.text = f"{bme280.relative_humidity:.1f} %"
+    humidity_data_label.text = f"{mqtt_humidity:.1f} %"
     barometric_label.text = "Pressure"
-    barometric_data_label.text = f"{pressure:.1f}"
+    barometric_data_label.text = f"{mqtt_pressure:.1f}"
 
     # Warnings based on local sensors
-    if pressure <= 919: # pray you never see this message
+    if mqtt_pressure <= 919: # pray you never see this message
         show_warning("HOLY SHIT", "Seek Shelter!")
-    elif 920 <= pressure <= 979:
+    elif 920 <= mqtt_pressure <= 979:
         show_warning("DANGER", "Major Hurricane")
-    elif 980 <= pressure <= 989:
+    elif 980 <= mqtt_pressure <= 989:
         show_warning("DANGER", "Minor Hurricane")
-    elif 990 <= pressure <= 1001:
+    elif 990 <= mqtt_pressure <= 1001:
         show_warning("WARNING", "Tropical Storm")
-    elif 1002 <= pressure <= 1010:  # sudden gusty downpours
+    elif 1002 <= mqtt_pressure <= 1009:  # sudden gusty downpours
         show_warning("CAUTION", "Low Pressure System")
-    elif 1018 <= pressure <= 1025:  #sudden light cold rain
+    elif 1019 <= mqtt_pressure <= 1025:  #sudden light cold rain
         show_warning("CAUTION", "High Pressure System")
-    elif pressure >= 1026:
+    elif mqtt_pressure >= 1026:
         show_warning("WARNING", "Hail & Tornados?")
     else:
-        hide_warning() # Normal pressures: 1111-1017 (no message)
-        
+        hide_warning() # Normal pressures: 1110-1018 (no message)
+
     # Connect to Wi-Fi
     print("\n===============================")
     print("Connecting to WiFi...")
@@ -535,7 +538,7 @@ while True:
         time.sleep(10)
         gc.collect()
     print("Connected!\n")
-    
+
     while wifi.radio.ipv4_address:
         try:
             if debug_OWM:
@@ -610,12 +613,9 @@ while True:
             print("Failed to connect, retrying\n", e)
 
         if (time.monotonic() - last) >= sleep_time:
-            value = temperature
-            mqtt_humidity = round(bme280.relative_humidity, 1)
-            mqtt_pressure = round(pressure, 1)
             try:
-                print(f"Publishing {feed_01}: {value} | {feed_02}: {display_temperature} | {feed_03}: {mqtt_pressure} | {feed_03}: {mqtt_humidity}")
-                io.publish(feed_01, value)
+                print(f"Publishing {feed_01}: {temp_round} | {feed_02}: {display_temperature} | {feed_03}: {mqtt_pressure} | {feed_04}: {mqtt_humidity}")
+                io.publish(feed_01, temp_round)
                 io.publish(feed_02, display_temperature)
                 io.publish(feed_03, mqtt_pressure)
                 io.publish(feed_04, mqtt_humidity)
