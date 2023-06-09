@@ -3,7 +3,9 @@ Social Media Tracker Project
 
 Uses 10x 7-segment clock display backpacks and multiplexer to exceed the default 8x I2C address limit. It tracks the amount of followers/subscribers I have across multiple social media platforms. Uses Adafruit's Circuit Python requests library. All code is open source including the individual API integrations I wrote and contributed to Adafruit's example library. This project takes all the individual API's (social media site API's) and combines them into 1 display as a demonstration of multiple-API integrations.
 
-https://user-images.githubusercontent.com/49322231/227807810-f3f5ae5a-ba3e-4756-8a7d-cdd30b6a0f5e.mov
+
+https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/30e40caa-3723-4f5d-8acc-3fbdc9f097bd
+
 
 ### Software Requirement:
 - Youtube API Developer Account Token
