@@ -70,6 +70,48 @@ Calc Time:  15 minutes
 Board Uptime: 1.2 days
 Next Update: 30 minutes
 ```
+## Timer update example with time_calc
+```py
+# 900 = 15 mins, 1800 = 30 mins, 3600 = 1 hour
+sleep_time = 900
+def time_calc(input_time):
+    if input_time < 60:
+        sleep_int = input_time
+        time_output = f"{sleep_int:.0f} seconds"
+    elif 60 <= input_time < 3600:
+        sleep_int = input_time / 60
+        time_output = f"{sleep_int:.0f} minutes"
+    elif 3600 <= input_time < 86400:
+        sleep_int = input_time / 60 / 60
+        time_output = f"{sleep_int:.0f} hours"
+    elif 86400 <= input_time < 432000:
+        sleep_int = input_time / 60 / 60 / 24
+        time_output = f"{sleep_int:.1f} days"
+    else:  # if > 5 days convert float to int & display whole days
+        sleep_int = input_time / 60 / 60 / 24
+        time_output = f"{sleep_int:.0f} days"
+    return time_output
+    
+if (time.monotonic() - last) >= sleep_time:
+    try:
+        # Updates something here when sleep time exceeds last update
+    except (ValueError, RuntimeError, OSError) as e:
+        print("Error: \n", e)
+        time.sleep(60)
+        continue
+    last = time.monotonic()
+    
+last_update = time.monotonic() - last
+print("Last Updated: ", time_calc(last_update))
+update_time = sleep_time - last_update
+print("Next Update: ", time_calc(update_time))
+time.sleep(sleep_time)
+```
+code.py output
+```py
+Last Updated:  5 seconds
+Next Update:  15 minutes
+```
 
 ## Get Time from Online (ESP32-S2)
 For boards with WiFi and no RTC
