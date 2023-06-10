@@ -1,9 +1,0 @@
-CIRCUITPY_WIFI_SSID = "Your Wifi SSID"  # Special variable recognized by web workflow
-CIRCUITPY_WIFI_PASSWORD = "Your WiFi Password"  # Special variable recognized by web workflow
-aio_username = "Your AdafruitIO Username"
-aio_key = "Your AdafruitIO Token"
-openweather_token = "Your OpenWeatherMaps Token"
-openweather_lat = "40.7259" #default lat/lon is adafruit industries
-openweather_lon = "-74.0055"
-timezone = "America/New_York"  # Check http://worldtimeapi.org/timezones
-timezone_offset = "-14400" # timezone offset in seconds plus or minus

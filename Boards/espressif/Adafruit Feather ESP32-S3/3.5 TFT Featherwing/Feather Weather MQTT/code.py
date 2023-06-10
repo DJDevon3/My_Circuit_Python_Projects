@@ -41,9 +41,19 @@ DISPLAY_HEIGHT = 320
 # Highlander voice: "There can be only one pool"
 pool = socketpool.SocketPool(wifi.radio)
 
-# AdafruitIO Dashboard credentials
-aio_username = os.getenv('aio_username')
-aio_key = os.getenv('aio_key')
+try:
+    from secrets import secrets
+except ImportError:
+    print("Secrets File Import Error")
+    raise
+
+aio_username = secrets['aio_username']
+aio_key = secrets['aio_key']
+OWKEY = secrets['openweather_token']
+OWLAT = secrets['openweather_lat']
+OWLON = secrets['openweather_lon']
+timezone = secrets['timezone']
+tz_offset_seconds = secrets['timezone_offset']
 
 # MQTT Topic
 # Use this format for a standard MQTT broker
@@ -74,7 +84,6 @@ display = HX8357(display_bus, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT)
 # Initialize BME280 Sensor
 i2c = board.STEMMA_I2C()  # uses board.SCL and board.SDA
 bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c)
-# Manually set or automate sea_level_pressure if you don't live in Florida.
 bme280.sea_level_pressure = bme280.pressure
 # print("Altitude = %0.2f meters" % bme280.altitude)
 
@@ -94,12 +103,6 @@ battery_monitor = LC709203F(board.I2C())
 battery_monitor.thermistor_bconstant = 3950
 battery_monitor.thermistor_enable = True
 
-OWKEY = os.getenv('openweather_token')
-OWLAT = os.getenv('openweather_lat')
-OWLON = os.getenv('openweather_lon')
-timezone = os.getenv('timezone')
-tz_offset_seconds = os.getenv('timezone_offset')
-
 # Converts seconds in minutes/hours/days
 def time_calc(input_time):
     if input_time < 60:
@@ -111,12 +114,9 @@ def time_calc(input_time):
     elif 3600 <= input_time < 86400:
         sleep_int = input_time / 60 / 60
         time_output = f"{sleep_int:.0f} hours"
-    elif 86400 <= input_time < 432000:
+    else:
         sleep_int = input_time / 60 / 60 / 24
         time_output = f"{sleep_int:.1f} days"
-    else:  # if > 5 days convert float to int & display whole days
-        sleep_int = input_time / 60 / 60 / 24
-        time_output = f"{sleep_int:.0f} days"
     return time_output
 
 # Quick Colors for Labels
@@ -439,8 +439,8 @@ last = 0
 display_temperature = 0
 # Define the input range and output range
 # This might be affected by high ambient humidity?
-input_range = [80.0, 110.0]
-output_range = [80.0 - 3.0, 110.0 - 8.0]
+input_range = [50.0, 120.0]
+output_range = [50.0 - 0.1, 120.0 - 2.4]
 
 while True:
     hello_label.text = "ESP32-S3 MQTT Feather Weather"
@@ -532,7 +532,7 @@ while True:
     requests = adafruit_requests.Session(pool, ssl.create_default_context())
     while not wifi.radio.ipv4_address:
         try:
-            wifi.radio.connect(os.getenv('CIRCUITPY_WIFI_SSID'), os.getenv('CIRCUITPY_WIFI_PASSWORD'))
+            wifi.radio.connect(secrets['ssid'], secrets['password'])
         except ConnectionError as e:
             print("Connection Error:", e)
             print("Retrying in 10 seconds")
@@ -589,7 +589,7 @@ while True:
                 print("Humidity:", owm_humidity)
                 print("Weather Type:", weather_type)
 
-                print("\nNext Update in %s %s" % (int(sleep_int), sleep_time_conversion))
+                print("Next Update: ", time_calc(sleep_time))
                 print("===============================")
 
             gc.collect()
@@ -647,15 +647,16 @@ while True:
             time.sleep(60)
             continue
         r = None
-        last_update = time.monotonic() - last
-        print("Last Updated: ", time_calc(last_update))
-        update_time = sleep_time - last_update
-        print("Next Update: ", time_calc(update_time))
+
+        print("Next Update: ", time_calc(sleep_time))
         print("===============================")
         gc.collect()
         time.sleep(sleep_time)
 
     TAKE_SCREENSHOT = False  # Set to True to take a screenshot
+    # You have sleep amount of time to remove SD card, transfer to PC, and return it
+    # Otherwise it will crash next reload and board will need to be restarted
+    # Good for taking screenshots of your pretty display
     if TAKE_SCREENSHOT:
         print("Taking Screenshot... ")
         save_pixels("/sd/screenshot.bmp", display)
