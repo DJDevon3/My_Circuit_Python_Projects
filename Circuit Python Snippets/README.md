@@ -278,7 +278,7 @@ Actual Temp: 77.6
 ```
 
 ## Temp Sensor Bias Adjust Algorithm (BME280)
-This completely replaces the manual bias adjust example above. Less code and can be more accurate.
+This completely replaces the manual bias adjust example above. Less code and can be more accurate. For the most accurate readings only compare against a "NIST traceable" thermometer.
 ```py
 import ulab.numpy as np
 # Initialize BME280 Sensor
