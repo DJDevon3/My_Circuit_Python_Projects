@@ -292,7 +292,8 @@ display_temperature = 0
 
 # Example of linear interpolation (calibrate the data points as you go)
 # Start during any season. Will take you about a year to fully calibrate.
-# Being within plus or minus 2 degreess is acceptable. Being within 1% is the goal.
+# Being within plus/minus 2 degrees is acceptable. Being within 1% between 50F-110F is the goal.
+# Below 50F there is no bias needed as there is no board heating to compensate for.
 input_range = [50.0, 120.0]
 output_range = [50.0 - 0.1, 120.0 - 2.4]
 while True:
