@@ -32,15 +32,15 @@
 - Good for debugging or if you don't have a display. Serial output to the REPL console can be helpful.
 ```py
 ===============================
+Board Uptime:  56 minutes
+Temp:  86.4131
+Actual Temp: 85.2
+===============================
 Connecting to WiFi...
-Connected!
-
-Board Uptime:  38 minutes
-Temp:  82.96
-Actual Temp: 80.0
+WiFi! ✅
 Connecting to Adafruit IO...
-Connected to MQTT Broker!
-Publishing BME280-Unbiased: 82.96 | BME280-RealTemp: 80.01 | BME280-Pressure: 1012.5 | BME280-Pressure: 55.4
+Connected to MQTT Broker! ✅
+Publishing BME280-Unbiased: 86.41 | BME280-RealTemp: 85.22 | BME280-Pressure: 1012.1 | BME280-Humidity: 65.1
 Next Update:  15 minutes
 ===============================
 ```
