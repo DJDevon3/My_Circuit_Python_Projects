@@ -277,7 +277,8 @@ Temp Scalar 80:
 Actual Temp: 77.6
 ```
 
-## Temp Sensor Logarithm Bias Adjust (BME280)
+## Temp Sensor Bias Adjust Algorithm (BME280)
+This completely replaces the manual bias adjust example above. Less code and can be more accurate.
 ```py
 import ulab.numpy as np
 # Initialize BME280 Sensor
