@@ -654,13 +654,10 @@ while True:
         break
 
     TAKE_SCREENSHOT = False  # Set to True to take a screenshot
-    # You have sleep amount of time to remove SD card, transfer to PC, and return it
-    # Otherwise it will crash next reload and board will need to be restarted
-    # Good for taking screenshots of your pretty display
     if TAKE_SCREENSHOT:
         print("Taking Screenshot... ")
         save_pixels("/sd/screenshot.bmp", display)
         print("Screenshot Saved")
         storage.umount(vfs)
-        print("SD Card Unmounted, Safe to remove SD Card")
+        print("SD Card Unmounted! It is now safe to remove SD Card")
         time.sleep(120)
