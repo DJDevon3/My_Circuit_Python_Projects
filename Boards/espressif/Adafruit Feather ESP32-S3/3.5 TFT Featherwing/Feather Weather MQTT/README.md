@@ -10,15 +10,19 @@
 - Default online lat/lon is set to Adafruit HQ location, ideally you'd also this this to your location
  
  # Pressure Warning Correlation:
- This is a screenshot from a radar website to show the built-in storm warning messages work very well.
+- This is a screenshot from a radar website to show my storm warnings work quite well. In 2023 I detected a sub-tropical system 300 miles away.
+- All you really need is accurate sensors for temp, humidity, and especially pressure to detect storms.
+- The Adafruit BME280 has been exceptional to work with.
 ![Capture](https://user-images.githubusercontent.com/49322231/235323256-1daa61f0-caa2-432b-9cb6-3666e063a1fc.JPG)
 
 # Purpose:
-- Combined with a large 10000mah battery this serves as a real-time environment station during a power outage.
+- Combined with a large 10000mah battery this serves as a real-time environment station while online or offline (power outage).
+- In offline mode it will continue to function it simply won't update the blue labels.
 - This device has been through a hurricane in 2021 and 2 hurricanes in 2022.
-- This is not designed as an early warning device, it's a danger level device during a hurricane.
-- As barometric pressure drops the strength of damage in a hurricane is often higher
-- The BME280 barometric sensor on this device in particular is extremely accurate.
+- This is not designed as an early warning device although it does work well for that.
+- This device was designed as a danger level device during a hurricane.
+- As barometric pressure drops the strength of damage in a hurricane is often greater
+- The BME280 barometric sensor on this device in particular, is extremely accurate.
 
 ## Hardware Used:
 - [Adafruit Feather ESP32-S3](https://www.adafruit.com/product/5477)
