@@ -290,6 +290,7 @@ display_temperature = 0
 # output_range = [50.0 - 0.1, 81.0 - 3.2, 82.0 - 3.1, 82.7 - 2.99, 83.0 - 2.94, 120.0 - 8.0]
 # Example of linear interpolation (you need to calibrate the data points as you go)
 # Start at any season but will take you about a year to fully calibrate.
+# Being within plus or minus 2 degreess is acceptable but being within .5 degree is the goal
 input_range = [50.0, 120.0]
 output_range = [50.0 - 0.1, 120.0 - 2.4]
 while True:
