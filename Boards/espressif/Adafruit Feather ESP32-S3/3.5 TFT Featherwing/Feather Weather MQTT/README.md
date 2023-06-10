@@ -10,7 +10,8 @@
 - Default online lat/lon is set to Adafruit HQ location, ideally you'd also this this to your location
  
  # Pressure Warning Correlation:
-- This is a screenshot from a radar website to show my storm warnings work quite well. In 2023 I detected a sub-tropical system 300 miles away.
+- This is a screenshot from a radar website to show my storm warnings work quite well.
+- In 2023 I detected a sub-tropical system 300 miles away.
 - All you really need is accurate sensors for temp, humidity, and especially pressure to detect storms.
 - The Adafruit BME280 has been exceptional to work with.
 ![Capture](https://user-images.githubusercontent.com/49322231/235323256-1daa61f0-caa2-432b-9cb6-3666e063a1fc.JPG)
