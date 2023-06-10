@@ -440,7 +440,7 @@ display_temperature = 0
 # Define the input range and output range
 # This might be affected by high ambient humidity?
 input_range = [50.0, 120.0]
-output_range = [50.0 - 0.1, 120.0 - 2.4]
+output_range = [50.0 - 0.1, 120.0 - 2.2]
 
 while True:
     hello_label.text = "ESP32-S3 MQTT Feather Weather"
@@ -509,7 +509,7 @@ while True:
     barometric_data_label.text = f"{mqtt_pressure:.1f}"
 
     # Warnings based on local sensors
-    if mqtt_pressure <= 919: # pray you never see this message
+    if mqtt_pressure <= 919:  # pray you never see this message
         show_warning("HOLY SHIT", "Seek Shelter!")
     elif 920 <= mqtt_pressure <= 979:
         show_warning("DANGER", "Major Hurricane")
@@ -524,7 +524,7 @@ while True:
     elif mqtt_pressure >= 1026:
         show_warning("WARNING", "Hail & Tornados?")
     else:
-        hide_warning() # Normal pressures: 1110-1018 (no message)
+        hide_warning()  # Normal pressures: 1110-1018 (no message)
 
     # Connect to Wi-Fi
     print("\n===============================")
@@ -554,7 +554,7 @@ while True:
             # print("JSON Dump: ", dump_object)
             if int(response['current']['dt']) == "KeyError: example":
                 print("Unable to retrive data due to key error")
-                print("most likely OpenWeather Throttling for too many API calls per day")
+                print("likely OpenWeather Throttling for too many API calls")
             else:
                 if debug_OWM:
                     print("OpenWeather Success")
@@ -588,7 +588,6 @@ while True:
                 print("Pressure:", owm_pressure)
                 print("Humidity:", owm_humidity)
                 print("Weather Type:", weather_type)
-
                 print("Next Update: ", time_calc(sleep_time))
                 print("===============================")
 
@@ -600,7 +599,7 @@ while True:
             owm_humidity_data_label.text = f"{owm_humidity:.1f} %"
             owm_barometric_data_label.text = f"{owm_pressure:.1f}"
 
-        except (ValueError, RuntimeError, gaierror) as e:
+        except (ValueError, RuntimeError) as e:
             print("Failed to get OWM data, retrying\n", e)
             time.sleep(240)
             continue
@@ -625,7 +624,7 @@ while True:
                 time.sleep(60)
                 continue
             last = time.monotonic()
-        #io.disconnect()
+        # io.disconnect()
 
         try:
             debug_NOAA = False
@@ -652,6 +651,7 @@ while True:
         print("===============================")
         gc.collect()
         time.sleep(sleep_time)
+        break
 
     TAKE_SCREENSHOT = False  # Set to True to take a screenshot
     # You have sleep amount of time to remove SD card, transfer to PC, and return it
@@ -662,5 +662,5 @@ while True:
         save_pixels("/sd/screenshot.bmp", display)
         print("Screenshot Saved")
         storage.umount(vfs)
-        print("SD Card Unmounted")  # unsafe to remove SD card until you see this message
+        print("SD Card Unmounted, Safe to remove SD Card")
         time.sleep(120)
