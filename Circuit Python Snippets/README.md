@@ -284,13 +284,15 @@ import ulab.numpy as np
 i2c = board.STEMMA_I2C()  # uses board.SCL and board.SDA
 bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c)
 display_temperature = 0
-# Define the input range and output range
-# This might be affected by high ambient humidity?
-input_range = [50.0, 120.0]
-output_range = [50.0 - 0.1, 120.0 - 8.0]
+# By adding more data points you can create a curve instead of a linear interpolation.
+input_range = [50.0, 81.0, 82.0, 82.7, 83.0, 120.0]
+output_range = [50.0 - 0.1, 81.0 - 3.2, 82.0 - 3.1, 82.7 - 2.99, 83.0 - 2.94, 120.0 - 8.0]
+# Example of linear interpolation
+# input_range = [50.0, 120.0]
+# output_range = [50.0 - 0.1, 120.0 - 8.0]
 while True:
     # By default BME280 increases approximately 0.1 per 1 degree over 50F due to PCB heating
-    # This logarithm is a work in progress (untested over 85F)
+    # This algorithm is a work in progress (untested over 85F)
     temperature = bme280.temperature * 1.8 + 32
     temperature = round(temperature, 1)
     print("Temp: ", temperature) # biased reading
