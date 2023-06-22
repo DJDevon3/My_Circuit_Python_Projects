@@ -7,11 +7,8 @@ The M4 Express w/propmaker featherwing is used solely for powering the 3W RGB LE
 
 ![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/espressif/Adafruit%20Feather%20ESP32-S2/Guy%20Fawkes%20Pumpkin%202022/IMG_0549.JPG)
 
-### As Seen on DigiKey's Hack-a-Pumpkin Contest 2022
-https://user-images.githubusercontent.com/49322231/198586264-08559ed8-9f2e-40ff-8640-982de1128694.mov
-
-### Convincing Candle Flicker
-https://user-images.githubusercontent.com/49322231/227809366-c0efd35b-c8db-4b36-930f-e28e6cf88156.mov
+### Video Demo
+https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/d11eee0b-c8ca-4f31-8895-abbfde145306
 
 ### Noods Circuit Design:
 1 nood per GPIO with a 100 ohm resistor soldered in-line. Used breadboard wire to be easier to plug in during prototyping. There is a positive and negative end on the nood! If you get it backwards just flip the wire around. 
