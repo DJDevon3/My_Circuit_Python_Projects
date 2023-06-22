@@ -36,9 +36,8 @@ displayio.release_displays()
 DISPLAY_WIDTH = 480
 DISPLAY_HEIGHT = 320
 
-# Initialize WiFi Pool (This should always be near the top of a script!)
-# anecdata: you only want to do this once early in your code pool.
-# Highlander voice: "There can be only one pool"
+# Initialize Web Sockets (This should always be near the top of a script!)
+# There can be only one pool
 pool = socketpool.SocketPool(wifi.radio)
 
 try:
@@ -69,6 +68,7 @@ feed_01 = "BME280-Unbiased"
 feed_02 = "BME280-RealTemp"
 feed_03 = "BME280-Pressure"
 feed_04 = "BME280-Humidity"
+feed_05 = "BME280-Altitude"
 
 # Time in seconds between updates (polling)
 # 600 = 10 mins, 900 = 15 mins, 1800 = 30 mins, 3600 = 1 hour
@@ -85,6 +85,7 @@ display = HX8357(display_bus, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT)
 i2c = board.STEMMA_I2C()  # uses board.SCL and board.SDA
 bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c)
 bme280.sea_level_pressure = bme280.pressure
+# print("Sea Level Pressure: ", bme280.sea_level_pressure)
 # print("Altitude = %0.2f meters" % bme280.altitude)
 
 # Initialize SDCard on TFT Featherwing
@@ -382,11 +383,11 @@ def show_warning(title, text):
 def hide_warning():
     warning_group.hidden = True
 
-# Define callback methods which are called when events occur
+# Define callback methods when events occur
 def connect(mqtt_client):
     # This function will be called when the mqtt_client is connected
     # successfully to the broker.
-    print("Connected to MQTT Broker!")
+    print("Connected to MQTT Broker! ✅")
 
 def disconnect(mqtt_client, userdata, rc):
     # This method is called when the mqtt_client disconnects
@@ -430,32 +431,31 @@ io.on_unsubscribe = unsubscribe
 io.on_publish = publish
 io.on_message = message
 
-try:
-    vbat_label.text = f"{battery_monitor.cell_voltage:.2f}"
-except (ValueError, RuntimeError, OSError) as e:
-    print("LC709203F Error: \n", e)
-
 last = 0
 display_temperature = 0
 # Define the input range and output range
-# This might be affected by high ambient humidity?
-input_range = [50.0, 120.0]
-output_range = [50.0 - 0.1, 120.0 - 2.2]
+# pressure at 1014 & 88F at 100% accurate. sea level pressure affects temp?
+input_range = [50.0, 70, 80, 88.0, 120.0]
+output_range = [50.0 - 0.1, 70.0 - 2.0, 80 - 1.0, 88.0 - 0.0, 120.0 - 2.2]
 
 while True:
     hello_label.text = "ESP32-S3 MQTT Feather Weather"
+    print("===============================")
     debug_OWM = False  # Set to True for Serial Print Debugging
 
     # USB Power Sensing
+    try:
+        vbat_label.text = f"{battery_monitor.cell_voltage:.2f}"
+    except (ValueError, RuntimeError, OSError) as e:
+        print("LC709203F Error: \n", e)
     # Set USB plug icon and voltage label to white
     usb_sense = supervisor.runtime.serial_connected
     if debug_OWM:
         print("USB Sense: ", usb_sense)
-    if usb_sense:
+    if usb_sense:  # if on USB power show plug sprite icon
         vbat_label.color = TEXT_WHITE
         sprite[0] = 3
-
-    if not usb_sense:
+    if not usb_sense:  # if on battery power only
         # Changes battery voltage color depending on charge level
         if vbat_label.text >= "4.23":
             vbat_label.color = TEXT_WHITE
@@ -478,12 +478,6 @@ while True:
         else:
             vbat_label.color = TEXT_WHITE
 
-    try:
-        vbat_label.text = f"{battery_monitor.cell_voltage:.2f}"
-    except OSError as e:
-        print("OSError:", e)
-        print("Retrying in 10 seconds")
-
     # Local sensor data display
     temp_label.text = "°F"
 
@@ -500,6 +494,7 @@ while True:
     # pressure = 1000  # Manually set to debug warning message
     mqtt_humidity = round(bme280.relative_humidity, 1)
     mqtt_pressure = round(bme280.pressure, 1)
+    mqtt_altitude = round(bme280.altitude, 2)
 
     temp_data_shadow.text = f"{display_temperature:.1f}"
     temp_data_label.text = f"{display_temperature:.1f}"
@@ -527,7 +522,7 @@ while True:
         hide_warning()  # Normal pressures: 1110-1018 (no message)
 
     # Connect to Wi-Fi
-    print("\n===============================")
+    print("===============================")
     print("Connecting to WiFi...")
     requests = adafruit_requests.Session(pool, ssl.create_default_context())
     while not wifi.radio.ipv4_address:
@@ -538,7 +533,7 @@ while True:
             print("Retrying in 10 seconds")
         time.sleep(10)
         gc.collect()
-    print("Connected!\n")
+    print("WiFi! ✅")
 
     while wifi.radio.ipv4_address:
         try:
@@ -553,7 +548,7 @@ while True:
             # dump_object = json.dumps(response)
             # print("JSON Dump: ", dump_object)
             if int(response['current']['dt']) == "KeyError: example":
-                print("Unable to retrive data due to key error")
+                print("Unable to retrive data due to key:value error")
                 print("likely OpenWeather Throttling for too many API calls")
             else:
                 if debug_OWM:
@@ -614,11 +609,12 @@ while True:
 
         if (time.monotonic() - last) >= sleep_time:
             try:
-                print(f"Publishing {feed_01}: {temp_round} | {feed_02}: {display_temperature} | {feed_03}: {mqtt_pressure} | {feed_04}: {mqtt_humidity}")
+                print(f"Publishing {feed_01}: {temp_round} | {feed_02}: {display_temperature} | {feed_03}: {mqtt_pressure} | {feed_04}: {mqtt_humidity} | {feed_05}: {mqtt_altitude}")
                 io.publish(feed_01, temp_round)
                 io.publish(feed_02, display_temperature)
                 io.publish(feed_03, mqtt_pressure)
                 io.publish(feed_04, mqtt_humidity)
+                io.publish(feed_05, mqtt_altitude)
             except (ValueError, RuntimeError, ConnectionError, OSError, MMQTTException) as e:
                 print("io.publish Error: \n", e)
                 time.sleep(60)
