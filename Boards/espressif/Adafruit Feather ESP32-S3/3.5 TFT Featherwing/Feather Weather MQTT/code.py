@@ -454,24 +454,24 @@ while True:
         print("USB Sense: ", usb_sense)
     if usb_sense:  # if on USB power show plug sprite icon
         vbat_label.color = TEXT_WHITE
-        sprite[0] = 3
+        sprite[0] = 5
     if not usb_sense:  # if on battery power only
         # Changes battery voltage color depending on charge level
         if vbat_label.text >= "4.23":
             vbat_label.color = TEXT_WHITE
-            sprite[0] = 3
+            sprite[0] = 5
         elif "4.10" <= vbat_label.text <= "4.22":
             vbat_label.color = TEXT_GREEN
-            sprite[0] = 1
+            sprite[0] = 0
         elif "4.00" <= vbat_label.text <= "4.09":
             vbat_label.color = TEXT_LIGHTBLUE
-            sprite[0] = 0
+            sprite[0] = 1
         elif "3.90" <= vbat_label.text <= "3.99":
             vbat_label.color = TEXT_YELLOW
-            sprite[0] = 5
+            sprite[0] = 2
         elif "3.80" <= vbat_label.text <= "3.89":
             vbat_label.color = TEXT_ORANGE
-            sprite[0] = 2
+            sprite[0] = 3
         elif vbat_label.text <= "3.79":
             vbat_label.color = TEXT_RED
             sprite[0] = 4
