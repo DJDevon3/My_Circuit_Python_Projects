@@ -1,5 +1,7 @@
 # Real Font Styles in Circuit Python
 
+![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Font%20Styles/example_output.png)
+
 ![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Font%20Style%20Demo/screenshot.bmp)
 
 ![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Font%20Style%20Demo/screenshot2.bmp)
