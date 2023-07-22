@@ -308,6 +308,7 @@ while True:
                 # Display Labels
                 date_label.text = f"{activities_timestamp}"
                 time_label.text = f"{activities_latest_heart_time[0:-3]}"
+
                 my_plane = Cartesian(
                     x=30,  # x position for the plane
                     y=60,  # y plane position
@@ -321,8 +322,8 @@ while True:
                     major_tick_stroke=2,
                     subticks=True,
                 )
-                plot_group.append(my_plane)
                 my_plane.clear_plot_lines()
+                plot_group.append(my_plane)
                 data = [
                     (0, activities_latest_heart_value14),
                     (1, activities_latest_heart_value13),
@@ -366,7 +367,7 @@ while True:
         continue
 
     display.refresh()
-    TAKE_SCREENSHOT = False  # Set to True to take a screenshot
+    TAKE_SCREENSHOT = True  # Set to True to take a screenshot
     if TAKE_SCREENSHOT:
         # Initialize SD Card & Mount Virtual File System
         cs = digitalio.DigitalInOut(board.D5)
@@ -380,5 +381,5 @@ while True:
         print("Screenshot Saved")
         storage.umount(vfs)
         print("SD Card Unmounted")  # Do not remove SD card until unmounted
-
+    plot_group.remove(my_plane)
     time.sleep(sleep_time)
