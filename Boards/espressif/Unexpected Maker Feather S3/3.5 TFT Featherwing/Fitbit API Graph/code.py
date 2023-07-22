@@ -41,7 +41,8 @@ display.auto_refresh = False
 
 # --- Fitbit Developer Account & oAuth App Required: ---
 # Step 1: Create a personal app here: https://dev.fitbit.com
-# Step 2: Use the Tutorial to get the Token and initial Refresh Token:
+# Step 2: Use their Tutorial to get the Token and first Refresh Token
+# Fitbit's Tutorial Step 4 is as far as you need to go.
 # https://dev.fitbit.com/build/reference/web-api/troubleshooting-guide/oauth2-tutorial/
 
 # Ensure these are in settings.toml
