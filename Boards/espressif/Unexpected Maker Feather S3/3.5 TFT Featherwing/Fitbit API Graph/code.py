@@ -275,7 +275,7 @@ while True:
             # Pointless to poll their API faster than 15 minute intervals.
             activities_heart_value = fitbit_json["activities-heart-intraday"]["dataset"]
             response_length = len(activities_heart_value)
-            if response_length >= 5:
+            if response_length >= 15:
                 activities_timestamp = fitbit_json["activities-heart"][0]["dateTime"]
                 print(f"Fitbit Date: {activities_timestamp}")
                 activities_latest_heart_time = fitbit_json["activities-heart-intraday"]["dataset"][response_length-1]["time"]
@@ -367,7 +367,7 @@ while True:
         continue
 
     display.refresh()
-    TAKE_SCREENSHOT = True  # Set to True to take a screenshot
+    TAKE_SCREENSHOT = False  # Set to True to take a screenshot
     if TAKE_SCREENSHOT:
         # Initialize SD Card & Mount Virtual File System
         cs = digitalio.DigitalInOut(board.D5)
