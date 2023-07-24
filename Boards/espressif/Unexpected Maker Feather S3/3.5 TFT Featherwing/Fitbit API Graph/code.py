@@ -299,7 +299,7 @@ while True:
                 activities_latest_heart_value13 = fitbit_json["activities-heart-intraday"]["dataset"][response_length-14]["value"]
                 activities_latest_heart_value14 = fitbit_json["activities-heart-intraday"]["dataset"][response_length-15]["value"]
                 print(f"Latest 15 Minute Averages: {activities_latest_heart_value14},{activities_latest_heart_value13},{activities_latest_heart_value12},{activities_latest_heart_value11},{activities_latest_heart_value10},{activities_latest_heart_value9},{activities_latest_heart_value8},{activities_latest_heart_value7},{activities_latest_heart_value6},{activities_latest_heart_value5},{activities_latest_heart_value4},{activities_latest_heart_value3},{activities_latest_heart_value2},{activities_latest_heart_value1},{activities_latest_heart_value0}")
-                
+
                 list_data = [activities_latest_heart_value14,activities_latest_heart_value13,activities_latest_heart_value12,activities_latest_heart_value11,activities_latest_heart_value10,activities_latest_heart_value9,activities_latest_heart_value8,activities_latest_heart_value7,activities_latest_heart_value6,activities_latest_heart_value5,activities_latest_heart_value4,activities_latest_heart_value3,activities_latest_heart_value2,activities_latest_heart_value1,activities_latest_heart_value0]
                 # print(f"Data : {list_data}")
                 lowest_y = sorted(list((list_data)))  # Get lowest sorted value
@@ -381,5 +381,11 @@ while True:
         print("Screenshot Saved")
         storage.umount(vfs)
         print("SD Card Unmounted")  # Do not remove SD card until unmounted
-    plot_group.remove(my_plane)
+    try:
+        plot_group.remove(my_plane)
+    except (ValueError, RuntimeError) as e:
+        print(f"Not enough values for today yet.")
+        print(f"Needs 15 values. Doesn't work from midnight to 00:15")
+        time.sleep(60)
+        pass
     time.sleep(sleep_time)
