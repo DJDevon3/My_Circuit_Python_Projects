@@ -35,5 +35,6 @@ To run the script forever without making a change to code.py
   
 To make a change to code.py while keeping refresh token valid
 - Copy/paste the next refresh token into settings.toml any time you want to make a change to code.py
+- This is why the Next Refresh Token is always visible in REPL/Terminal output.
 - Save settings.toml replacing Next Refresh Token with Initial Refresh Token manually, then immediately save code.py with new changes
 - I will be looking for a way to automate this process in the future with file appends.
