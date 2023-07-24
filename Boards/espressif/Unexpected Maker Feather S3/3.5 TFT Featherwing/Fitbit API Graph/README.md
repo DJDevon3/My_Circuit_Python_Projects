@@ -10,7 +10,7 @@ Fitbit API walkthrough for getting API Token & Initial Refresh Token
   
 ![Fitbit_Tutorial_Walkthrough](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/83e6a90a-069c-4a52-a89b-d58469a96e2c)
 
-- Because I'm using their example salt (PKCE Verifier) & I'm generating a new refresh token every 15 minutes. I'm not the least bit worried about showing these tokens. 
+- Because I'm using their example salt (PKCE Verifier) & I've already generated a new token after this guide... plus I'm generating a new refresh token every 15 minutes. I'm not the least bit worried about showing these tokens. 
 
 Code.py Serial Output:
 ```py
