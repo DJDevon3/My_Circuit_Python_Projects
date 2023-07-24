@@ -8,7 +8,8 @@ Fitbit API walkthrough for getting API Token & Initial Refresh Token
 - Fitbit's Tutorial Step 4 is as far as you need to go.
 - https://dev.fitbit.com/build/reference/web-api/troubleshooting-guide/oauth2-tutorial/
   
-![Fitbit_Tutorial_Walkthrough](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/83e6a90a-069c-4a52-a89b-d58469a96e2c)
+![Fitbit_Tutorial_Walkthrough](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/f70ec67f-d06d-4d6f-9823-934fb3936fd9)
+
 
 - Because I'm using their example salt (PKCE Verifier) & I've already generated a new token after this guide... plus I'm generating a new refresh token every 15 minutes. I'm not the least bit worried about showing these tokens. 
 
