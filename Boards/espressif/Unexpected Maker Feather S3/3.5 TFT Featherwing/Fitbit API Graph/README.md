@@ -8,7 +8,8 @@ Fitbit API walkthrough for getting API Token & Initial Refresh Token
 - Fitbit's Tutorial Step 4 is as far as you need to go.
 - https://dev.fitbit.com/build/reference/web-api/troubleshooting-guide/oauth2-tutorial/
   
-![Fitbit_Tutorial_Walkthrough](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/271a4290-53f2-4964-8f00-0fc580492e98)
+![Fitbit_Tutorial_Walkthrough](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/83e6a90a-069c-4a52-a89b-d58469a96e2c)
+
 
 Code.py Serial Output:
 ```py
