@@ -1,3 +1,33 @@
 ### Circuit Python Fitbit API Graphing Example
 
 ![TFT Featherwing Screenshot](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/espressif/Unexpected%20Maker%20Feather%20S3/3.5%20TFT%20Featherwing/Fitbit%20API%20Graph/screenshot.jpg)
+
+Fitbit API walkthrough for getting API Token & Initial Refresh Token
+- Step 1: Create a personal app here: https://dev.fitbit.com
+- Step 2: Use their Tutorial to get the Token and first Refresh Token
+- Fitbit's Tutorial Step 4 is as far as you need to go.
+- https://dev.fitbit.com/build/reference/web-api/troubleshooting-guide/oauth2-tutorial/
+  
+![Fitbit_Tutorial_Walkthrough](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/271a4290-53f2-4964-8f00-0fc580492e98)
+
+Code.py Serial Output:
+```py
+-----Token Refresh POST Attempt -------
+Next Refresh Token:  c29ad89203d9d26094b1f4019e4ea6f64f8bc284202e024e8bf98c03d519aa0a
+
+Attempting to GET FITBIT Stats!
+===============================
+Fitbit Date: 2023-07-24
+Fitbit Time: 10:34
+Today's Logged Pulses : 635
+Latest 15 Minute Averages: 91,87,85,83,84,83,84,84,97,95,87,86,86,87,88
+Board Uptime:  2.3 days
+
+Finished!
+Next Update in:  15 minutes
+===============================
+```
+You would copy/paste the next refresh token into settings.toml any time you want to make a change to code.py
+Save settings.toml with new token then save code.py with new changes
+I will be looking for a way to automate this process in the future with file appends.
+Every time code.py runs it generates a new refresh token.
