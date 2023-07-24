@@ -32,4 +32,5 @@ Next Update in:  15 minutes
 You would copy/paste the next refresh token into settings.toml any time you want to make a change to code.py
 Save settings.toml with new token then save code.py with new changes
 I will be looking for a way to automate this process in the future with file appends.
-Every time code.py runs it generates a new refresh token.
+
+Every time code.py runs it generates a new refresh token automatically and will run forever on new refresh tokens indefinitely updating every 15 minutes.
