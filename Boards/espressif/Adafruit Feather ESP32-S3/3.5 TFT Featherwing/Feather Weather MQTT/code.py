@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2023 DJDevon3
 # SPDX-License-Identifier: MIT
 # Adafruit ESP32-S3 Feather Weather with MQTT
-# Coded for Circuit Python 8.1
+# Coded for Circuit Python 8.2.0 stable
 
 import gc
 import os
