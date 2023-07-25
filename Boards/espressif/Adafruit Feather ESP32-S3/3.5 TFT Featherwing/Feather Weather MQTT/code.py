@@ -27,7 +27,7 @@ from adafruit_display_text import label
 from adafruit_display_shapes.roundrect import RoundRect
 from adafruit_bitmap_font import bitmap_font
 from adafruit_bitmapsaver import save_pixels
-from adafruit_lc709203f import LC709203F
+from adafruit_lc709203f import LC709203F, PackSize
 from adafruit_bme280 import basic as adafruit_bme280
 from adafruit_hx8357 import HX8357
 
@@ -84,7 +84,8 @@ display = HX8357(display_bus, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT)
 # Initialize BME280 Sensor
 i2c = board.STEMMA_I2C()  # uses board.SCL and board.SDA
 bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c)
-bme280.sea_level_pressure = bme280.pressure
+# sea_level_pressure should be set in the while true loop
+# bme280.sea_level_pressure = bme280.pressure
 # print("Sea Level Pressure: ", bme280.sea_level_pressure)
 # print("Altitude = %0.2f meters" % bme280.altitude)
 
@@ -439,6 +440,7 @@ input_range = [50.0, 70, 80, 88.0, 120.0]
 output_range = [50.0 - 0.1, 70.0 - 2.0, 80 - 1.0, 88.0 - 0.0, 120.0 - 2.2]
 
 while True:
+    bme280.sea_level_pressure = bme280.pressure
     hello_label.text = "ESP32-S3 MQTT Feather Weather"
     print("===============================")
     debug_OWM = False  # Set to True for Serial Print Debugging
@@ -449,7 +451,7 @@ while True:
     except (ValueError, RuntimeError, OSError) as e:
         print("LC709203F Error: \n", e)
     # Set USB plug icon and voltage label to white
-    usb_sense = supervisor.runtime.serial_connected
+    usb_sense = supervisor.runtime.usb_connected
     if debug_OWM:
         print("USB Sense: ", usb_sense)
     if usb_sense:  # if on USB power show plug sprite icon
