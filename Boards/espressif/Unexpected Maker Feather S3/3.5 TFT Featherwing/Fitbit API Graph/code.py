@@ -10,6 +10,7 @@ import array
 import displayio
 import digitalio
 import terminalio
+import microcontroller
 import ssl
 import wifi
 import socketpool
@@ -38,6 +39,8 @@ tft_dc = board.D10
 display_bus = displayio.FourWire(spi, command=tft_dc, chip_select=tft_cs)
 display = HX8357(display_bus, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT)
 display.auto_refresh = False
+top_nvm = microcontroller.nvm[0:64].decode()
+print(f"Top NVM: {top_nvm}")
 
 # --- Fitbit Developer Account & oAuth App Required: ---
 # Step 1: Create a personal app here: https://dev.fitbit.com
@@ -48,7 +51,7 @@ display.auto_refresh = False
 # Ensure these are in settings.toml
 # Fitbit_ClientID = "YourAppClientID"
 # Fitbit_Token = "Long 256 character string (SHA-256)"
-# Fitbit_First_Refresh_Token = "40 character string"
+# Fitbit_First_Refresh_Token = "64 character string"
 # Fitbit_UserID = "UserID authorizing the ClientID"
 
 Fitbit_ClientID = os.getenv("Fitbit_ClientID")
@@ -179,9 +182,18 @@ while not wifi.radio.ipv4_address:
 print("Connected!\n")
 
 Refresh_Token = Fitbit_First_Refresh_Token
-add = 1
+First_Refresh = True
+
+print(f"Top NVM: {top_nvm}")
+print(f"Initial: {Fitbit_First_Refresh_Token}")
 while True:
-    hello_label.text = "Circuit Python Fitbit API"
+    if top_nvm != Fitbit_First_Refresh_Token:
+        Refresh_Token = microcontroller.nvm[0:64].decode()
+        print(f"NVM 64 No b: {microcontroller.nvm[0:64].decode()}")
+        print(f"Refresh_Token: {Refresh_Token}")
+    else:
+        print(f"Initial_Refresh_Token: {Refresh_Token}")
+    hello_label.text = "Circuit Python 8.2.1 Fitbit API"
     try:
         # STREAMER WARNING: private data will be viewable while True
         debug = False  # Set to True for full debug view
@@ -222,6 +234,14 @@ while True:
             fitbit_token_type = fitbit_refresh_oauth_json["token_type"]
             fitbit_user_id = fitbit_refresh_oauth_json["user_id"]
             print("Next Refresh Token: ", Refresh_Token)
+            try:
+                nvmtoken = b''+fitbit_new_refesh_token
+                microcontroller.nvm[0:64] = nvmtoken
+                print(f"Token Added to NVM: {nvmtoken.decode()}")
+            except (OSError) as e:
+                print("OS Error:", e)
+                continue
+
             if debug:
                 print("Token Expires in: ", time_calc(fitbit_token_expiration))
                 print("Scope: ", fitbit_scope)
@@ -383,9 +403,11 @@ while True:
         print("SD Card Unmounted")  # Do not remove SD card until unmounted
     try:
         plot_group.remove(my_plane)
-    except (ValueError, RuntimeError) as e:
+    except (NameError, ValueError, RuntimeError) as e:
         print(f"Not enough values for today yet.")
         print(f"Needs 15 values. Doesn't work from midnight to 00:15")
+        print("Next Update in: ", time_calc(sleep_time))
         time.sleep(60)
         pass
+    First_Refresh = False
     time.sleep(sleep_time)
