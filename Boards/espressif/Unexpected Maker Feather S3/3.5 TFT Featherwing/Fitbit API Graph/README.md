@@ -15,16 +15,15 @@ Fitbit API walkthrough for getting API Token & Initial Refresh Token
 
 Code.py Serial Output:
 ```py
------Token Refresh POST Attempt -------
-Next Refresh Token:  c29ad89203d9d26094b1f4019e4ea6f64f8bc284202e024e8bf98c03d519aa0a
+Next token written to NVM Successfully!
 
 Attempting to GET FITBIT Stats!
 ===============================
-Fitbit Date: 2023-07-24
-Fitbit Time: 10:34
-Today's Logged Pulses : 635
-Latest 15 Minute Averages: 91,87,85,83,84,83,84,84,97,95,87,86,86,87,88
-Board Uptime:  2.3 days
+Fitbit Date: 2023-08-02
+Fitbit Time: 02:37
+Today's Logged Pulses : 158
+Latest 15 Minute Averages: 85,84,85,83,86,82,85,86,84,82,82,82,81,84,84
+Board Uptime:  12 hours
 
 Finished!
 Next Update in:  15 minutes
@@ -40,4 +39,4 @@ To run the script forever without making a change to code.py
 - In the event of a hard reset script will use the NVM token instead of initial token (should run forever).
 
 ### Using Fitbit's tutorial with this method
-- no callback server is required after the SHA-256 API token and initial refresh token are added to settings.toml
+- no callback server is required after the SHA-256 API token and initial refresh token are added to settings.toml using their tutorial
