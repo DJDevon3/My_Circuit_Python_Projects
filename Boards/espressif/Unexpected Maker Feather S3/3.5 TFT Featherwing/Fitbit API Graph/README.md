@@ -39,7 +39,7 @@ Next Update in:  15 minutes
   
 ### microcontroller.nvm token storage
 - Settings.toml Refresh token automatically replaced with next refresh token.
-- Next refresh token stored in Non-Volitile Memory (NVM)
+- Next refresh token stored in Non-Volatile Memory (NVM)
 - NVM token used during the next request (cycle repeats indefinitely).
 - NVM token will persist through:
   - hard reset
