@@ -6,7 +6,7 @@ A 4x microcontroller Halloween mask illumination project by DJDevon3
 https://user-images.githubusercontent.com/49322231/199375149-0370c1ab-0e28-4d0f-97be-19614207e7a6.MOV
 
 ### Parts List
-Everything listed is what is used in the project. There's definitely room for improvement in weight savings and making things smaller with less of a rats nest. Almost all electronics in this project sourced from Adafruit.com
+Definitely room for improvement in weight savings & making things smaller with less of a rats nest. Almost all electronics in this project sourced from Adafruit.com
 
 ### Microcontrollers:
 - 1x [Adafruit Gemma M0](https://www.adafruit.com/product/3501) (Controls NeoPixel rings)
