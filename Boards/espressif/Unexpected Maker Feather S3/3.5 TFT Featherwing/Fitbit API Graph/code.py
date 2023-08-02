@@ -39,8 +39,12 @@ tft_dc = board.D10
 display_bus = displayio.FourWire(spi, command=tft_dc, chip_select=tft_cs)
 display = HX8357(display_bus, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT)
 display.auto_refresh = False
+
+# STREAMER WARNING: private data will be viewable while debug True
+debug = False  # Set True for full debug view
 top_nvm = microcontroller.nvm[0:64].decode()
-print(f"Top NVM: {top_nvm}")
+if debug:
+    print(f"Top NVM: {top_nvm}") # NVM before settings.toml loaded
 
 # --- Fitbit Developer Account & oAuth App Required: ---
 # Step 1: Create a personal app here: https://dev.fitbit.com
@@ -56,7 +60,7 @@ print(f"Top NVM: {top_nvm}")
 
 Fitbit_ClientID = os.getenv("Fitbit_ClientID")
 Fitbit_Token = os.getenv("Fitbit_Token")
-Fitbit_First_Refresh_Token = os.getenv("Fitbit_First_Refresh_Token")
+Fitbit_First_Refresh_Token = os.getenv("Fitbit_First_Refresh_Token") #overides nvm first run only
 Fitbit_UserID = os.getenv("Fitbit_UserID")
 
 wifi_ssid = os.getenv("CIRCUITPY_WIFI_SSID")
@@ -132,11 +136,11 @@ time_label.anchored_position = (5, 30)
 time_label.scale = (2)
 time_label.color = TEXT_WHITE
 
-pulses_today_label = label.Label(terminalio.FONT)
-pulses_today_label.anchor_point = (0.5, 0.0)
-pulses_today_label.anchored_position = (DISPLAY_WIDTH/2, 150)
-pulses_today_label.scale = (3)
-pulses_today_label.color = TEXT_WHITE
+midnight_label = label.Label(terminalio.FONT)
+midnight_label.anchor_point = (0.5, 0.0)
+midnight_label.anchored_position = (DISPLAY_WIDTH/2, DISPLAY_HEIGHT/2-50)
+midnight_label.scale = (2)
+midnight_label.color = TEXT_WHITE
 
 pulse_label = label.Label(terminalio.FONT)
 pulse_label.anchor_point = (0.5, 0.0)
@@ -156,15 +160,14 @@ main_group.append(text_group)
 # Append labels to subgroups (sublayers)
 text_group.append(hello_label)
 text_group.append(date_label)
-text_group.append(pulses_today_label)
+text_group.append(midnight_label)
 text_group.append(time_label)
 text_group.append(pulse_label)
 
 # Combine and Show
 display.show(main_group)
 
-# First we use Client ID & Client Token to create a token with POST
-# No user interaction is required for this type of scope (implicit grant flow)
+# Authenticates Client ID & SHA-256 Token to POST
 fitbit_oauth_header = {"Content-Type": "application/x-www-form-urlencoded"}
 fitbit_oauth_token = "https://api.fitbit.com/oauth2/token"
 
@@ -181,24 +184,30 @@ while not wifi.radio.ipv4_address:
     time.sleep(10)
 print("Connected!\n")
 
+# First run uses settings.toml token
 Refresh_Token = Fitbit_First_Refresh_Token
-First_Refresh = True
 
-print(f"Top NVM: {top_nvm}")
-print(f"Initial: {Fitbit_First_Refresh_Token}")
+if debug: 
+    print(f"Top NVM Again (just to make sure): {top_nvm}")
+    print(f"Settings.toml Initial Refresh Token: {Fitbit_First_Refresh_Token}")
+    
 while True:
+    hello_label.text = "Circuit Python 8.2.1 Fitbit API"
+    
     if top_nvm != Fitbit_First_Refresh_Token:
         Refresh_Token = microcontroller.nvm[0:64].decode()
-        print(f"NVM 64 No b: {microcontroller.nvm[0:64].decode()}")
-        print(f"Refresh_Token: {Refresh_Token}")
+        if debug:
+            # NVM 64 should match Current Refresh Token
+            print(f"NVM 64: {microcontroller.nvm[0:64].decode()}")
+            print(f"Current Refresh_Token: {Refresh_Token}")
     else:
-        print(f"Initial_Refresh_Token: {Refresh_Token}")
-    hello_label.text = "Circuit Python 8.2.1 Fitbit API"
+        if debug:
+            # If this is a first run from settings.toml
+            print(f"Initial_Refresh_Token: {Refresh_Token}")
+            
     try:
-        # STREAMER WARNING: private data will be viewable while True
-        debug = False  # Set to True for full debug view
-
-        print("\n-----Token Refresh POST Attempt -------")
+        if debug:
+            print("\n-----Token Refresh POST Attempt -------")
         fitbit_oauth_refresh_token = (
             "&grant_type=refresh_token"
             + "&client_id="
@@ -222,7 +231,7 @@ while True:
 
             fitbit_new_token = fitbit_refresh_oauth_json["access_token"]
             if debug:
-                print("Access Token: ", fitbit_new_token)
+                print("Your Private SHA-256 Token: ", fitbit_new_token)
             fitbit_access_token = fitbit_new_token  # NEW FULL TOKEN
 
             # Overwrites Initial/Old Refresh Token with Next/New Refresh Token
@@ -233,11 +242,15 @@ while True:
             fitbit_scope = fitbit_refresh_oauth_json["scope"]
             fitbit_token_type = fitbit_refresh_oauth_json["token_type"]
             fitbit_user_id = fitbit_refresh_oauth_json["user_id"]
-            print("Next Refresh Token: ", Refresh_Token)
+            if debug:
+                print("Next Refresh Token: ", Refresh_Token)
             try:
+                # Stores Next token in NVM
                 nvmtoken = b''+fitbit_new_refesh_token
                 microcontroller.nvm[0:64] = nvmtoken
-                print(f"Token Added to NVM: {nvmtoken.decode()}")
+                if debug:
+                    print(f"Next Token for NVM: {nvmtoken.decode()}")
+                print(f"Next token written to NVM Successfully!")
             except (OSError) as e:
                 print("OS Error:", e)
                 continue
@@ -255,9 +268,9 @@ while True:
             continue
 
         # ----------------------------- GET DATA -------------------------------------
-        # Refresh token is refreshed every time script runs :)
-        # Fitbit tokens expire every 8 hours!
-        # Now that we have POST refresh token we can do a GET for data
+        # Now that we have POST response with next refresh token we can GET for data
+        # 64-bit Refresh tokens will "keep alive" SHA-256 token indefinitely
+        # Fitbit main SHA-256 token expires in 8 hours unless refreshed!
         # ----------------------------------------------------------------------------
         detail_level = "1min"  # Supported: 1sec | 1min | 5min | 15min
         requested_date = "today" # Date format yyyy-MM-dd or today
@@ -326,6 +339,7 @@ while True:
                 highest_y = sorted(list_data,reverse=True)  # Get highest sorted value
 
                 # Display Labels
+                new_line = '\n'
                 date_label.text = f"{activities_timestamp}"
                 time_label.text = f"{activities_latest_heart_time[0:-3]}"
 
@@ -404,10 +418,10 @@ while True:
     try:
         plot_group.remove(my_plane)
     except (NameError, ValueError, RuntimeError) as e:
-        print(f"Not enough values for today yet.")
-        print(f"Needs 15 values. Doesn't work from midnight to 00:15")
+        midnight_label.text = (f"Not enough values for today yet.{new_line}No display from midnight to 00:15")
+        print(f"Not enough values for today yet{new_line}Needs 15 values.{new_line}No display from midnight to 00:15")
         print("Next Update in: ", time_calc(sleep_time))
+        print("===============================")
         time.sleep(60)
         pass
-    First_Refresh = False
     time.sleep(sleep_time)

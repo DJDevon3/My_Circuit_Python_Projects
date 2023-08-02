@@ -1,0 +1,4 @@
+Fitbit_ClientID = "YourAppClientID"
+Fitbit_Token = "Long 256 character string (SHA-256)"
+Fitbit_First_Refresh_Token = "64 character string"
+Fitbit_UserID = "UserID authorizing the ClientID"
