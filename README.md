@@ -1,14 +1,12 @@
 # Circuit Python Projects by DJDevon3
 
-### Circuit Python Coding Language
-- Open-source & owned by Adafruit
-
-Circuit Python is a fork of Micropython intended to run on small computers called Microcontrollers.
+### Circuit Python
+- is a fork of Micropython intended to run on small computers called Microcontrollers.
 - Python
   - Micropython
     - CircuitPython
 
-I've re-organized projects by board type as some projects contain specific board or add-on board code. 
+I've organized projects by board type as some projects contain specific board or add-on board code. 
 
 Adafruit Ecosystem Terminology:
 - Board = Feather
