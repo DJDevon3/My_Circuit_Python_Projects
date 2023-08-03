@@ -28,7 +28,6 @@ displayio.release_displays()
 # Initialize WiFi Pool (There can be only 1 pool & top of script)
 pool = socketpool.SocketPool(wifi.radio)
 
-# 4.0" ST7796S Aliexpress Display
 DISPLAY_WIDTH = 480
 DISPLAY_HEIGHT = 320
 
@@ -42,6 +41,8 @@ display.auto_refresh = False
 
 # STREAMER WARNING: private data will be viewable while debug True
 debug = False  # Set True for full debug view
+
+# Can use to confirm first instance of NVM is correct refresh token
 top_nvm = microcontroller.nvm[0:64].decode()
 if debug:
     print(f"Top NVM: {top_nvm}") # NVM before settings.toml loaded
@@ -109,9 +110,9 @@ def bar_color(heart_rate):
     elif 75 <= heart_rate < 85:
         heart_rate_color = TEXT_LIGHTBLUE
     elif 85 <= heart_rate < 100:
-        heart_rate_color = TEXT_YELLOW
+        heart_rate_color = TEXT_GREEN
     elif 100 <= heart_rate < 110:
-        heart_rate_color = TEXT_ORANGE
+        heart_rate_color = TEXT_YELLOW
     elif 110 <= heart_rate < 120:
         heart_rate_color = TEXT_ORANGE
     else:
@@ -192,7 +193,7 @@ if debug:
     print(f"Settings.toml Initial Refresh Token: {Fitbit_First_Refresh_Token}")
     
 while True:
-    hello_label.text = "Circuit Python 8.2.1 Fitbit API"
+    hello_label.text = "Circuit Python 8.2.2 Fitbit API"
     
     if top_nvm != Fitbit_First_Refresh_Token:
         Refresh_Token = microcontroller.nvm[0:64].decode()
@@ -383,6 +384,7 @@ while True:
                     print("Index Error:", e)
                     continue
             else :
+                midnight_label.text = (f"Not enough values for today yet.{new_line}No display from midnight to 00:15")
                 print(f"Waiting for latest sync...")
                 print(f"Not enough values for today to display yet.")
         except (KeyError) as keyerror:
@@ -418,7 +420,6 @@ while True:
     try:
         plot_group.remove(my_plane)
     except (NameError, ValueError, RuntimeError) as e:
-        midnight_label.text = (f"Not enough values for today yet.{new_line}No display from midnight to 00:15")
         print(f"Not enough values for today yet{new_line}Needs 15 values.{new_line}No display from midnight to 00:15")
         print("Next Update in: ", time_calc(sleep_time))
         print("===============================")
