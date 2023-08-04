@@ -151,17 +151,18 @@ pulse_label.color = TEXT_PINK
 
 # Create subgroups (layers)
 text_group = displayio.Group()
+midnight_group = displayio.Group()
 plot_group = displayio.Group()
 main_group = displayio.Group()
 
 # Add subgroups to main group
 main_group.append(plot_group)
 main_group.append(text_group)
+main_group.append(midnight_group)
 
 # Append labels to subgroups (sublayers)
 text_group.append(hello_label)
 text_group.append(date_label)
-text_group.append(midnight_label)
 text_group.append(time_label)
 text_group.append(pulse_label)
 
@@ -310,6 +311,7 @@ while True:
             activities_heart_value = fitbit_json["activities-heart-intraday"]["dataset"]
             response_length = len(activities_heart_value)
             if response_length >= 15:
+                midnight_label.text = ("")
                 activities_timestamp = fitbit_json["activities-heart"][0]["dateTime"]
                 print(f"Fitbit Date: {activities_timestamp}")
                 activities_latest_heart_time = fitbit_json["activities-heart-intraday"]["dataset"][response_length-1]["time"]
