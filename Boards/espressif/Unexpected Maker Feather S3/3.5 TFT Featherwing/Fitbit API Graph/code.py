@@ -1,12 +1,10 @@
 # SPDX-FileCopyrightText: 2023 DJDevon3
 # SPDX-License-Identifier: MIT
 # Coded for Circuit Python 8.2
-# Unexpected Maker FeatherS3 with 3.5" TFT Featherwing
 
 import os
 import board
 import time
-import array
 import displayio
 import digitalio
 import terminalio
@@ -14,7 +12,6 @@ import microcontroller
 import ssl
 import wifi
 import socketpool
-import adafruit_imageload
 import adafruit_sdcard
 from adafruit_bitmapsaver import save_pixels
 import storage
@@ -45,7 +42,7 @@ debug = False  # Set True for full debug view
 # Can use to confirm first instance of NVM is correct refresh token
 top_nvm = microcontroller.nvm[0:64].decode()
 if debug:
-    print(f"Top NVM: {top_nvm}") # NVM before settings.toml loaded
+    print(f"Top NVM: {top_nvm}")  # NVM before settings.toml loaded
 
 # --- Fitbit Developer Account & oAuth App Required: ---
 # Step 1: Create a personal app here: https://dev.fitbit.com
@@ -61,7 +58,7 @@ if debug:
 
 Fitbit_ClientID = os.getenv("Fitbit_ClientID")
 Fitbit_Token = os.getenv("Fitbit_Token")
-Fitbit_First_Refresh_Token = os.getenv("Fitbit_First_Refresh_Token") #overides nvm first run only
+Fitbit_First_Refresh_Token = os.getenv("Fitbit_First_Refresh_Token")
 Fitbit_UserID = os.getenv("Fitbit_UserID")
 
 wifi_ssid = os.getenv("CIRCUITPY_WIFI_SSID")
@@ -220,7 +217,10 @@ while True:
 
         # ----------------------------- POST FOR REFRESH TOKEN -----------------------
         if debug:
-            print(f"FULL REFRESH TOKEN POST:{fitbit_oauth_token}{fitbit_oauth_refresh_token}")
+            print(
+                "FULL REFRESH TOKEN POST:"
+                + f"{fitbit_oauth_token}{fitbit_oauth_refresh_token}"
+            )
             print(f"Current Refresh Token: {Refresh_Token}")
         # TOKEN REFRESH POST
         fitbit_oauth_refresh_POST = requests.post(
@@ -252,7 +252,7 @@ while True:
                 microcontroller.nvm[0:64] = nvmtoken
                 if debug:
                     print(f"Next Token for NVM: {nvmtoken.decode()}")
-                print(f"Next token written to NVM Successfully!")
+                print("Next token written to NVM Successfully!")
             except (OSError) as e:
                 print("OS Error:", e)
                 continue
@@ -275,7 +275,7 @@ while True:
         # Fitbit main SHA-256 token expires in 8 hours unless refreshed!
         # ----------------------------------------------------------------------------
         detail_level = "1min"  # Supported: 1sec | 1min | 5min | 15min
-        requested_date = "today" # Date format yyyy-MM-dd or today
+        requested_date = "today"  # Date format yyyy-MM-dd or today
         fitbit_header = {
             "Authorization": "Bearer " + fitbit_access_token + "",
             "Client-Id": "" + Fitbit_ClientID + "",
@@ -303,7 +303,8 @@ while True:
             print(f"Full API GET URL: {FITBIT_SOURCE}")
             print(f"Header: {fitbit_header}")
             # print(f"JSON Full Response: {fitbit_json}")
-            # print(f"Intraday Full Response: {fitbit_json["activities-heart-intraday"]["dataset"]}")
+            Intraday_Response = fitbit_json["activities-heart-intraday"]["dataset"]
+            # print(f"Intraday Full Response: {Intraday_Response}")
 
         try:
             # Fitbit's sync to mobile device & server every 15 minutes in chunks.
@@ -314,32 +315,95 @@ while True:
                 midnight_label.text = ("")
                 activities_timestamp = fitbit_json["activities-heart"][0]["dateTime"]
                 print(f"Fitbit Date: {activities_timestamp}")
-                activities_latest_heart_time = fitbit_json["activities-heart-intraday"]["dataset"][response_length-1]["time"]
+                activities_latest_heart_time = fitbit_json["activities-heart-intraday"][
+                    "dataset"
+                ][response_length - 1]["time"]
                 print(f"Fitbit Time: {activities_latest_heart_time[0:-3]}")
-                print(f"Today's Logged Pulses : {response_length}")
+                print(f"Today's Logged Pulses: {response_length}")
 
                 # Each 1min heart rate is a 60 second average
-                activities_latest_heart_value0 = fitbit_json["activities-heart-intraday"]["dataset"][response_length-1]["value"]
-                activities_latest_heart_value1 = fitbit_json["activities-heart-intraday"]["dataset"][response_length-2]["value"]
-                activities_latest_heart_value2 = fitbit_json["activities-heart-intraday"]["dataset"][response_length-3]["value"]
-                activities_latest_heart_value3 = fitbit_json["activities-heart-intraday"]["dataset"][response_length-4]["value"]
-                activities_latest_heart_value4 = fitbit_json["activities-heart-intraday"]["dataset"][response_length-5]["value"]
-                activities_latest_heart_value5 = fitbit_json["activities-heart-intraday"]["dataset"][response_length-6]["value"]
-                activities_latest_heart_value6 = fitbit_json["activities-heart-intraday"]["dataset"][response_length-7]["value"]
-                activities_latest_heart_value7 = fitbit_json["activities-heart-intraday"]["dataset"][response_length-8]["value"]
-                activities_latest_heart_value8 = fitbit_json["activities-heart-intraday"]["dataset"][response_length-9]["value"]
-                activities_latest_heart_value9 = fitbit_json["activities-heart-intraday"]["dataset"][response_length-10]["value"]
-                activities_latest_heart_value10 = fitbit_json["activities-heart-intraday"]["dataset"][response_length-11]["value"]
-                activities_latest_heart_value11 = fitbit_json["activities-heart-intraday"]["dataset"][response_length-12]["value"]
-                activities_latest_heart_value12 = fitbit_json["activities-heart-intraday"]["dataset"][response_length-13]["value"]
-                activities_latest_heart_value13 = fitbit_json["activities-heart-intraday"]["dataset"][response_length-14]["value"]
-                activities_latest_heart_value14 = fitbit_json["activities-heart-intraday"]["dataset"][response_length-15]["value"]
-                print(f"Latest 15 Minute Averages: {activities_latest_heart_value14},{activities_latest_heart_value13},{activities_latest_heart_value12},{activities_latest_heart_value11},{activities_latest_heart_value10},{activities_latest_heart_value9},{activities_latest_heart_value8},{activities_latest_heart_value7},{activities_latest_heart_value6},{activities_latest_heart_value5},{activities_latest_heart_value4},{activities_latest_heart_value3},{activities_latest_heart_value2},{activities_latest_heart_value1},{activities_latest_heart_value0}")
-
-                list_data = [activities_latest_heart_value14,activities_latest_heart_value13,activities_latest_heart_value12,activities_latest_heart_value11,activities_latest_heart_value10,activities_latest_heart_value9,activities_latest_heart_value8,activities_latest_heart_value7,activities_latest_heart_value6,activities_latest_heart_value5,activities_latest_heart_value4,activities_latest_heart_value3,activities_latest_heart_value2,activities_latest_heart_value1,activities_latest_heart_value0]
+                activities_latest_heart_value0 = fitbit_json[
+                    "activities-heart-intraday"
+                ]["dataset"][response_length - 1]["value"]
+                activities_latest_heart_value1 = fitbit_json[
+                    "activities-heart-intraday"
+                ]["dataset"][response_length - 2]["value"]
+                activities_latest_heart_value2 = fitbit_json[
+                    "activities-heart-intraday"
+                ]["dataset"][response_length - 3]["value"]
+                activities_latest_heart_value3 = fitbit_json[
+                    "activities-heart-intraday"
+                ]["dataset"][response_length - 4]["value"]
+                activities_latest_heart_value4 = fitbit_json[
+                    "activities-heart-intraday"
+                ]["dataset"][response_length - 5]["value"]
+                activities_latest_heart_value5 = fitbit_json[
+                    "activities-heart-intraday"
+                ]["dataset"][response_length - 6]["value"]
+                activities_latest_heart_value6 = fitbit_json[
+                    "activities-heart-intraday"
+                ]["dataset"][response_length - 7]["value"]
+                activities_latest_heart_value7 = fitbit_json[
+                    "activities-heart-intraday"
+                ]["dataset"][response_length - 8]["value"]
+                activities_latest_heart_value8 = fitbit_json[
+                    "activities-heart-intraday"
+                ]["dataset"][response_length - 9]["value"]
+                activities_latest_heart_value9 = fitbit_json[
+                    "activities-heart-intraday"
+                ]["dataset"][response_length - 10]["value"]
+                activities_latest_heart_value10 = fitbit_json[
+                    "activities-heart-intraday"
+                ]["dataset"][response_length - 11]["value"]
+                activities_latest_heart_value11 = fitbit_json[
+                    "activities-heart-intraday"
+                ]["dataset"][response_length - 12]["value"]
+                activities_latest_heart_value12 = fitbit_json[
+                    "activities-heart-intraday"
+                ]["dataset"][response_length - 13]["value"]
+                activities_latest_heart_value13 = fitbit_json[
+                    "activities-heart-intraday"
+                ]["dataset"][response_length - 14]["value"]
+                activities_latest_heart_value14 = fitbit_json[
+                    "activities-heart-intraday"
+                ]["dataset"][response_length - 15]["value"]
+                latest_15_avg = "Latest 15 Minute Averages"
+                print(
+                    f"{latest_15_avg}: "
+                    + f"{activities_latest_heart_value14},"
+                    + f"{activities_latest_heart_value13},"
+                    + f"{activities_latest_heart_value12},"
+                    + f"{activities_latest_heart_value11},"
+                    + f"{activities_latest_heart_value10},"
+                    + f"{activities_latest_heart_value9},"
+                    + f"{activities_latest_heart_value8},"
+                    + f"{activities_latest_heart_value7},"
+                    + f"{activities_latest_heart_value6},"
+                    + f"{activities_latest_heart_value5},"
+                    + f"{activities_latest_heart_value4},"
+                    + f"{activities_latest_heart_value3},"
+                    + f"{activities_latest_heart_value2},"
+                    + f"{activities_latest_heart_value1},"
+                    + f"{activities_latest_heart_value0}"
+                )
+                list_data = [activities_latest_heart_value14,
+                             activities_latest_heart_value13,
+                             activities_latest_heart_value12,
+                             activities_latest_heart_value11,
+                             activities_latest_heart_value10,
+                             activities_latest_heart_value9,
+                             activities_latest_heart_value8,
+                             activities_latest_heart_value7,
+                             activities_latest_heart_value6,
+                             activities_latest_heart_value5,
+                             activities_latest_heart_value4,
+                             activities_latest_heart_value3,
+                             activities_latest_heart_value2,
+                             activities_latest_heart_value1,
+                             activities_latest_heart_value0]
                 # print(f"Data : {list_data}")
                 lowest_y = sorted(list((list_data)))  # Get lowest sorted value
-                highest_y = sorted(list_data,reverse=True)  # Get highest sorted value
+                highest_y = sorted(list_data, reverse=True)  # Get highest sorted value
 
                 # Display Labels
                 new_line = '\n'
@@ -386,17 +450,24 @@ while True:
                     print("Index Error:", e)
                     continue
             else :
-                midnight_label.text = (f"Not enough values for today yet.{new_line}No display from midnight to 00:15")
-                print(f"Waiting for latest sync...")
-                print(f"Not enough values for today to display yet.")
+                midnight_label.text = (
+                    f"Not enough values for today.{new_line}"
+                    + "No display from midnight to 00:15"
+                )
+                print("Waiting for latest sync...")
+                print("Not enough values for today to display yet.")
         except (KeyError) as keyerror:
             print(f"Key Error: {keyerror}")
-            print(f"Too Many Requests, Expired token, invalid permission, or (key:value) pair error.")
+            print("Too Many Requests, "
+                  + "Expired token, "
+                  + "invalid permission, "
+                  + "or (key:value) pair error."
+                  )
             continue
 
-        print("Board Uptime: ", time_calc(time.monotonic()))  # Board Up-Time seconds
+        print("Board Uptime:", time_calc(time.monotonic()))  # Board Up-Time seconds
         print("\nFinished!")
-        print("Next Update in: ", time_calc(sleep_time))
+        print("Next Update in:", time_calc(sleep_time))
         print("===============================")
 
     except (ValueError, RuntimeError) as e:
@@ -422,7 +493,10 @@ while True:
     try:
         plot_group.remove(my_plane)
     except (NameError, ValueError, RuntimeError) as e:
-        print(f"Not enough values for today yet{new_line}Needs 15 values.{new_line}No display from midnight to 00:15")
+        print("Final Exception Failure:\n", e)
+        print(f"Not enough values for today yet{new_line}"
+              + f"Needs 15 values.{new_line}No display from midnight to 00:15"
+              )
         print("Next Update in: ", time_calc(sleep_time))
         print("===============================")
         time.sleep(60)
