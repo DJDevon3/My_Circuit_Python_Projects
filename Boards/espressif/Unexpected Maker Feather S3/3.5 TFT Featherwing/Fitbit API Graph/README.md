@@ -110,6 +110,6 @@ Next Update in: 30 seconds
 
 # Fitbit Time (Latest Sync Time)
 - Automatically refreshes from the Fitbit Watch to the mobile app every 15 minutes.
-- This is why polling every 1min, 5min, 7min, 10min, etc.. and still receive the same data
-- 15 minute poll intervals recommended, it's pointless to poll faster as you will eventually get throttled for too many API calls.
-- If you get temp banned for too many requests, the temp ban is lifted at the top of every hour, this at least helps to ensure your token will not expire after 8 hours.
+- Polling every 1min, 5min, 7min, 10min, with Intraday you'll always return the same data until next Sync.
+- 15 minute poll intervals recommended, it's pointless to poll faster.
+- If you get temp banned for too many requests, the temp ban is lifted at the top of every hour, this at least helps ensure your token will not expire after 8 hours.
