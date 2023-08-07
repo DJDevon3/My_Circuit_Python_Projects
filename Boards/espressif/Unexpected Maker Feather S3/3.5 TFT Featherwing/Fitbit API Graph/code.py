@@ -140,6 +140,12 @@ midnight_label.anchored_position = (DISPLAY_WIDTH/2, DISPLAY_HEIGHT/2-50)
 midnight_label.scale = (2)
 midnight_label.color = TEXT_WHITE
 
+watch_bat_label = label.Label(terminalio.FONT)
+watch_bat_label.anchor_point = (1.0, 0.0)
+watch_bat_label.anchored_position = (DISPLAY_WIDTH, 5)
+watch_bat_label.scale = (2)
+watch_bat_label.color = TEXT_WHITE
+
 pulse_label = label.Label(terminalio.FONT)
 pulse_label.anchor_point = (0.5, 0.0)
 pulse_label.anchored_position = (344, 200)
@@ -161,6 +167,7 @@ main_group.append(midnight_group)
 text_group.append(hello_label)
 text_group.append(date_label)
 text_group.append(time_label)
+text_group.append(watch_bat_label)
 text_group.append(pulse_label)
 
 # Combine and Show
@@ -185,25 +192,54 @@ print("Connected!\n")
 
 # First run uses settings.toml token
 Refresh_Token = Fitbit_First_Refresh_Token
-
+First_Run = True
 if debug: 
     print(f"Top NVM Again (just to make sure): {top_nvm}")
     print(f"Settings.toml Initial Refresh Token: {Fitbit_First_Refresh_Token}")
     
 while True:
-    hello_label.text = "Circuit Python 8.2.2 Fitbit API"
+    # hello_label.text = "Circuit Python 8.2.2 Fitbit API"
     
-    if top_nvm != Fitbit_First_Refresh_Token:
+    if top_nvm is not Refresh_Token and First_Run is False:
+        First_Run = False
         Refresh_Token = microcontroller.nvm[0:64].decode()
+        print("------ INDEFINITE RUN -------")
         if debug:
+            print("Top NVM is Fitbit First Refresh Token")
             # NVM 64 should match Current Refresh Token
             print(f"NVM 64: {microcontroller.nvm[0:64].decode()}")
             print(f"Current Refresh_Token: {Refresh_Token}")
-    else:
-        if debug:
-            # If this is a first run from settings.toml
-            print(f"Initial_Refresh_Token: {Refresh_Token}")
             
+    if top_nvm != Fitbit_First_Refresh_Token and First_Run is True:
+        if debug:
+            print(f"Top NVM: {top_nvm}")
+            print(f"First Refresh: {Refresh_Token}")
+            print(f"First Run: {First_Run}")
+        Refresh_Token = top_nvm
+        First_Run = False
+        print("------ MANUAL CTRL+S TOKEN DIFFERENCE -------")
+        if debug:
+            # NVM 64 should not match Current Refresh Token
+            print("Top NVM is NOT Fitbit First Refresh Token")
+            print(f"NVM 64: {microcontroller.nvm[0:64].decode()}")
+            print(f"Current Refresh_Token: {Refresh_Token}")
+            
+    if top_nvm == Refresh_Token and First_Run is True:
+        if debug:
+            print(f"Top NVM: {top_nvm}")
+            print(f"First Refresh: {Refresh_Token}")
+            print(f"First Run: {First_Run}")
+        Refresh_Token = Fitbit_First_Refresh_Token
+        nvmtoken = b''+Refresh_Token
+        microcontroller.nvm[0:64] = nvmtoken
+        First_Run = False
+        print("------ FIRST RUN SETTINGS.TOML TOKEN-------")
+        if debug:
+            # NVM 64 should match Current Refresh Token
+            print("Top NVM IS Fitbit First Refresh Token")
+            print(f"NVM 64: {microcontroller.nvm[0:64].decode()}")
+            print(f"Current Refresh_Token: {Refresh_Token}")
+ 
     try:
         if debug:
             print("\n-----Token Refresh POST Attempt -------")
@@ -281,7 +317,7 @@ while True:
             "Client-Id": "" + Fitbit_ClientID + "",
         }
         # Heart Intraday Scope
-        FITBIT_SOURCE = (
+        FITBIT_INTRADAY_SOURCE = (
             "https://api.fitbit.com/1/user/"
             + Fitbit_UserID
             + "/activities/heart/date/today"
@@ -289,10 +325,16 @@ while True:
             + detail_level
             + ".json"
         )
+        # Device Details 
+        FITBIT_DEVICE_SOURCE = (
+            "https://api.fitbit.com/1/user/"
+            + Fitbit_UserID
+            + "/devices.json"
+        )
 
-        print("\nAttempting to GET FITBIT Stats!")
+        print("\nAttempting to GET FITBIT Intraday Stats!")
         print("===============================")
-        fitbit_get_response = requests.get(url=FITBIT_SOURCE, headers=fitbit_header)
+        fitbit_get_response = requests.get(url=FITBIT_INTRADAY_SOURCE, headers=fitbit_header)
         try:
             fitbit_json = fitbit_get_response.json()
         except ConnectionError as e:
@@ -300,7 +342,7 @@ while True:
             print("Retrying in 10 seconds")
 
         if debug:
-            print(f"Full API GET URL: {FITBIT_SOURCE}")
+            print(f"Full API GET URL: {FITBIT_INTRADAY_SOURCE}")
             print(f"Header: {fitbit_header}")
             # print(f"JSON Full Response: {fitbit_json}")
             Intraday_Response = fitbit_json["activities-heart-intraday"]["dataset"]
@@ -463,8 +505,24 @@ while True:
                   + "invalid permission, "
                   + "or (key:value) pair error."
                   )
+            time.sleep(60)
             continue
+            
+        fitbit_get_device_response = requests.get(url=FITBIT_DEVICE_SOURCE, headers=fitbit_header)
+        try:
+            fitbit_device_json = fitbit_get_device_response.json()
+        except ConnectionError as e:
+            print("Connection Error:", e)
+            print("Retrying in 10 seconds")
 
+        if debug:
+            print(f"Full API GET URL: {FITBIT_DEVICE_SOURCE}")
+            print(f"Header: {fitbit_header}")
+            print(f"JSON Full Response: {fitbit_device_json}")
+            
+        Device_Response = fitbit_device_json[0]["batteryLevel"]
+        print(f"Watch Battery %: {Device_Response}")
+        watch_bat_label.text = f"Battery: {Device_Response}%"
         print("Board Uptime:", time_calc(time.monotonic()))  # Board Up-Time seconds
         print("\nFinished!")
         print("Next Update in:", time_calc(sleep_time))
