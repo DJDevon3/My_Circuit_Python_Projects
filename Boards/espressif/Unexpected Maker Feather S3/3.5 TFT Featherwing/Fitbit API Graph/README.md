@@ -109,6 +109,7 @@ Next Update in: 30 seconds
   - exiting bootloader mode
 
 # Fitbit Time (Latest Sync Time)
-- Automatically refreshes from the Fitbit Watch to the mobile app every 15 minutes
-- This is why you can poll as much as you want within 15 minutes and still receive the same data
-- 15 minute poll intervals recommended, it's pointless to poll faster.
+- Automatically refreshes from the Fitbit Watch to the mobile app every 15 minutes.
+- This is why polling every 1min, 5min, 7min, 10min, etc.. and still receive the same data
+- 15 minute poll intervals recommended, it's pointless to poll faster as you will eventually get throttled for too many API calls.
+- If you get temp banned for too many requests, the temp ban is lifted at the top of every hour, this at least helps to ensure your token will not expire after 8 hours.
