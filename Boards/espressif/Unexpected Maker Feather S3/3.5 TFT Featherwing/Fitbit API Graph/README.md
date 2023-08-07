@@ -70,7 +70,7 @@ Next Update in: 30 seconds
 ===============================
 ```
 ### Automated Run Serial Output:
-- Next automated request attempt 
+- Automated request attempt. Set sleep_time to 30 seconds for testing but not for many attempts as you could get temp banned. Return to 900 seconds after testing.
 ```py
 ===============================
 ------ INDEFINITE RUN -------
