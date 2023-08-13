@@ -55,9 +55,7 @@ To change the address on an MCP23017 both GND and 3v3 pads should have been be p
 ![i2c_devices](https://user-images.githubusercontent.com/49322231/209739560-fe98bdec-a6be-4387-ac1d-8067821e12e9.png)
 
 ### Adding I2C Devices to the Pi Pico on the TR-Cowbell v1.2
-You can still tap into either I2C bus using GP10 & GP11 for Bus 1 or GP12 & GP13 for Bus 0. This is the reason why I included stacking headers with all kits. I highly recommend using the stacking headers as it will make your life easier if you ever decide to use the Pico for external purposes like adding a display. Unfortunately the Stemma port and Stemma breakout are broken on v1.2 due to both MCP chips taking up both buses.  
-
-I will be working on documenting a bodge fix to put both MCP chips on 1 bus and getting the Stemma port functioning as intended. This is obviously a priority to fix this for all v1.2 owners.
+You can still tap into either I2C bus using GP10 & GP11 for Bus 1 or GP12 & GP13 for Bus 0. This is the reason why I included stacking headers with all kits. I highly recommend using the stacking headers as it will make your life easier if you ever decide to use the Pico for external purposes like adding a display. Doing the bodge fix addresses the issue of using up both I2C busses for v1.2 owners.
 
 ### MCP23017 Pin Confusion
 It's OK to be confused at some point about which pins go where. There are so many overlapping numbers it's quite easy to mix things up. As long as all MCP pins are traced to switches and or LED's you can always fix pin mappings in software.
