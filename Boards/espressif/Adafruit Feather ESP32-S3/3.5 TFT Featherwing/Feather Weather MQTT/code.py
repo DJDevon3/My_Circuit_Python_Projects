@@ -3,22 +3,7 @@
 # Adafruit ESP32-S3 Feather Weather with MQTT
 # Coded for Circuit Python 8.2.0 stable
 
-import gc
-import os
-import supervisor
-import time
-import board
-import displayio
-import digitalio
-import terminalio
-import adafruit_imageload
-import adafruit_sdcard
-import storage
-import ssl
-import wifi
-import socketpool
-import json
-import adafruit_requests
+import gc, os, supervisor, time, board, displayio, digitalio, terminalio, adafruit_imageload, adafruit_sdcard, storage, ssl, wifi, socketpool, json, adafruit_requests
 import ulab.numpy as np
 import adafruit_minimqtt.adafruit_minimqtt as MQTT
 from adafruit_minimqtt.adafruit_minimqtt import MMQTTException
