@@ -1,6 +1,6 @@
 # TR-Cowbell Page (all versions)
-TR Cowbell is a Midi Sequencer/Macropad PCB designed by DJDevon3 & powered by Raspberry Pi Pico or Pico W.
-Software written by DJDevon3 & Neradoc
+- TR Cowbell is a Midi Sequencer/Macropad PCB designed by DJDevon3 & powered by Raspberry Pi Pico or Pico W.
+- Software by DJDevon3 & Neradoc
 
 ![Based on PicoStepSeq by @Todbot](https://github.com/todbot/picostepseq)
 
