@@ -7,6 +7,8 @@ TR Cowbell is a Midi Sequencer/Macropad PCB designed by DJDevon3 & powered by Ra
 - 16 TR-808 style sequencer switches
 - 5 tacticle general purpose buttons
 - 1 general purpose rotary encoder
+- 1 TRS MIDI IN
+- 1 TRS MIDI OUT
 - 1 board reset tacticle button
 
 ![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/raspberrypi/Raspberry%20Pi%20Pico/TR%20Cowbell/Pictures/v1.2_screenshot.jpg)
