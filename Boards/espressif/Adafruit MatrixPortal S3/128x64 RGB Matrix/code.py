@@ -289,8 +289,8 @@ def hide_warning():
     warning_group.hidden = True
 
 display_temperature = 0
-# Define the input range and output range
-# pressure at 1014 & 88F at 100% accurate. sea level pressure affects temp?
+# Temperature offset adjustments
+# For correcting incorrect temp sensor readings
 input_range = [50, 70, 80, 88, 90, 95, 120]
 output_range = [50-0.1, 70-2.0, 80-2.0, 88-4.5, 90-7.0, 95-10.0, 120-15]
 
