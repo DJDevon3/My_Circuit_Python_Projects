@@ -7,7 +7,7 @@
 - 1x [30cm IDC cable](https://www.amazon.com/dp/B07FZWH9S6)
 - 1x [5V 18A Meanwell PSU](https://www.amazon.com/dp/B018TEAPRQ)
 - 1x 3-prong (USA spec) PC power cord. Most people have an extra laying around. If you don't have one you'll need to source one.
-- 1x [AC Rocker Switch Socket](https://www.amazon.com/dp/B07RQV2)
+- 1x [AC Rocker Switch Socket](https://www.amazon.com/dp/B07RQV2NPN)
 - 1x [20A Fuses](https://www.amazon.com/dp/B0B1CPZ7XH)
 
 
