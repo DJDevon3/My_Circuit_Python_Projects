@@ -6,8 +6,8 @@
 - publishes sensor data to AdafruitIO group feed (you must create and customize a dashboard)
 
 ![screenshot](https://user-images.githubusercontent.com/49322231/235323187-4bcce094-0927-4b9e-b5cf-2646f0b6944d.jpg)
-- Labels in blue are from online data (Adafruit HQ in NY), orange is local sensors (Florida).
-- Default online lat/lon is set to Adafruit HQ location, ideally you'd also this this to your location
+- Labels in blue are from online data, orange is local sensors (Florida).
+- Default online lat/lon is set to Adafruit HQ location, ideally you'd also set this to your location
  
  # Pressure Warning Correlation:
 - This is a screenshot from a radar website to show my storm warnings work quite well.
