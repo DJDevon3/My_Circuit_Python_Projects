@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 # Used with Adafruit MatrixPortal S3
-# Coded for Circuit Python 9.0 alpha
+# Coded for Circuit Python 8.x
 
 import time
 import board
