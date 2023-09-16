@@ -17,4 +17,5 @@
 
 ![Brackets_Serpentine](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/dfbeed8d-e7ee-43a4-8114-ac9dce358379)
 
-![IMG_1162](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/11b4534b-41e6-473b-863c-60f7398fecfb)
+
+![IMG_1163](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/c276226f-f087-406f-b61a-a1f137811b7a)
