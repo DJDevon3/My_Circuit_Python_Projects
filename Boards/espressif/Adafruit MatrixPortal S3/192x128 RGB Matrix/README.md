@@ -9,6 +9,7 @@
 - 2x 3-prong (USA spec) PC power cord. Most people have an extra laying around. If you don't have one you'll need to source one.
 - 2x [AC Rocker Switch Socket](https://www.amazon.com/dp/B07RQV2NPN)
 - 2x [20A Fuses](https://www.amazon.com/dp/B0B1CPZ7XH)
+- [3D Printed Brackets available on Printables](https://www.printables.com/model/578204-hub75-5mm-pitch-4-panel-bracket)
 
 
 
