@@ -21,3 +21,7 @@
 
 ![IMG_1163](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/c276226f-f087-406f-b61a-a1f137811b7a)
 
+Includes fireworks animation example coded by Todbot
+
+https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/36f9f95f-79bd-4e58-98f7-084944f9ba2c
+
