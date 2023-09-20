@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2023 DJDevon3
 # SPDX-License-Identifier: MIT
-# Coded for Circuit Python 8.2
+# Coded for Circuit Python 8.2.x
 
 import os
 import board
@@ -122,6 +122,12 @@ hello_label.anchored_position = (DISPLAY_WIDTH/2, 5)
 hello_label.scale = (1)
 hello_label.color = TEXT_WHITE
 
+error_label = label.Label(terminalio.FONT)
+error_label.anchor_point = (0.5, 0.5)
+error_label.anchored_position = (DISPLAY_WIDTH/2, DISPLAY_HEIGHT/2)
+error_label.scale = (2)
+error_label.color = TEXT_WHITE
+
 date_label = label.Label(terminalio.FONT)
 date_label.anchor_point = (0.0, 0.0)
 date_label.anchored_position = (5, 5)
@@ -169,6 +175,7 @@ text_group.append(date_label)
 text_group.append(time_label)
 text_group.append(watch_bat_label)
 text_group.append(pulse_label)
+text_group.append(error_label)
 
 # Combine and Show
 display.show(main_group)
@@ -193,13 +200,14 @@ print("Connected!\n")
 # First run uses settings.toml token
 Refresh_Token = Fitbit_First_Refresh_Token
 First_Run = True
-if debug: 
+if debug:
     print(f"Top NVM Again (just to make sure): {top_nvm}")
     print(f"Settings.toml Initial Refresh Token: {Fitbit_First_Refresh_Token}")
-    
+
+new_line = '\n'
 while True:
     # hello_label.text = "Circuit Python 8.2.2 Fitbit API"
-    
+
     if top_nvm is not Refresh_Token and First_Run is False:
         First_Run = False
         Refresh_Token = microcontroller.nvm[0:64].decode()
@@ -209,7 +217,7 @@ while True:
             # NVM 64 should match Current Refresh Token
             print(f"NVM 64: {microcontroller.nvm[0:64].decode()}")
             print(f"Current Refresh_Token: {Refresh_Token}")
-            
+
     if top_nvm != Fitbit_First_Refresh_Token and First_Run is True:
         if debug:
             print(f"Top NVM: {top_nvm}")
@@ -217,13 +225,13 @@ while True:
             print(f"First Run: {First_Run}")
         Refresh_Token = top_nvm
         First_Run = False
-        print("------ MANUAL CTRL+S TOKEN DIFFERENCE -------")
+        print("------ MANUAL REBOOT TOKEN DIFFERENCE -------")
         if debug:
             # NVM 64 should not match Current Refresh Token
             print("Top NVM is NOT Fitbit First Refresh Token")
             print(f"NVM 64: {microcontroller.nvm[0:64].decode()}")
             print(f"Current Refresh_Token: {Refresh_Token}")
-            
+
     if top_nvm == Refresh_Token and First_Run is True:
         if debug:
             print(f"Top NVM: {top_nvm}")
@@ -239,7 +247,7 @@ while True:
             print("Top NVM IS Fitbit First Refresh Token")
             print(f"NVM 64: {microcontroller.nvm[0:64].decode()}")
             print(f"Current Refresh_Token: {Refresh_Token}")
- 
+
     try:
         if debug:
             print("\n-----Token Refresh POST Attempt -------")
@@ -325,7 +333,7 @@ while True:
             + detail_level
             + ".json"
         )
-        # Device Details 
+        # Device Details
         FITBIT_DEVICE_SOURCE = (
             "https://api.fitbit.com/1/user/"
             + Fitbit_UserID
@@ -334,7 +342,9 @@ while True:
 
         print("\nAttempting to GET FITBIT Intraday Stats!")
         print("===============================")
-        fitbit_get_response = requests.get(url=FITBIT_INTRADAY_SOURCE, headers=fitbit_header)
+        FBIS = FITBIT_INTRADAY_SOURCE
+        FBH = fitbit_header
+        fitbit_get_response = requests.get(url=FBIS, headers=FBH)
         try:
             fitbit_json = fitbit_get_response.json()
         except ConnectionError as e:
@@ -342,7 +352,7 @@ while True:
             print("Retrying in 10 seconds")
 
         if debug:
-            print(f"Full API GET URL: {FITBIT_INTRADAY_SOURCE}")
+            print(f"Full API GET URL: {FBIS}")
             print(f"Header: {fitbit_header}")
             # print(f"JSON Full Response: {fitbit_json}")
             Intraday_Response = fitbit_json["activities-heart-intraday"]["dataset"]
@@ -444,11 +454,11 @@ while True:
                              activities_latest_heart_value1,
                              activities_latest_heart_value0]
                 # print(f"Data : {list_data}")
+                # For autoscaling graph
                 lowest_y = sorted(list((list_data)))  # Get lowest sorted value
                 highest_y = sorted(list_data, reverse=True)  # Get highest sorted value
 
                 # Display Labels
-                new_line = '\n'
                 date_label.text = f"{activities_timestamp}"
                 time_label.text = f"{activities_latest_heart_time[0:-3]}"
 
@@ -507,8 +517,9 @@ while True:
                   )
             time.sleep(60)
             continue
-            
-        fitbit_get_device_response = requests.get(url=FITBIT_DEVICE_SOURCE, headers=fitbit_header)
+        FBDS = FITBIT_DEVICE_SOURCE
+        FBH = fitbit_header
+        fitbit_get_device_response = requests.get(url=FBDS, headers=FBH)
         try:
             fitbit_device_json = fitbit_get_device_response.json()
         except ConnectionError as e:
@@ -519,7 +530,7 @@ while True:
             print(f"Full API GET URL: {FITBIT_DEVICE_SOURCE}")
             print(f"Header: {fitbit_header}")
             print(f"JSON Full Response: {fitbit_device_json}")
-            
+
         Device_Response = fitbit_device_json[0]["batteryLevel"]
         print(f"Watch Battery %: {Device_Response}")
         watch_bat_label.text = f"Battery: {Device_Response}%"
@@ -551,10 +562,12 @@ while True:
     try:
         plot_group.remove(my_plane)
     except (NameError, ValueError, RuntimeError) as e:
+        error_label.text = "No data for today yet"
         print("Final Exception Failure:\n", e)
-        print(f"Not enough values for today yet{new_line}"
-              + f"Needs 15 values.{new_line}No display from midnight to 00:15"
-              )
+        print("Not enough values for today yet",
+        "Needs 15 values.",
+        "No display from midnight to 00:15",
+        sep="\n")
         print("Next Update in: ", time_calc(sleep_time))
         print("===============================")
         time.sleep(60)
