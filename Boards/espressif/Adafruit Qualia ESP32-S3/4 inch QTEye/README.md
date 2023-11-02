@@ -1,7 +1,7 @@
 # Adafruit Qualia Boards
 Circuit Python Projects on Adafruit Qualia boards by DJDevon3
 
-Uses a modified version of Todbot's QTEye code
+Uses a modified version of [Todbot's QTEye code](https://github.com/todbot/circuitpython-tricks/tree/main/larger-tricks/eyeballs)
 
 ### Hardware:
 - Adafruit Qualia ESP32-S3 Microcontroller
