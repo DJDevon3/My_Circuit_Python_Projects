@@ -32,7 +32,8 @@
 - [Adafruit BME280](https://www.adafruit.com/product/2651) Barometric Pressure, Temperature, Humidity Sensor
 
 ## Requirement:
-- OpenWeatherMaps Account & API Token
+- [OpenWeatherMap](https://openweathermap.org) Account & API Token (free)
+- [AdafruitIO](https://io.adafruit.com/) MQTT logging dashboard (free)
 
 ## Demonstration Serial Print Output:
 - Good for debugging or if you don't have a display. Serial output to the REPL console can be helpful.
