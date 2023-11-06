@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2023 DJDevon3
 # SPDX-License-Identifier: MIT
 # Adafruit ESP32-S3 Feather Weather with MQTT
-# Coded for Circuit Python 8.2.0 stable
+# Coded for Circuit Python 8.2.x
 
 import gc
 import os
@@ -48,11 +48,10 @@ except ImportError:
 
 aio_username = secrets['aio_username']
 aio_key = secrets['aio_key']
+# Local time & weather from lat/lon
 OWKEY = secrets['openweather_token']
 OWLAT = secrets['openweather_lat']
 OWLON = secrets['openweather_lon']
-timezone = secrets['timezone']
-tz_offset_seconds = secrets['timezone_offset']
 
 # MQTT Topic
 # Use this format for a standard MQTT broker
@@ -147,8 +146,6 @@ NOAA_MAP_SOURCE = "https://radar.weather.gov/ridge/standard/SOUTHEAST_0.gif"
 DATA_SOURCE = "https://api.openweathermap.org/data/2.5/onecall?"
 DATA_SOURCE += "lat=" + OWLAT
 DATA_SOURCE += "&lon=" + OWLON
-DATA_SOURCE += "&timezone=" + timezone
-DATA_SOURCE += "&timezone_offset=" + str(tz_offset_seconds)
 DATA_SOURCE += "&exclude=hourly,daily"
 DATA_SOURCE += "&appid=" + OWKEY
 DATA_SOURCE += "&units=imperial"
@@ -555,23 +552,28 @@ while True:
             else:
                 if debug_OWM:
                     print("OpenWeather Success")
-
+                    
+            # Timezone & offset automatically returned based on lat/lon
+            get_timezone_offset = int(response['timezone_offset'])
+            tz_offset_seconds = get_timezone_offset
+            if debug_OWM:
+                print(f"Timezone Offset (in seconds): {get_timezone_offset}")
             get_timestamp = int(response['current']['dt'] + int(tz_offset_seconds))
             current_unix_time = time.localtime(get_timestamp)
             current_struct_time = time.struct_time(current_unix_time)
             current_date = "{}".format(_format_date(current_struct_time))
             current_time = "{}".format(_format_time(current_struct_time))
-
+            
             sunrise = int(response['current']['sunrise'] + int(tz_offset_seconds))
             sunrise_unix_time = time.localtime(sunrise)
             sunrise_struct_time = time.struct_time(sunrise_unix_time)
             sunrise_time = "{}".format(_format_time(sunrise_struct_time))
-
+            
             sunset = int(response['current']['sunset'] + int(tz_offset_seconds))
             sunset_unix_time = time.localtime(sunset)
             sunset_struct_time = time.struct_time(sunset_unix_time)
             sunset_time = "{}".format(_format_time(sunset_struct_time))
-
+            
             owm_temp = response['current']['temp']
             owm_pressure = response['current']['pressure']
             owm_humidity = response['current']['humidity']
