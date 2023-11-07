@@ -1,6 +1,5 @@
 # ESP32-S3 Feather Weather with MQTT
-- pulls info from OpenWeatherMaps in JSON format to display
-- pulls timezone & timezone offset based on lat/lon
+- pulls data from OpenWeatherMaps API in JSON format to display (including timezone from lat/lon)
 - local environment data from BME280 sensor connected via STEMMA
 - displays weather data on 3.5" TFT Featherwing & serial console
 - displays battery voltage and has USB sensing to know if it's plugged into USB 5V supply (battery or plug icon)
