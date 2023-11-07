@@ -150,16 +150,6 @@ DATA_SOURCE += "&exclude=hourly,daily"
 DATA_SOURCE += "&appid=" + OWKEY
 DATA_SOURCE += "&units=imperial"
 
-def _format_datetime(datetime):
-    return "{:02}/{:02}/{} {:02}:{:02}:{:02}".format(
-        datetime.tm_mon,
-        datetime.tm_mday,
-        datetime.tm_year,
-        datetime.tm_hour,
-        datetime.tm_min,
-        datetime.tm_sec,
-    )
-
 def _format_date(datetime):
     return "{:02}/{:02}/{:02}".format(
         datetime.tm_year,
@@ -276,6 +266,11 @@ owm_barometric_data_label.anchored_position = (470, DISPLAY_HEIGHT - 55)
 owm_barometric_data_label.scale = 1
 owm_barometric_data_label.color = TEXT_LIGHTBLUE
 
+owm_windspeed_label = label.Label(medium_font)
+owm_windspeed_label.anchor_point = (1.0, 1.0)
+owm_windspeed_label.anchored_position = (DISPLAY_WIDTH - 5, 50)
+owm_windspeed_label.scale = 1
+
 vbat_label = label.Label(medium_font)
 vbat_label.anchor_point = (1.0, 1.0)
 vbat_label.anchored_position = (DISPLAY_WIDTH - 15, 20)
@@ -365,6 +360,7 @@ text_group.append(owm_humidity_data_label)
 text_group.append(barometric_label)
 text_group.append(barometric_data_label)
 text_group.append(owm_barometric_data_label)
+text_group.append(owm_windspeed_label)
 text_group.append(vbat_label)
 text_group.append(plugbmp_label)
 text_group.append(greenbmp_label)
@@ -486,13 +482,16 @@ while True:
     # Account for PCB heating bias, gets slightly hotter as ambient increases
     temperature = bme280.temperature * 1.8 + 32
     temp_round = round(temperature, 2)
-    print("Temp: ", temperature) # biased reading
+    print("Temp: ", temperature)  # biased reading
     display_temperature = np.interp(temperature, input_range, output_range)
     display_temperature = round(display_temperature[0], 2)
     print(f"Actual Temp: {display_temperature:.1f}")
-    # pressure = 1000  # Manually set to debug warning message
+    if debug_OWM:
+        mqtt_pressure = 1000  # Manually set to debug warning message
+        print(f"BME280 Pressure: {mqtt_pressure}")
+    else: 
+        mqtt_pressure = round(bme280.pressure, 1)
     mqtt_humidity = round(bme280.relative_humidity, 1)
-    mqtt_pressure = round(bme280.pressure, 1)
     mqtt_altitude = round(bme280.altitude, 2)
 
     temp_data_shadow.text = f"{display_temperature:.1f}"
@@ -513,7 +512,7 @@ while True:
         show_warning("WARNING", "Tropical Storm")
     elif 1002 <= mqtt_pressure <= 1009:  # sudden gusty downpours
         show_warning("CAUTION", "Low Pressure System")
-    elif 1019 <= mqtt_pressure <= 1025:  #sudden light cold rain
+    elif 1019 <= mqtt_pressure <= 1025:  # sudden light cold rain
         show_warning("CAUTION", "High Pressure System")
     elif mqtt_pressure >= 1026:
         show_warning("WARNING", "Hail & Tornados?")
@@ -552,7 +551,7 @@ while True:
             else:
                 if debug_OWM:
                     print("OpenWeather Success")
-                    
+
             # Timezone & offset automatically returned based on lat/lon
             get_timezone_offset = int(response['timezone_offset'])
             tz_offset_seconds = get_timezone_offset
@@ -563,21 +562,22 @@ while True:
             current_struct_time = time.struct_time(current_unix_time)
             current_date = "{}".format(_format_date(current_struct_time))
             current_time = "{}".format(_format_time(current_struct_time))
-            
+
             sunrise = int(response['current']['sunrise'] + int(tz_offset_seconds))
             sunrise_unix_time = time.localtime(sunrise)
             sunrise_struct_time = time.struct_time(sunrise_unix_time)
             sunrise_time = "{}".format(_format_time(sunrise_struct_time))
-            
+
             sunset = int(response['current']['sunset'] + int(tz_offset_seconds))
             sunset_unix_time = time.localtime(sunset)
             sunset_struct_time = time.struct_time(sunset_unix_time)
             sunset_time = "{}".format(_format_time(sunset_struct_time))
-            
+
             owm_temp = response['current']['temp']
             owm_pressure = response['current']['pressure']
             owm_humidity = response['current']['humidity']
             weather_type = response['current']['weather'][0]['main']
+            owm_windspeed = float(response['current']['wind_speed'])
 
             if debug_OWM:
                 print("Timestamp:", current_date + " " + current_time)
@@ -587,12 +587,14 @@ while True:
                 print("Pressure:", owm_pressure)
                 print("Humidity:", owm_humidity)
                 print("Weather Type:", weather_type)
+                print("Wind Speed:", owm_windspeed)
                 print("Next Update: ", time_calc(sleep_time))
                 print("===============================")
 
             gc.collect()
             date_label.text = current_date
             time_label.text = current_time
+            owm_windspeed_label.text = f"{owm_windspeed:.1f} mph"
             owm_temp_data_shadow.text = f"{owm_temp:.1f}"
             owm_temp_data_label.text = f"{owm_temp:.1f}"
             owm_humidity_data_label.text = f"{owm_humidity:.1f} %"
