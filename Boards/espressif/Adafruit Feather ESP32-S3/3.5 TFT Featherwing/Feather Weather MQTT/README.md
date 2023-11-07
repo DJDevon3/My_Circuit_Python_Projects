@@ -5,8 +5,8 @@
 - displays weather data on 3.5" TFT Featherwing & serial console
 - displays battery voltage and has USB sensing to know if it's plugged into USB 5V supply (battery or plug icon)
 - publishes sensor data to AdafruitIO group feed (you must create and customize a dashboard)
-
-![screenshot](https://user-images.githubusercontent.com/49322231/235323187-4bcce094-0927-4b9e-b5cf-2646f0b6944d.jpg)
+- 
+![screenshot](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/35a53c35-349e-4b11-bbd2-4d005b161859)
 - Labels in blue are from online data, orange is BME280 sensor data.
 - Default online lat/lon is set to Adafruit HQ location, ideally you'd also set this to your location
  
