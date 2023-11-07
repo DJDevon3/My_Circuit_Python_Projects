@@ -270,6 +270,7 @@ owm_windspeed_label = label.Label(medium_font)
 owm_windspeed_label.anchor_point = (1.0, 1.0)
 owm_windspeed_label.anchored_position = (DISPLAY_WIDTH - 5, 50)
 owm_windspeed_label.scale = 1
+owm_windspeed_label.color = TEXT_LIGHTBLUE
 
 vbat_label = label.Label(medium_font)
 vbat_label.anchor_point = (1.0, 1.0)
