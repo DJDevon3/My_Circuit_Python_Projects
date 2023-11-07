@@ -487,9 +487,9 @@ while True:
     display_temperature = round(display_temperature[0], 2)
     print(f"Actual Temp: {display_temperature:.1f}")
     if debug_OWM:
-        mqtt_pressure = 1000  # Manually set to debug warning message
+        mqtt_pressure = 1005  # Manually set to debug warning message
         print(f"BME280 Pressure: {mqtt_pressure}")
-    else: 
+    else:
         mqtt_pressure = round(bme280.pressure, 1)
     mqtt_humidity = round(bme280.relative_humidity, 1)
     mqtt_altitude = round(bme280.altitude, 2)
@@ -652,14 +652,16 @@ while True:
         print("Next Update: ", time_calc(sleep_time))
         print("===============================")
         gc.collect()
+        
+        TAKE_SCREENSHOT = False  # Set to True to take a screenshot
+        if TAKE_SCREENSHOT:
+            print("Taking Screenshot... ")
+            save_pixels("/sd/screenshot.bmp", display)
+            print("Screenshot Saved")
+            storage.umount(vfs)
+            print("SD Card Unmounted! It is now safe to remove SD Card")
+            time.sleep(120)
+        
         time.sleep(sleep_time)
         break
 
-    TAKE_SCREENSHOT = False  # Set to True to take a screenshot
-    if TAKE_SCREENSHOT:
-        print("Taking Screenshot... ")
-        save_pixels("/sd/screenshot.bmp", display)
-        print("Screenshot Saved")
-        storage.umount(vfs)
-        print("SD Card Unmounted! It is now safe to remove SD Card")
-        time.sleep(120)
