@@ -164,142 +164,41 @@ def _format_time(datetime):
         # datetime.tm_sec,
     )
 
-# Individual customizable position labels
-# https://learn.adafruit.com/circuitpython-display-support-using-displayio/text
-hello_label = label.Label(terminalio.FONT)
-hello_label.anchor_point = (0.5, 1.0)
-hello_label.anchored_position = (DISPLAY_WIDTH/2, 15)
-hello_label.scale = (1)
-hello_label.color = TEXT_WHITE
-
-warning_label = label.Label(terminalio.FONT)
-warning_label.anchor_point = (0.5, 1.0)
-warning_label.anchored_position = (DISPLAY_WIDTH/2, DISPLAY_HEIGHT - 35)
-warning_label.scale = (3)
-warning_label.color = TEXT_RED
-
-warning_text_label = label.Label(terminalio.FONT)
-warning_text_label.anchor_point = (0.5, 1.0)
-warning_text_label.anchored_position = (DISPLAY_WIDTH/2, DISPLAY_HEIGHT - 5)
-warning_text_label.scale = (2)
-warning_text_label.color = TEXT_RED
-
-date_label = label.Label(medium_font)
-# Anchor point bottom center of text
-date_label.anchor_point = (0.0, 0.0)
-# Display width divided in half for center of display (x,y)
-date_label.anchored_position = (5, 5)
-date_label.scale = 1
-date_label.color = TEXT_LIGHTBLUE
-
-time_label = label.Label(medium_font)
-# Anchor point bottom center of text
-time_label.anchor_point = (0.0, 0.0)
-# Display width divided in half for center of display (x,y)
-time_label.anchored_position = (5, 25)
-time_label.scale = 2
-time_label.color = TEXT_LIGHTBLUE
-
-temp_label = label.Label(medium_font)
-temp_label.anchor_point = (1.0, 1.0)
-temp_label.anchored_position = (475, 145)
-temp_label.scale = 2
-temp_label.color = TEXT_ORANGE
-
-temp_data_label = label.Label(huge_font)
-temp_data_label.anchor_point = (0.5, 1.0)
-temp_data_label.anchored_position = (DISPLAY_WIDTH / 2, 200)
-temp_data_label.scale = 1
-temp_data_label.color = TEXT_ORANGE
-
-temp_data_shadow = label.Label(huge_font)
-temp_data_shadow.anchor_point = (0.5, 1.0)
-temp_data_shadow.anchored_position = (DISPLAY_WIDTH / 2 + 2, 200 + 2)
-temp_data_shadow.scale = 1
-temp_data_shadow.color = TEXT_BLACK
-
-owm_temp_data_label = label.Label(medium_font)
-owm_temp_data_label.anchor_point = (0.5, 1.0)
-owm_temp_data_label.anchored_position = (DISPLAY_WIDTH / 2, 100)
-owm_temp_data_label.scale = 2
-owm_temp_data_label.color = TEXT_LIGHTBLUE
-
-owm_temp_data_shadow = label.Label(medium_font)
-owm_temp_data_shadow.anchor_point = (0.5, 1.0)
-owm_temp_data_shadow.anchored_position = (DISPLAY_WIDTH / 2 + 2, 100 + 2)
-owm_temp_data_shadow.scale = 2
-owm_temp_data_shadow.color = TEXT_BLACK
-
-humidity_label = label.Label(medium_font)
-humidity_label.anchor_point = (0.0, 1.0)
-humidity_label.anchored_position = (5, DISPLAY_HEIGHT - 23)
-humidity_label.scale = 1
-humidity_label.color = TEXT_GRAY
-
-humidity_data_label = label.Label(medium_font)
-humidity_data_label.anchor_point = (0.0, 1.0)
-humidity_data_label.anchored_position = (5, DISPLAY_HEIGHT)
-humidity_data_label.scale = 1
-humidity_data_label.color = TEXT_ORANGE
-
-owm_humidity_data_label = label.Label(medium_font)
-owm_humidity_data_label.anchor_point = (0.0, 1.0)
-owm_humidity_data_label.anchored_position = (5, DISPLAY_HEIGHT - 55)
-owm_humidity_data_label.scale = 1
-owm_humidity_data_label.color = TEXT_LIGHTBLUE
-
-barometric_label = label.Label(medium_font)
-barometric_label.anchor_point = (1.0, 1.0)
-barometric_label.anchored_position = (470, DISPLAY_HEIGHT - 27)
-barometric_label.scale = 1
-barometric_label.color = TEXT_GRAY
-
-barometric_data_label = label.Label(medium_font)
-barometric_data_label.anchor_point = (1.0, 1.0)
-barometric_data_label.anchored_position = (470, DISPLAY_HEIGHT)
-barometric_data_label.scale = 1
-barometric_data_label.color = TEXT_ORANGE
-
-owm_barometric_data_label = label.Label(medium_font)
-owm_barometric_data_label.anchor_point = (1.0, 1.0)
-owm_barometric_data_label.anchored_position = (470, DISPLAY_HEIGHT - 55)
-owm_barometric_data_label.scale = 1
-owm_barometric_data_label.color = TEXT_LIGHTBLUE
-
-owm_windspeed_label = label.Label(medium_font)
-owm_windspeed_label.anchor_point = (1.0, 1.0)
-owm_windspeed_label.anchored_position = (DISPLAY_WIDTH - 5, 50)
-owm_windspeed_label.scale = 1
-owm_windspeed_label.color = TEXT_LIGHTBLUE
-
-vbat_label = label.Label(medium_font)
-vbat_label.anchor_point = (1.0, 1.0)
-vbat_label.anchored_position = (DISPLAY_WIDTH - 15, 20)
-vbat_label.scale = 1
-
-plugbmp_label = label.Label(terminalio.FONT)
-plugbmp_label.anchor_point = (1.0, 1.0)
-plugbmp_label.scale = 1
-
-greenbmp_label = label.Label(terminalio.FONT)
-greenbmp_label.anchor_point = (1.0, 1.0)
-greenbmp_label.scale = 1
-
-bluebmp_label = label.Label(terminalio.FONT)
-bluebmp_label.anchor_point = (1.0, 1.0)
-bluebmp_label.scale = 1
-
-yellowbmp_label = label.Label(terminalio.FONT)
-yellowbmp_label.anchor_point = (1.0, 1.0)
-yellowbmp_label.scale = 1
-
-orangebmp_label = label.Label(terminalio.FONT)
-orangebmp_label.anchor_point = (1.0, 1.0)
-orangebmp_label.scale = 1
-
-redbmp_label = label.Label(terminalio.FONT)
-redbmp_label.anchor_point = (1.0, 1.0)
-redbmp_label.scale = 1
+# Function for minimizing labels to 1 liners
+# Attribution: Anecdata (thanks!)
+def make_my_label(font, anchor_point, anchored_position, scale, color):
+    l = label.Label(font)
+    l.anchor_point = anchor_point
+    l.anchored_position = anchored_position
+    l.scale = scale
+    l.color = color
+    return l
+    
+# name_label (FONT, (ANCHOR POINT), (ANCHOR POSITION), SCALE, COLOR)
+hello_label = make_my_label(terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH/2, 15), 1, TEXT_WHITE)
+warning_label = make_my_label(terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH/2, DISPLAY_HEIGHT - 35), 3, TEXT_RED)
+warning_text_label = make_my_label(terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH/2, DISPLAY_HEIGHT - 5), 2, TEXT_RED)
+date_label = make_my_label(medium_font, (0.0, 0.0), (5,5), 1, TEXT_LIGHTBLUE)
+time_label = make_my_label(medium_font, (0.0, 0.0), (5,25), 2, TEXT_LIGHTBLUE)
+temp_label = make_my_label(medium_font, (1.0, 1.0), (475, 145), 2, TEXT_ORANGE)
+temp_data_label = make_my_label(huge_font, (0.5, 1.0), (DISPLAY_WIDTH / 2, 200), 1, TEXT_ORANGE)
+temp_data_shadow = make_my_label(huge_font, (0.5, 1.0), (DISPLAY_WIDTH / 2 + 2, 200 + 2), 1, TEXT_BLACK)
+owm_temp_data_label = make_my_label(medium_font, (0.5, 1.0), (DISPLAY_WIDTH / 2, 100), 2, TEXT_LIGHTBLUE)
+owm_temp_data_shadow = make_my_label(medium_font, (0.5, 1.0), (DISPLAY_WIDTH / 2 + 2, 100 + 2), 2, TEXT_BLACK)
+humidity_label = make_my_label(medium_font, (0.0, 1.0), (5, DISPLAY_HEIGHT - 23), 1, TEXT_GRAY)
+humidity_data_label = make_my_label(medium_font, (0.0, 1.0), (5, DISPLAY_HEIGHT), 1, TEXT_ORANGE)
+owm_humidity_data_label = make_my_label(medium_font, (0.0, 1.0), (5, DISPLAY_HEIGHT - 55), 1, TEXT_LIGHTBLUE)
+barometric_label = make_my_label(medium_font, (1.0, 1.0), (470, DISPLAY_HEIGHT - 27), 1, TEXT_GRAY)
+barometric_data_label = make_my_label(medium_font, (1.0, 1.0), (470, DISPLAY_HEIGHT), 1, TEXT_ORANGE)
+owm_barometric_data_label = make_my_label(medium_font, (1.0, 1.0), (470, DISPLAY_HEIGHT - 55), 1, TEXT_LIGHTBLUE)
+owm_windspeed_label = make_my_label(medium_font, (1.0, 1.0), (DISPLAY_WIDTH - 5, 50), 1, TEXT_LIGHTBLUE)
+vbat_label = make_my_label(medium_font, (1.0, 1.0), (DISPLAY_WIDTH - 15, 20), 1, None)
+plugbmp_label = make_my_label(terminalio.FONT, (1.0, 1.0), None, 1, None)
+greenbmp_label = make_my_label(terminalio.FONT, (1.0, 1.0), None, 1, None)
+bluebmp_label = make_my_label(terminalio.FONT, (1.0, 1.0), None, 1, None)
+yellowbmp_label = make_my_label(terminalio.FONT, (1.0, 1.0), None, 1, None)
+orangebmp_label = make_my_label(terminalio.FONT, (1.0, 1.0), None, 1, None)
+redbmp_label = make_my_label(terminalio.FONT, (1.0, 1.0), None, 1, None)
 
 # Load Bitmap to tile grid first (Background layer)
 DiskBMP = displayio.OnDiskBitmap("/images/Astral_Fruit_8bit.bmp")
@@ -524,7 +423,7 @@ while True:
     print("===============================")
     print("Connecting to WiFi...")
     requests = adafruit_requests.Session(pool, ssl.create_default_context())
-    while not wifi.radio.ipv4_address:
+    while not wifi.radio.connected:
         try:
             wifi.radio.connect(secrets['ssid'], secrets['password'])
         except ConnectionError as e:
@@ -534,7 +433,7 @@ while True:
         gc.collect()
     print("WiFi! ✅")
 
-    while wifi.radio.ipv4_address:
+    while wifi.radio.connected:
         try:
             if debug_OWM:
                 print("Attempting to GET Weather!")
@@ -605,6 +504,11 @@ while True:
             print("Failed to get OWM data, retrying\n", e)
             time.sleep(240)
             continue
+        except OSError as g:
+            if g.errno == -2:
+                print("gaierror, breaking out of loop\n", g)
+                break
+            raise
         response = None
 
         # Connect to Adafruit IO
@@ -653,7 +557,7 @@ while True:
         print("Next Update: ", time_calc(sleep_time))
         print("===============================")
         gc.collect()
-        
+
         TAKE_SCREENSHOT = False  # Set to True to take a screenshot
         if TAKE_SCREENSHOT:
             print("Taking Screenshot... ")
@@ -662,7 +566,7 @@ while True:
             storage.umount(vfs)
             print("SD Card Unmounted! It is now safe to remove SD Card")
             time.sleep(120)
-        
+
         time.sleep(sleep_time)
         break
 
