@@ -3,8 +3,6 @@
 # Adafruit ESP32-S3 Feather Weather with MQTT
 # Coded for Circuit Python 8.2.x
 
-import gc
-import os
 import supervisor
 import time
 import board
@@ -17,7 +15,6 @@ import storage
 import ssl
 import wifi
 import socketpool
-import json
 import adafruit_requests
 import ulab.numpy as np
 import adafruit_minimqtt.adafruit_minimqtt as MQTT
@@ -27,7 +24,7 @@ from adafruit_display_text import label
 from adafruit_display_shapes.roundrect import RoundRect
 from adafruit_bitmap_font import bitmap_font
 from adafruit_bitmapsaver import save_pixels
-from adafruit_lc709203f import LC709203F, PackSize
+from adafruit_lc709203f import LC709203F
 from adafruit_bme280 import basic as adafruit_bme280
 from adafruit_hx8357 import HX8357
 
@@ -46,12 +43,12 @@ except ImportError:
     print("Secrets File Import Error")
     raise
 
-aio_username = secrets['aio_username']
-aio_key = secrets['aio_key']
+aio_username = secrets["aio_username"]
+aio_key = secrets["aio_key"]
 # Local time & weather from lat/lon
-OWKEY = secrets['openweather_token']
-OWLAT = secrets['openweather_lat']
-OWLON = secrets['openweather_lon']
+OWKEY = secrets["openweather_token"]
+OWLAT = secrets["openweather_lat"]
+OWLON = secrets["openweather_lon"]
 
 # MQTT Topic
 # Use this format for a standard MQTT broker
@@ -60,7 +57,7 @@ OWLON = secrets['openweather_lon']
 # AdafruitIO MMQTT Topic
 # Use this format for io.adafruit.com
 # /g/ is group and /f/ is feed
-mqtt_topic = aio_username + '/g/default'
+mqtt_topic = aio_username + "/g/default"
 
 # Creates & Publishes to default AdafruitIO group
 feed_01 = "BME280-Unbiased"
@@ -105,20 +102,16 @@ battery_monitor.thermistor_bconstant = 3950
 battery_monitor.thermistor_enable = True
 
 # Converts seconds in minutes/hours/days
+# Attribution: Written by DJDevon3 & refined by Elpekenin
 def time_calc(input_time):
     if input_time < 60:
-        sleep_int = input_time
-        time_output = f"{sleep_int:.0f} seconds"
-    elif 60 <= input_time < 3600:
-        sleep_int = input_time / 60
-        time_output = f"{sleep_int:.0f} minutes"
-    elif 3600 <= input_time < 86400:
-        sleep_int = input_time / 60 / 60
-        time_output = f"{sleep_int:.0f} hours"
-    else:
-        sleep_int = input_time / 60 / 60 / 24
-        time_output = f"{sleep_int:.1f} days"
-    return time_output
+        return f"{input_time:.0f} seconds"
+    if input_time < 3600:
+        return f"{input_time / 60:.0f} minutes"
+    if input_time < 86400:
+        return f"{input_time / 60 / 60:.0f} hours"
+    return f"{input_time / 60 / 60 / 24:.1f} days"
+
 
 # Quick Colors for Labels
 TEXT_BLACK = 0x000000
@@ -150,12 +143,14 @@ DATA_SOURCE += "&exclude=hourly,daily"
 DATA_SOURCE += "&appid=" + OWKEY
 DATA_SOURCE += "&units=imperial"
 
+
 def _format_date(datetime):
     return "{:02}/{:02}/{:02}".format(
         datetime.tm_year,
         datetime.tm_mon,
         datetime.tm_mday,
     )
+
 
 def _format_time(datetime):
     return "{:02}:{:02}".format(
@@ -164,34 +159,64 @@ def _format_time(datetime):
         # datetime.tm_sec,
     )
 
+
 # Function for minimizing labels to 1 liners
 # Attribution: Anecdata (thanks!)
 def make_my_label(font, anchor_point, anchored_position, scale, color):
-    l = label.Label(font)
-    l.anchor_point = anchor_point
-    l.anchored_position = anchored_position
-    l.scale = scale
-    l.color = color
-    return l
-    
+    func_label = label.Label(font)
+    func_label.anchor_point = anchor_point
+    func_label.anchored_position = anchored_position
+    func_label.scale = scale
+    func_label.color = color
+    return func_label
+
+
 # name_label (FONT, (ANCHOR POINT), (ANCHOR POSITION), SCALE, COLOR)
-hello_label = make_my_label(terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH/2, 15), 1, TEXT_WHITE)
-warning_label = make_my_label(terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH/2, DISPLAY_HEIGHT - 35), 3, TEXT_RED)
-warning_text_label = make_my_label(terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH/2, DISPLAY_HEIGHT - 5), 2, TEXT_RED)
-date_label = make_my_label(medium_font, (0.0, 0.0), (5,5), 1, TEXT_LIGHTBLUE)
-time_label = make_my_label(medium_font, (0.0, 0.0), (5,25), 2, TEXT_LIGHTBLUE)
+hello_label = make_my_label(
+    terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH / 2, 15), 1, TEXT_WHITE
+)
+warning_label = make_my_label(
+    terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH / 2, DISPLAY_HEIGHT - 35), 3, TEXT_RED
+)
+warning_text_label = make_my_label(
+    terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH / 2, DISPLAY_HEIGHT - 5), 2, TEXT_RED
+)
+date_label = make_my_label(medium_font, (0.0, 0.0), (5, 5), 1, TEXT_LIGHTBLUE)
+time_label = make_my_label(medium_font, (0.0, 0.0), (5, 25), 2, TEXT_LIGHTBLUE)
 temp_label = make_my_label(medium_font, (1.0, 1.0), (475, 145), 2, TEXT_ORANGE)
-temp_data_label = make_my_label(huge_font, (0.5, 1.0), (DISPLAY_WIDTH / 2, 200), 1, TEXT_ORANGE)
-temp_data_shadow = make_my_label(huge_font, (0.5, 1.0), (DISPLAY_WIDTH / 2 + 2, 200 + 2), 1, TEXT_BLACK)
-owm_temp_data_label = make_my_label(medium_font, (0.5, 1.0), (DISPLAY_WIDTH / 2, 100), 2, TEXT_LIGHTBLUE)
-owm_temp_data_shadow = make_my_label(medium_font, (0.5, 1.0), (DISPLAY_WIDTH / 2 + 2, 100 + 2), 2, TEXT_BLACK)
-humidity_label = make_my_label(medium_font, (0.0, 1.0), (5, DISPLAY_HEIGHT - 23), 1, TEXT_GRAY)
-humidity_data_label = make_my_label(medium_font, (0.0, 1.0), (5, DISPLAY_HEIGHT), 1, TEXT_ORANGE)
-owm_humidity_data_label = make_my_label(medium_font, (0.0, 1.0), (5, DISPLAY_HEIGHT - 55), 1, TEXT_LIGHTBLUE)
-barometric_label = make_my_label(medium_font, (1.0, 1.0), (470, DISPLAY_HEIGHT - 27), 1, TEXT_GRAY)
-barometric_data_label = make_my_label(medium_font, (1.0, 1.0), (470, DISPLAY_HEIGHT), 1, TEXT_ORANGE)
-owm_barometric_data_label = make_my_label(medium_font, (1.0, 1.0), (470, DISPLAY_HEIGHT - 55), 1, TEXT_LIGHTBLUE)
-owm_windspeed_label = make_my_label(medium_font, (1.0, 1.0), (DISPLAY_WIDTH - 5, 50), 1, TEXT_LIGHTBLUE)
+temp_data_label = make_my_label(
+    huge_font, (0.5, 1.0), (DISPLAY_WIDTH / 2, 200), 1, TEXT_ORANGE
+)
+temp_data_shadow = make_my_label(
+    huge_font, (0.5, 1.0), (DISPLAY_WIDTH / 2 + 2, 200 + 2), 1, TEXT_BLACK
+)
+owm_temp_data_label = make_my_label(
+    medium_font, (0.5, 1.0), (DISPLAY_WIDTH / 2, 100), 2, TEXT_LIGHTBLUE
+)
+owm_temp_data_shadow = make_my_label(
+    medium_font, (0.5, 1.0), (DISPLAY_WIDTH / 2 + 2, 100 + 2), 2, TEXT_BLACK
+)
+humidity_label = make_my_label(
+    medium_font, (0.0, 1.0), (5, DISPLAY_HEIGHT - 23), 1, TEXT_GRAY
+)
+humidity_data_label = make_my_label(
+    medium_font, (0.0, 1.0), (5, DISPLAY_HEIGHT), 1, TEXT_ORANGE
+)
+owm_humidity_data_label = make_my_label(
+    medium_font, (0.0, 1.0), (5, DISPLAY_HEIGHT - 55), 1, TEXT_LIGHTBLUE
+)
+barometric_label = make_my_label(
+    medium_font, (1.0, 1.0), (470, DISPLAY_HEIGHT - 27), 1, TEXT_GRAY
+)
+barometric_data_label = make_my_label(
+    medium_font, (1.0, 1.0), (470, DISPLAY_HEIGHT), 1, TEXT_ORANGE
+)
+owm_barometric_data_label = make_my_label(
+    medium_font, (1.0, 1.0), (470, DISPLAY_HEIGHT - 55), 1, TEXT_LIGHTBLUE
+)
+owm_windspeed_label = make_my_label(
+    medium_font, (1.0, 1.0), (DISPLAY_WIDTH - 5, 50), 1, TEXT_LIGHTBLUE
+)
 vbat_label = make_my_label(medium_font, (1.0, 1.0), (DISPLAY_WIDTH - 15, 20), 1, None)
 plugbmp_label = make_my_label(terminalio.FONT, (1.0, 1.0), None, 1, None)
 greenbmp_label = make_my_label(terminalio.FONT, (1.0, 1.0), None, 1, None)
@@ -208,24 +233,32 @@ tile_grid = displayio.TileGrid(
     width=1,
     height=1,
     tile_width=DISPLAY_WIDTH,
-    tile_height=DISPLAY_HEIGHT)
+    tile_height=DISPLAY_HEIGHT,
+)
 
 # Load battery voltage icons (from 1 sprite sheet image)
-sprite_sheet, palette = adafruit_imageload.load("/icons/vbat_spritesheet.bmp",
-                                                bitmap=displayio.Bitmap,
-                                                palette=displayio.Palette)
-sprite = displayio.TileGrid(sprite_sheet, pixel_shader=palette,
-                            width=1,
-                            height=1,
-                            tile_width=11,
-                            tile_height=20)
+sprite_sheet, palette = adafruit_imageload.load(
+    "/icons/vbat_spritesheet.bmp", bitmap=displayio.Bitmap, palette=displayio.Palette
+)
+sprite = displayio.TileGrid(
+    sprite_sheet, pixel_shader=palette, width=1, height=1, tile_width=11, tile_height=20
+)
 sprite_group = displayio.Group(scale=1)
 sprite_group.append(sprite)
 sprite_group.x = 470
 sprite_group.y = 0
 
 # Warning label RoundRect
-roundrect = RoundRect(int(DISPLAY_WIDTH/2-140), int(DISPLAY_HEIGHT-75), 280, 75, 10, fill=0x0, outline=0xFFFFFF, stroke=1)
+roundrect = RoundRect(
+    int(DISPLAY_WIDTH / 2 - 140),
+    int(DISPLAY_HEIGHT - 75),
+    280,
+    75,
+    10,
+    fill=0x0,
+    outline=0xFFFFFF,
+    stroke=1,
+)
 
 # Create subgroups
 text_group = displayio.Group()
@@ -270,12 +303,16 @@ text_group.append(orangebmp_label)
 text_group.append(redbmp_label)
 display.show(main_group)
 
+
 def show_warning(title, text):
     warning_label.text = title
     warning_text_label.text = text
     warning_group.hidden = False
+
+
 def hide_warning():
     warning_group.hidden = True
+
 
 # Define callback methods when events occur
 def connect(mqtt_client):
@@ -283,26 +320,32 @@ def connect(mqtt_client):
     # successfully to the broker.
     print("Connected to MQTT Broker! ✅")
 
+
 def disconnect(mqtt_client, userdata, rc):
     # This method is called when the mqtt_client disconnects
     # from the broker.
     print("Disconnected from MQTT Broker!")
 
+
 def subscribe(mqtt_client, userdata, topic, granted_qos):
     # This method is called when the mqtt_client subscribes to a new feed.
     print("Subscribed to {0} with QOS level {1}".format(topic, granted_qos))
+
 
 def unsubscribe(mqtt_client, userdata, topic, pid):
     # This method is called when the mqtt_client unsubscribes from a feed.
     print("Unsubscribed from {0} with PID {1}".format(topic, pid))
 
+
 def publish(mqtt_client, userdata, topic, pid):
     # This method is called when the mqtt_client publishes data to a feed.
     print("Published to {0} with PID {1}".format(topic, pid))
 
+
 def message(client, topic, message):
     # Method called when a client's subscribed feed has a new value.
     print("New message on topic {0}: {1}".format(topic, message))
+
 
 # Initialize a new MQTT Client object
 mqtt_client = MQTT.MQTT(
@@ -336,7 +379,7 @@ while True:
     bme280.sea_level_pressure = bme280.pressure
     hello_label.text = "ESP32-S3 MQTT Feather Weather"
     print("===============================")
-    debug_OWM = False  # Set to True for Serial Print Debugging
+    debug_OWM = False  # Set True for Serial Print Debugging
 
     # USB Power Sensing
     try:
@@ -367,6 +410,7 @@ while True:
         elif "3.80" <= vbat_label.text <= "3.89":
             vbat_label.color = TEXT_ORANGE
             sprite[0] = 3
+        # TFT cutoff voltage is 3.70
         elif vbat_label.text <= "3.79":
             vbat_label.color = TEXT_RED
             sprite[0] = 4
@@ -387,7 +431,7 @@ while True:
     display_temperature = round(display_temperature[0], 2)
     print(f"Actual Temp: {display_temperature:.1f}")
     if debug_OWM:
-        mqtt_pressure = 1005  # Manually set to debug warning message
+        mqtt_pressure = 1005  # Manually set debug warning message
         print(f"BME280 Pressure: {mqtt_pressure}")
     else:
         mqtt_pressure = round(bme280.pressure, 1)
@@ -425,12 +469,11 @@ while True:
     requests = adafruit_requests.Session(pool, ssl.create_default_context())
     while not wifi.radio.connected:
         try:
-            wifi.radio.connect(secrets['ssid'], secrets['password'])
+            wifi.radio.connect(secrets["ssid"], secrets["password"])
         except ConnectionError as e:
             print("Connection Error:", e)
             print("Retrying in 10 seconds")
         time.sleep(10)
-        gc.collect()
     print("WiFi! ✅")
 
     while wifi.radio.connected:
@@ -445,7 +488,7 @@ while True:
             # uncomment the 2 lines below to see full json response
             # dump_object = json.dumps(response)
             # print("JSON Dump: ", dump_object)
-            if int(response['current']['dt']) == "KeyError: example":
+            if int(response["current"]["dt"]) == "KeyError: example":
                 print("Unable to retrive data due to key:value error")
                 print("likely OpenWeather Throttling for too many API calls")
             else:
@@ -453,31 +496,31 @@ while True:
                     print("OpenWeather Success")
 
             # Timezone & offset automatically returned based on lat/lon
-            get_timezone_offset = int(response['timezone_offset'])
+            get_timezone_offset = int(response["timezone_offset"])
             tz_offset_seconds = get_timezone_offset
             if debug_OWM:
                 print(f"Timezone Offset (in seconds): {get_timezone_offset}")
-            get_timestamp = int(response['current']['dt'] + int(tz_offset_seconds))
+            get_timestamp = int(response["current"]["dt"] + int(tz_offset_seconds))
             current_unix_time = time.localtime(get_timestamp)
             current_struct_time = time.struct_time(current_unix_time)
             current_date = "{}".format(_format_date(current_struct_time))
             current_time = "{}".format(_format_time(current_struct_time))
 
-            sunrise = int(response['current']['sunrise'] + int(tz_offset_seconds))
+            sunrise = int(response["current"]["sunrise"] + int(tz_offset_seconds))
             sunrise_unix_time = time.localtime(sunrise)
             sunrise_struct_time = time.struct_time(sunrise_unix_time)
             sunrise_time = "{}".format(_format_time(sunrise_struct_time))
 
-            sunset = int(response['current']['sunset'] + int(tz_offset_seconds))
+            sunset = int(response["current"]["sunset"] + int(tz_offset_seconds))
             sunset_unix_time = time.localtime(sunset)
             sunset_struct_time = time.struct_time(sunset_unix_time)
             sunset_time = "{}".format(_format_time(sunset_struct_time))
 
-            owm_temp = response['current']['temp']
-            owm_pressure = response['current']['pressure']
-            owm_humidity = response['current']['humidity']
-            weather_type = response['current']['weather'][0]['main']
-            owm_windspeed = float(response['current']['wind_speed'])
+            owm_temp = response["current"]["temp"]
+            owm_pressure = response["current"]["pressure"]
+            owm_humidity = response["current"]["humidity"]
+            weather_type = response["current"]["weather"][0]["main"]
+            owm_windspeed = float(response["current"]["wind_speed"])
 
             if debug_OWM:
                 print("Timestamp:", current_date + " " + current_time)
@@ -491,7 +534,6 @@ while True:
                 print("Next Update: ", time_calc(sleep_time))
                 print("===============================")
 
-            gc.collect()
             date_label.text = current_date
             time_label.text = current_time
             owm_windspeed_label.text = f"{owm_windspeed:.1f} mph"
@@ -520,13 +562,21 @@ while True:
 
         if (time.monotonic() - last) >= sleep_time:
             try:
-                print(f"Publishing {feed_01}: {temp_round} | {feed_02}: {display_temperature} | {feed_03}: {mqtt_pressure} | {feed_04}: {mqtt_humidity} | {feed_05}: {mqtt_altitude}")
+                print(
+                    f"Publishing {feed_01}: {temp_round} | {feed_02}: {display_temperature} | {feed_03}: {mqtt_pressure} | {feed_04}: {mqtt_humidity} | {feed_05}: {mqtt_altitude}"
+                )
                 io.publish(feed_01, temp_round)
                 io.publish(feed_02, display_temperature)
                 io.publish(feed_03, mqtt_pressure)
                 io.publish(feed_04, mqtt_humidity)
                 io.publish(feed_05, mqtt_altitude)
-            except (ValueError, RuntimeError, ConnectionError, OSError, MMQTTException) as e:
+            except (
+                ValueError,
+                RuntimeError,
+                ConnectionError,
+                OSError,
+                MMQTTException,
+            ) as e:
                 print("io.publish Error: \n", e)
                 time.sleep(60)
                 continue
@@ -535,28 +585,32 @@ while True:
 
         try:
             debug_NOAA = False
-            url = 'https://radar.weather.gov/ridge/standard/SOUTHEAST_0.gif'
+            url = "https://radar.weather.gov/ridge/standard/SOUTHEAST_0.gif"
             r = requests.get(url)
             if debug_NOAA:
                 print(r.status_code)
                 print(r.headers)
                 print(len(r.content))
-                print("Content Type: ", r.headers.get('content-type'))
+                print("Content Type: ", r.headers.get("content-type"))
                 print("Object URL: ", r)
-            with open('/sd/SOUTHEAST_0.gif', 'wb') as fp:
+            with open("/sd/SOUTHEAST_0.gif", "wb") as fp:
                 fp.write(r.content)
             if debug_NOAA:
                 print("Wrote File: /sd/SOUTHEAST_0.gif")
 
         except (ValueError, RuntimeError) as e:
             print("Failed to get NOAA data, retrying\n", e)
-            time.sleep(60)
+            time.sleep(240)
             continue
+        except OSError as g:
+            if g.errno == -2:
+                print("gaierror, breaking out of loop\n", g)
+                break
+            raise
         r = None
 
         print("Next Update: ", time_calc(sleep_time))
         print("===============================")
-        gc.collect()
 
         TAKE_SCREENSHOT = False  # Set to True to take a screenshot
         if TAKE_SCREENSHOT:
@@ -569,4 +623,3 @@ while True:
 
         time.sleep(sleep_time)
         break
-
