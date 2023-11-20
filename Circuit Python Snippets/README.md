@@ -63,29 +63,19 @@ Next Update: 30 minutes
 ```
 ## Timer update example with time_calc
 This one is meant for finished & refined scripts not debugging.
-It will update every 15 minutes regardless if you attempt to save in between that time or not.
-Strict update timer only, no interference.
+It will only update every x amount of seconds regardless if you attempt to save in between that time or not.
 ```py
 import time
 # 900 = 15 mins, 1800 = 30 mins, 3600 = 1 hour
 sleep_time = 900
 def time_calc(input_time):
     if input_time < 60:
-        sleep_int = input_time
-        time_output = f"{sleep_int:.0f} seconds"
-    elif 60 <= input_time < 3600:
-        sleep_int = input_time / 60
-        time_output = f"{sleep_int:.0f} minutes"
-    elif 3600 <= input_time < 86400:
-        sleep_int = input_time / 60 / 60
-        time_output = f"{sleep_int:.0f} hours"
-    elif 86400 <= input_time < 432000:
-        sleep_int = input_time / 60 / 60 / 24
-        time_output = f"{sleep_int:.1f} days"
-    else:  # if > 5 days convert float to int & display whole days
-        sleep_int = input_time / 60 / 60 / 24
-        time_output = f"{sleep_int:.0f} days"
-    return time_output
+        return f"{input_time:.0f} seconds"
+    if input_time < 3600:
+        return f"{input_time / 60:.0f} minutes"
+    if input_time < 86400:
+        return f"{input_time / 60 / 60:.0f} hours"
+    return f"{input_time / 60 / 60 / 24:.1f} days"
     
 if (time.monotonic() - last) >= sleep_time:
     try:
