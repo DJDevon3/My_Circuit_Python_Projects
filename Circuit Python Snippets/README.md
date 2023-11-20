@@ -40,24 +40,15 @@ Timestamp: 08/17/2022 15:36:10
 ```py
 import time
 # 900 = 15 mins, 1800 = 30 mins, 3600 = 1 hour
-sleep_time = 900
+sleep_time = 1800
 def time_calc(input_time):
     if input_time < 60:
-        sleep_int = input_time
-        time_output = f"{sleep_int:.0f} seconds"
-    elif 60 <= input_time < 3600:
-        sleep_int = input_time / 60
-        time_output = f"{sleep_int:.0f} minutes"
-    elif 3600 <= input_time < 86400:
-        sleep_int = input_time / 60 / 60
-        time_output = f"{sleep_int:.0f} hours"
-    elif 86400 <= input_time < 432000:
-        sleep_int = input_time / 60 / 60 / 24
-        time_output = f"{sleep_int:.1f} days"
-    else:  # if > 5 days convert float to int & display whole days
-        sleep_int = input_time / 60 / 60 / 24
-        time_output = f"{sleep_int:.0f} days"
-    return time_output
+        return f"{input_time:.0f} seconds"
+    if input_time < 3600:
+        return f"{input_time / 60:.0f} minutes"
+    if input_time < 86400:
+        return f"{input_time / 60 / 60:.0f} hours"
+    return f"{input_time / 60 / 60 / 24:.1f} days"
 
 print("Calc Time: ", time_calc(900))  # time conversion testing
 print("Board Uptime: ", time_calc(time.monotonic())) # example for board uptime
