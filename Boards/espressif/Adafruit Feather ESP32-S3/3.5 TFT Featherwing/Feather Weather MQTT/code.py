@@ -7,11 +7,8 @@ import supervisor
 import time
 import board
 import displayio
-import digitalio
 import terminalio
 import adafruit_imageload
-import adafruit_sdcard
-import storage
 import ssl
 import wifi
 import socketpool
@@ -23,7 +20,6 @@ from adafruit_io.adafruit_io import IO_MQTT, AdafruitIO_MQTTError
 from adafruit_display_text import label
 from adafruit_display_shapes.roundrect import RoundRect
 from adafruit_bitmap_font import bitmap_font
-from adafruit_bitmapsaver import save_pixels
 from adafruit_lc709203f import LC709203F
 from adafruit_bme280 import basic as adafruit_bme280
 from adafruit_hx8357 import HX8357
@@ -68,7 +64,7 @@ feed_05 = "BME280-Altitude"
 
 # Time in seconds between updates (polling)
 # 600 = 10 mins, 900 = 15 mins, 1800 = 30 mins, 3600 = 1 hour
-sleep_time = 900
+sleep_time = 840
 
 # Initialize TFT Display
 spi = board.SPI()
@@ -84,13 +80,6 @@ bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c)
 # bme280.sea_level_pressure = bme280.pressure
 # print("Sea Level Pressure: ", bme280.sea_level_pressure)
 # print("Altitude = %0.2f meters" % bme280.altitude)
-
-# Initialize SDCard on TFT Featherwing
-cs = digitalio.DigitalInOut(board.D5)
-sdcard = adafruit_sdcard.SDCard(spi, cs)
-vfs = storage.VfsFat(sdcard)
-virtual_root = "/sd"
-storage.mount(vfs, virtual_root)
 
 i2c = board.I2C()
 battery_monitor = LC709203F(board.I2C())
@@ -130,10 +119,6 @@ TEXT_YELLOW = 0xFFFF00
 # Fonts are optional
 medium_font = bitmap_font.load_font("/fonts/Arial-16.bdf")
 huge_font = bitmap_font.load_font("/fonts/GoodTimesRg-Regular-121.bdf")
-
-# NOAA Animated Gif
-# Customize here: https://radar.weather.gov/region/conus/standard
-NOAA_MAP_SOURCE = "https://radar.weather.gov/ridge/standard/SOUTHEAST_0.gif"
 
 # OpenWeather 2.5 Free API
 DATA_SOURCE = "https://api.openweathermap.org/data/2.5/onecall?"
@@ -305,45 +290,45 @@ display.show(main_group)
 
 
 def show_warning(title, text):
+    # Function to display weather popup warning
     warning_label.text = title
     warning_text_label.text = text
     warning_group.hidden = False
 
 
 def hide_warning():
+    # Function to hide weather popup warning
     warning_group.hidden = True
 
 
 # Define callback methods when events occur
 def connect(mqtt_client):
-    # This function will be called when the mqtt_client is connected
-    # successfully to the broker.
-    print("Connected to MQTT Broker! ✅")
+    # Method when mqtt_client connected to the broker.
+    print("| | | | Connected to MQTT Broker! ✅")
 
 
-def disconnect(mqtt_client, userdata, rc):
-    # This method is called when the mqtt_client disconnects
-    # from the broker.
-    print("Disconnected from MQTT Broker!")
+def disconnect(mqtt_client):
+    # Method when the mqtt_client disconnects from broker.
+    print("| | | Disconnected from MQTT Broker")
 
 
 def subscribe(mqtt_client, userdata, topic, granted_qos):
-    # This method is called when the mqtt_client subscribes to a new feed.
+    # Method when the mqtt_client subscribes to a new feed.
     print("Subscribed to {0} with QOS level {1}".format(topic, granted_qos))
 
 
 def unsubscribe(mqtt_client, userdata, topic, pid):
-    # This method is called when the mqtt_client unsubscribes from a feed.
+    # Method when the mqtt_client unsubscribes from a feed.
     print("Unsubscribed from {0} with PID {1}".format(topic, pid))
 
 
 def publish(mqtt_client, userdata, topic, pid):
-    # This method is called when the mqtt_client publishes data to a feed.
+    # Method when the mqtt_client publishes data to a feed.
     print("Published to {0} with PID {1}".format(topic, pid))
 
 
 def message(client, topic, message):
-    # Method called when a client's subscribed feed has a new value.
+    # Method client's subscribed feed has a new value.
     print("New message on topic {0}: {1}".format(topic, message))
 
 
@@ -372,14 +357,14 @@ last = 0
 display_temperature = 0
 # Define the input range and output range
 # pressure at 1014 & 88F at 100% accurate. sea level pressure affects temp?
-input_range = [50.0, 70, 80, 88.0, 120.0]
-output_range = [50.0 - 0.1, 70.0 - 2.0, 80 - 1.0, 88.0 - 0.0, 120.0 - 2.2]
+input_range = [50.0, 70, 75, 78, 80, 88.0, 120.0]
+output_range = [50.0 - 0.1, 70.0 - 2.0, 75 + 1.0, 78 + 1.5, 80 - 1.0, 88.0 - 0.0, 120.0 - 2.2]
 
 while True:
+    debug_OWM = False  # Set True for Serial Print Debugging
     bme280.sea_level_pressure = bme280.pressure
     hello_label.text = "ESP32-S3 MQTT Feather Weather"
     print("===============================")
-    debug_OWM = False  # Set True for Serial Print Debugging
 
     # USB Power Sensing
     try:
@@ -462,10 +447,11 @@ while True:
         show_warning("WARNING", "Hail & Tornados?")
     else:
         hide_warning()  # Normal pressures: 1110-1018 (no message)
-
-    # Connect to Wi-Fi
-    print("===============================")
-    print("Connecting to WiFi...")
+    
+    wifi.radio.enabled = False
+    wifi.radio.enabled = True
+    print("| Connecting to WiFi...")
+    
     requests = adafruit_requests.Session(pool, ssl.create_default_context())
     while not wifi.radio.connected:
         try:
@@ -473,66 +459,62 @@ while True:
         except ConnectionError as e:
             print("Connection Error:", e)
             print("Retrying in 10 seconds")
-        time.sleep(10)
-    print("WiFi! ✅")
+            time.sleep(10)
+    print("| | WiFi! ✅")
 
     while wifi.radio.connected:
         try:
+            print("| | | Attempting to GET Weather!")
             if debug_OWM:
-                print("Attempting to GET Weather!")
-                # Uncomment line below to print API URL with all data filled in
-                # print("Full API GET URL: ", DATA_SOURCE)
+                print("Full API GET URL: ", DATA_SOURCE)
                 print("\n===============================")
-            response = requests.get(DATA_SOURCE).json()
+            owm_response = requests.get(DATA_SOURCE).json()
 
             # uncomment the 2 lines below to see full json response
-            # dump_object = json.dumps(response)
+            # warning: returns ALL JSON data, could crash your board
+            # dump_object = json.dumps(owm_response)
             # print("JSON Dump: ", dump_object)
-            if int(response["current"]["dt"]) == "KeyError: example":
+            if int(owm_response["current"]["dt"]) == "KeyError: example":
                 print("Unable to retrive data due to key:value error")
                 print("likely OpenWeather Throttling for too many API calls")
             else:
-                if debug_OWM:
-                    print("OpenWeather Success")
+                print("| | | | Connected to OpenWeatherMap ✅")
 
             # Timezone & offset automatically returned based on lat/lon
-            get_timezone_offset = int(response["timezone_offset"])
+            get_timezone_offset = int(owm_response["timezone_offset"])
             tz_offset_seconds = get_timezone_offset
             if debug_OWM:
                 print(f"Timezone Offset (in seconds): {get_timezone_offset}")
-            get_timestamp = int(response["current"]["dt"] + int(tz_offset_seconds))
+            get_timestamp = int(owm_response["current"]["dt"] + int(tz_offset_seconds))
             current_unix_time = time.localtime(get_timestamp)
             current_struct_time = time.struct_time(current_unix_time)
             current_date = "{}".format(_format_date(current_struct_time))
             current_time = "{}".format(_format_time(current_struct_time))
 
-            sunrise = int(response["current"]["sunrise"] + int(tz_offset_seconds))
+            sunrise = int(owm_response["current"]["sunrise"] + int(tz_offset_seconds))
             sunrise_unix_time = time.localtime(sunrise)
             sunrise_struct_time = time.struct_time(sunrise_unix_time)
             sunrise_time = "{}".format(_format_time(sunrise_struct_time))
 
-            sunset = int(response["current"]["sunset"] + int(tz_offset_seconds))
+            sunset = int(owm_response["current"]["sunset"] + int(tz_offset_seconds))
             sunset_unix_time = time.localtime(sunset)
             sunset_struct_time = time.struct_time(sunset_unix_time)
             sunset_time = "{}".format(_format_time(sunset_struct_time))
 
-            owm_temp = response["current"]["temp"]
-            owm_pressure = response["current"]["pressure"]
-            owm_humidity = response["current"]["humidity"]
-            weather_type = response["current"]["weather"][0]["main"]
-            owm_windspeed = float(response["current"]["wind_speed"])
-
-            if debug_OWM:
-                print("Timestamp:", current_date + " " + current_time)
-                print("Sunrise:", sunrise_time)
-                print("Sunset:", sunset_time)
-                print("Temp:", owm_temp)
-                print("Pressure:", owm_pressure)
-                print("Humidity:", owm_humidity)
-                print("Weather Type:", weather_type)
-                print("Wind Speed:", owm_windspeed)
-                print("Next Update: ", time_calc(sleep_time))
-                print("===============================")
+            owm_temp = owm_response["current"]["temp"]
+            owm_pressure = owm_response["current"]["pressure"]
+            owm_humidity = owm_response["current"]["humidity"]
+            weather_type = owm_response["current"]["weather"][0]["main"]
+            owm_windspeed = float(owm_response["current"]["wind_speed"])
+            
+            print("| | | | | Sunrise:", sunrise_time)
+            print("| | | | | Sunset:", sunset_time)
+            print("| | | | | Temp:", owm_temp)
+            print("| | | | | Pressure:", owm_pressure)
+            print("| | | | | Humidity:", owm_humidity)
+            print("| | | | | Weather Type:", weather_type)
+            print("| | | | | Wind Speed:", owm_windspeed)
+            print("| | | | | Timestamp:", current_date + " " + current_time)
 
             date_label.text = current_date
             time_label.text = current_time
@@ -542,23 +524,18 @@ while True:
             owm_humidity_data_label.text = f"{owm_humidity:.1f} %"
             owm_barometric_data_label.text = f"{owm_pressure:.1f}"
 
-        except (ValueError, RuntimeError) as e:
-            print("Failed to get OWM data, retrying\n", e)
-            time.sleep(240)
+        except (ValueError, RuntimeError, OSError) as e:
+            print("Error: Failed to get OWM data, retrying\n", e)
             continue
-        except OSError as g:
-            if g.errno == -2:
-                print("gaierror, breaking out of loop\n", g)
-                break
-            raise
-        response = None
-
+        requests.get(DATA_SOURCE).close()
+        print("| | | | Disconnected from OpenWeatherMap")
+            
         # Connect to Adafruit IO
-        print("Connecting to Adafruit IO...")
         try:
             io.connect()
         except (ValueError, RuntimeError, AdafruitIO_MQTTError) as e:
             print("Failed to connect, retrying\n", e)
+            continue
 
         if (time.monotonic() - last) >= sleep_time:
             try:
@@ -581,45 +558,10 @@ while True:
                 time.sleep(60)
                 continue
             last = time.monotonic()
-        # io.disconnect()
-
-        try:
-            debug_NOAA = False
-            url = "https://radar.weather.gov/ridge/standard/SOUTHEAST_0.gif"
-            r = requests.get(url)
-            if debug_NOAA:
-                print(r.status_code)
-                print(r.headers)
-                print(len(r.content))
-                print("Content Type: ", r.headers.get("content-type"))
-                print("Object URL: ", r)
-            with open("/sd/SOUTHEAST_0.gif", "wb") as fp:
-                fp.write(r.content)
-            if debug_NOAA:
-                print("Wrote File: /sd/SOUTHEAST_0.gif")
-
-        except (ValueError, RuntimeError) as e:
-            print("Failed to get NOAA data, retrying\n", e)
-            time.sleep(240)
-            continue
-        except OSError as g:
-            if g.errno == -2:
-                print("gaierror, breaking out of loop\n", g)
-                break
-            raise
-        r = None
-
+            io.disconnect()
+            
+        print("| Disconnected from Wifi")
         print("Next Update: ", time_calc(sleep_time))
-        print("===============================")
-
-        TAKE_SCREENSHOT = False  # Set to True to take a screenshot
-        if TAKE_SCREENSHOT:
-            print("Taking Screenshot... ")
-            save_pixels("/sd/screenshot.bmp", display)
-            print("Screenshot Saved")
-            storage.umount(vfs)
-            print("SD Card Unmounted! It is now safe to remove SD Card")
-            time.sleep(120)
-
+            
         time.sleep(sleep_time)
         break
