@@ -3,6 +3,7 @@
 # Adafruit ESP32-S3 Feather Weather with MQTT
 # Coded for Circuit Python 8.2.x
 
+import os
 import supervisor
 import time
 import board
@@ -34,18 +35,15 @@ DISPLAY_HEIGHT = 320
 # There can be only one pool
 pool = socketpool.SocketPool(wifi.radio)
 
-try:
-    from secrets import secrets
-except ImportError:
-    print("Secrets File Import Error")
-    raise
-
-aio_username = secrets["aio_username"]
-aio_key = secrets["aio_key"]
+# Use settings.toml for credentials
+ssid = os.getenv("CIRCUITPY_WIFI_SSID")
+appw = os.getenv("CIRCUITPY_WIFI_PASSWORD")
+aio_username = os.getenv("aio_username")
+aio_key = os.getenv("aio_key")
 # Local time & weather from lat/lon
-OWKEY = secrets["openweather_token"]
-OWLAT = secrets["openweather_lat"]
-OWLON = secrets["openweather_lon"]
+OWKEY = os.getenv("openweather_token")
+OWLAT = os.getenv("openweather_lat")
+OWLON = os.getenv("openweather_lon")
 
 # MQTT Topic
 # Use this format for a standard MQTT broker
@@ -438,7 +436,7 @@ while True:
 
     # Warnings based on local sensors
     if mqtt_pressure <= 919:  # pray you never see this message
-        show_warning("HOLY SHIT", "Seek Shelter!")
+        show_warning("HOLY COW", "Seek Shelter!")
     elif 920 <= mqtt_pressure <= 979:
         show_warning("DANGER", "Major Hurricane")
     elif 980 <= mqtt_pressure <= 989:
@@ -454,14 +452,12 @@ while True:
     else:
         hide_warning()  # Normal pressures: 1110-1018 (no message)
 
-    wifi.radio.enabled = False
-    wifi.radio.enabled = True
     print("| Connecting to WiFi...")
 
     requests = adafruit_requests.Session(pool, ssl.create_default_context())
     while not wifi.radio.connected:
         try:
-            wifi.radio.connect(secrets["ssid"], secrets["password"])
+            wifi.radio.connect(os.getenv("CIRCUITPY_WIFI_SSID"), os.getenv("CIRCUITPY_WIFI_PASSWORD"))
         except ConnectionError as e:
             print("Connection Error:", e)
             print("Retrying in 10 seconds")
@@ -474,73 +470,76 @@ while True:
             if debug_OWM:
                 print("Full API GET URL: ", DATA_SOURCE)
                 print("\n===============================")
-            owm_response = requests.get(DATA_SOURCE).json()
+            with requests.get(DATA_SOURCE) as owm_request:
 
-            # uncomment the 2 lines below to see full json response
-            # warning: returns ALL JSON data, could crash your board
-            # dump_object = json.dumps(owm_response)
-            # print("JSON Dump: ", dump_object)
-            try:
-                if owm_response["message"]:
-                    print(f"| | ❌ OpenWeatherMap Error:  {owm_response["message"]}")
-            except (KeyError) as e:
-                print("| | Account within Request Limit")
-                print("| | ✅ Connected to OpenWeatherMap")
+                # uncomment the 2 lines below to see full json response
+                # warning: returns ALL JSON data, could crash your board
+                # dump_object = json.dumps(owm_request)
+                # print("JSON Dump: ", dump_object)
+                try:
+                    owm_response = owm_request.json()
+                    if owm_response["message"]:
+                        print(f"| | ❌ OpenWeatherMap Error:  {owm_response["message"]}")
+                        owm_request.close()
+                except (KeyError) as e:
+                    print("| | Account within Request Limit")
+                    print("| | ✅ Connected to OpenWeatherMap")
 
-                # Timezone & offset automatically returned based on lat/lon
-                get_timezone_offset = int(owm_response["timezone_offset"]) #1
-                tz_offset_seconds = get_timezone_offset
-                if debug_OWM:
-                    print(f"Timezone Offset (in seconds): {get_timezone_offset}")
-                get_timestamp = int(owm_response["current"]["dt"] + int(tz_offset_seconds)) #2
-                current_unix_time = time.localtime(get_timestamp)
-                current_struct_time = time.struct_time(current_unix_time)
-                current_date = "{}".format(_format_date(current_struct_time))
-                current_time = "{}".format(_format_time(current_struct_time))
+                    # Timezone & offset automatically returned based on lat/lon
+                    get_timezone_offset = int(owm_response["timezone_offset"]) #1
+                    tz_offset_seconds = get_timezone_offset
+                    if debug_OWM:
+                        print(f"Timezone Offset (in seconds): {get_timezone_offset}")
+                    get_timestamp = int(owm_response["current"]["dt"] + int(tz_offset_seconds)) #2
+                    current_unix_time = time.localtime(get_timestamp)
+                    current_struct_time = time.struct_time(current_unix_time)
+                    current_date = "{}".format(_format_date(current_struct_time))
+                    current_time = "{}".format(_format_time(current_struct_time))
 
-                sunrise = int(owm_response["current"]["sunrise"] + int(tz_offset_seconds)) #3
-                sunrise_unix_time = time.localtime(sunrise)
-                sunrise_struct_time = time.struct_time(sunrise_unix_time)
-                sunrise_time = "{}".format(_format_time(sunrise_struct_time))
+                    sunrise = int(owm_response["current"]["sunrise"] + int(tz_offset_seconds)) #3
+                    sunrise_unix_time = time.localtime(sunrise)
+                    sunrise_struct_time = time.struct_time(sunrise_unix_time)
+                    sunrise_time = "{}".format(_format_time(sunrise_struct_time))
 
-                sunset = int(owm_response["current"]["sunset"] + int(tz_offset_seconds)) #4
-                sunset_unix_time = time.localtime(sunset)
-                sunset_struct_time = time.struct_time(sunset_unix_time)
-                sunset_time = "{}".format(_format_time(sunset_struct_time))
+                    sunset = int(owm_response["current"]["sunset"] + int(tz_offset_seconds)) #4
+                    sunset_unix_time = time.localtime(sunset)
+                    sunset_struct_time = time.struct_time(sunset_unix_time)
+                    sunset_time = "{}".format(_format_time(sunset_struct_time))
 
-                owm_temp = owm_response["current"]["temp"] #5
-                owm_pressure = owm_response["current"]["pressure"] #6
-                owm_humidity = owm_response["current"]["humidity"] #7
-                weather_type = owm_response["current"]["weather"][0]["main"] #8
-                owm_windspeed = float(owm_response["current"]["wind_speed"]) #9
+                    owm_temp = owm_response["current"]["temp"] #5
+                    owm_pressure = owm_response["current"]["pressure"] #6
+                    owm_humidity = owm_response["current"]["humidity"] #7
+                    weather_type = owm_response["current"]["weather"][0]["main"] #8
+                    owm_windspeed = float(owm_response["current"]["wind_speed"]) #9
 
-                print("| | | Sunrise:", sunrise_time)
-                print("| | | Sunset:", sunset_time)
-                print("| | | Temp:", owm_temp)
-                print("| | | Pressure:", owm_pressure)
-                print("| | | Humidity:", owm_humidity)
-                print("| | | Weather Type:", weather_type)
-                print("| | | Wind Speed:", owm_windspeed)
-                print("| | | Timestamp:", current_date + " " + current_time)
+                    print("| | | Sunrise:", sunrise_time)
+                    print("| | | Sunset:", sunset_time)
+                    print("| | | Temp:", owm_temp)
+                    print("| | | Pressure:", owm_pressure)
+                    print("| | | Humidity:", owm_humidity)
+                    print("| | | Weather Type:", weather_type)
+                    print("| | | Wind Speed:", owm_windspeed)
+                    print("| | | Timestamp:", current_date + " " + current_time)
 
-                date_label.text = current_date
-                time_label.text = current_time
-                owm_windspeed_label.text = f"{owm_windspeed:.1f} mph"
-                owm_temp_data_shadow.text = f"{owm_temp:.1f}"
-                owm_temp_data_label.text = f"{owm_temp:.1f}"
-                owm_humidity_data_label.text = f"{owm_humidity:.1f} %"
-                owm_barometric_data_label.text = f"{owm_pressure:.1f}"
-                pass
+                    date_label.text = current_date
+                    time_label.text = current_time
+                    owm_windspeed_label.text = f"{owm_windspeed:.1f} mph"
+                    owm_temp_data_shadow.text = f"{owm_temp:.1f}"
+                    owm_temp_data_label.text = f"{owm_temp:.1f}"
+                    owm_humidity_data_label.text = f"{owm_humidity:.1f} %"
+                    owm_barometric_data_label.text = f"{owm_pressure:.1f}"
+                    owm_request.close()
+                    pass
 
         except (ValueError, RuntimeError) as e:
             print("ValueError: Failed to get OWM data, retrying\n", e)
-            continue
+            time.sleep(240)
+            break
         except OSError as g:
             if g.errno == -2:
                 print("gaierror, breaking out of loop\n", g)
                 time.sleep(240)
                 break
-        response = None
         print("| | ✂️ Disconnected from OpenWeatherMap")
 
         # Connect to Adafruit IO
