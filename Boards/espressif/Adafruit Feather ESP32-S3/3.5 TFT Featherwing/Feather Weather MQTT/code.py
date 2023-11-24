@@ -16,7 +16,8 @@ import adafruit_requests
 import ulab.numpy as np
 import adafruit_minimqtt.adafruit_minimqtt as MQTT
 from adafruit_minimqtt.adafruit_minimqtt import MMQTTException
-from adafruit_io.adafruit_io import IO_MQTT, AdafruitIO_MQTTError
+from adafruit_io.adafruit_io_errors import (AdafruitIO_RequestError,AdafruitIO_ThrottleError,AdafruitIO_MQTTError,)
+from adafruit_io.adafruit_io import IO_MQTT
 from adafruit_display_text import label
 from adafruit_display_shapes.roundrect import RoundRect
 from adafruit_bitmap_font import bitmap_font
@@ -64,7 +65,7 @@ feed_05 = "BME280-Altitude"
 
 # Time in seconds between updates (polling)
 # 600 = 10 mins, 900 = 15 mins, 1800 = 30 mins, 3600 = 1 hour
-sleep_time = 840
+sleep_time = 900
 
 # Initialize TFT Display
 spi = board.SPI()
@@ -304,12 +305,12 @@ def hide_warning():
 # Define callback methods when events occur
 def connect(mqtt_client):
     # Method when mqtt_client connected to the broker.
-    print("| | | | Connected to MQTT Broker! ✅")
+    print("| | ✅ Connected to MQTT Broker!")
 
 
 def disconnect(mqtt_client):
     # Method when the mqtt_client disconnects from broker.
-    print("| | | Disconnected from MQTT Broker")
+    print("| | ✂️ Disconnected from MQTT Broker")
 
 
 def subscribe(mqtt_client, userdata, topic, granted_qos):
@@ -329,6 +330,10 @@ def publish(mqtt_client, userdata, topic, pid):
 
 def message(client, topic, message):
     # Method client's subscribed feed has a new value.
+    print("New message on topic {0}: {1}".format(topic, message))
+    
+def ioerrors(client, topic, message):
+    # Method for callback errors.
     print("New message on topic {0}: {1}".format(topic, message))
 
 
@@ -352,6 +357,7 @@ io.on_subscribe = subscribe
 io.on_unsubscribe = unsubscribe
 io.on_publish = publish
 io.on_message = message
+io.subscribe_to_errors = ioerrors
 
 last = 0
 display_temperature = 0
@@ -460,11 +466,11 @@ while True:
             print("Connection Error:", e)
             print("Retrying in 10 seconds")
             time.sleep(10)
-    print("| | WiFi! ✅")
+    print("| ✅ WiFi!")
 
     while wifi.radio.connected:
         try:
-            print("| | | Attempting to GET Weather!")
+            print("| | Attempting to GET Weather!")
             if debug_OWM:
                 print("Full API GET URL: ", DATA_SOURCE)
                 print("\n===============================")
@@ -476,46 +482,46 @@ while True:
             # print("JSON Dump: ", dump_object)
             try:
                 if owm_response["message"]:
-                    print(f"| | | OpenWeatherMap Error:  {owm_response["message"]}")
+                    print(f"| | ❌ OpenWeatherMap Error:  {owm_response["message"]}")
             except (KeyError) as e:
-                print("| | | Account within Request Limit")
-                print("| | | | Connected to OpenWeatherMap ✅")
+                print("| | Account within Request Limit")
+                print("| | ✅ Connected to OpenWeatherMap")
 
                 # Timezone & offset automatically returned based on lat/lon
-                get_timezone_offset = int(owm_response["timezone_offset"])
+                get_timezone_offset = int(owm_response["timezone_offset"]) #1
                 tz_offset_seconds = get_timezone_offset
                 if debug_OWM:
                     print(f"Timezone Offset (in seconds): {get_timezone_offset}")
-                get_timestamp = int(owm_response["current"]["dt"] + int(tz_offset_seconds))
+                get_timestamp = int(owm_response["current"]["dt"] + int(tz_offset_seconds)) #2
                 current_unix_time = time.localtime(get_timestamp)
                 current_struct_time = time.struct_time(current_unix_time)
                 current_date = "{}".format(_format_date(current_struct_time))
                 current_time = "{}".format(_format_time(current_struct_time))
 
-                sunrise = int(owm_response["current"]["sunrise"] + int(tz_offset_seconds))
+                sunrise = int(owm_response["current"]["sunrise"] + int(tz_offset_seconds)) #3
                 sunrise_unix_time = time.localtime(sunrise)
                 sunrise_struct_time = time.struct_time(sunrise_unix_time)
                 sunrise_time = "{}".format(_format_time(sunrise_struct_time))
 
-                sunset = int(owm_response["current"]["sunset"] + int(tz_offset_seconds))
+                sunset = int(owm_response["current"]["sunset"] + int(tz_offset_seconds)) #4
                 sunset_unix_time = time.localtime(sunset)
                 sunset_struct_time = time.struct_time(sunset_unix_time)
                 sunset_time = "{}".format(_format_time(sunset_struct_time))
 
-                owm_temp = owm_response["current"]["temp"]
-                owm_pressure = owm_response["current"]["pressure"]
-                owm_humidity = owm_response["current"]["humidity"]
-                weather_type = owm_response["current"]["weather"][0]["main"]
-                owm_windspeed = float(owm_response["current"]["wind_speed"])
+                owm_temp = owm_response["current"]["temp"] #5
+                owm_pressure = owm_response["current"]["pressure"] #6
+                owm_humidity = owm_response["current"]["humidity"] #7
+                weather_type = owm_response["current"]["weather"][0]["main"] #8
+                owm_windspeed = float(owm_response["current"]["wind_speed"]) #9
 
-                print("| | | | | Sunrise:", sunrise_time)
-                print("| | | | | Sunset:", sunset_time)
-                print("| | | | | Temp:", owm_temp)
-                print("| | | | | Pressure:", owm_pressure)
-                print("| | | | | Humidity:", owm_humidity)
-                print("| | | | | Weather Type:", weather_type)
-                print("| | | | | Wind Speed:", owm_windspeed)
-                print("| | | | | Timestamp:", current_date + " " + current_time)
+                print("| | | Sunrise:", sunrise_time)
+                print("| | | Sunset:", sunset_time)
+                print("| | | Temp:", owm_temp)
+                print("| | | Pressure:", owm_pressure)
+                print("| | | Humidity:", owm_humidity)
+                print("| | | Weather Type:", weather_type)
+                print("| | | Wind Speed:", owm_windspeed)
+                print("| | | Timestamp:", current_date + " " + current_time)
 
                 date_label.text = current_date
                 time_label.text = current_time
@@ -526,42 +532,39 @@ while True:
                 owm_barometric_data_label.text = f"{owm_pressure:.1f}"
                 pass
 
-        except (ValueError, RuntimeError, OSError) as e:
-            print("Error: Failed to get OWM data, retrying\n", e)
+        except (ValueError, RuntimeError) as e:
+            print("ValueError: Failed to get OWM data, retrying\n", e)
             continue
-            print("| | | | Disconnected from OpenWeatherMap")
+        except OSError as g:
+            if g.errno == -2:
+                print("gaierror, breaking out of loop\n", g)
+                time.sleep(240)
+                break
+        response = None
+        print("| | ✂️ Disconnected from OpenWeatherMap")
 
         # Connect to Adafruit IO
         try:
             io.connect()
-        except (ValueError, RuntimeError, AdafruitIO_MQTTError) as e:
-            print("Failed to connect, retrying\n", e)
-            continue
-
-        if (time.monotonic() - last) >= sleep_time:
-            try:
+            if (time.monotonic() - last) >= sleep_time:
                 print(
-                    f"| | | | | Publishing {feed_01}: {temp_round} | {feed_02}: {display_temperature} | {feed_03}: {mqtt_pressure} | {feed_04}: {mqtt_humidity} | {feed_05}: {mqtt_altitude}"
-                )
+                        f"| | | ✅ Publishing {feed_01}: {temp_round} | {feed_02}: {display_temperature} | {feed_03}: {mqtt_pressure} | {feed_04}: {mqtt_humidity} | {feed_05}: {mqtt_altitude}"
+                    )
                 io.publish(feed_01, temp_round)
                 io.publish(feed_02, display_temperature)
-                io.publish(feed_03, mqtt_pressure)
-                io.publish(feed_04, mqtt_humidity)
-                io.publish(feed_05, mqtt_altitude)
-            except (
-                ValueError,
-                RuntimeError,
-                ConnectionError,
-                OSError,
-                MMQTTException,
-            ) as e:
-                print("io.publish Error: \n", e)
-                time.sleep(60)
-                continue
-            last = time.monotonic()
-            io.disconnect()
+                io.publish_multiple([(feed_03, mqtt_pressure), (feed_04, mqtt_humidity), (feed_05, mqtt_altitude)])
+        except (ValueError, RuntimeError, ConnectionError, OSError, MMQTTException) as e:
+            print("| | ❌ Failed to connect, retrying\n", e)
+            time.sleep(240)
+            continue
+        except (AdafruitIO_RequestError, AdafruitIO_ThrottleError, AdafruitIO_MQTTError) as e:
+            print("| | ❌ Failed to connect, passing\n", e)
+            pass
+            
+        last = time.monotonic()
+        io.disconnect()
 
-        print("| Disconnected from Wifi")
+        print("| ✂️ Disconnected from Wifi")
         print("Next Update: ", time_calc(sleep_time))
 
         time.sleep(sleep_time)
