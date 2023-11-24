@@ -363,8 +363,8 @@ last = 0
 display_temperature = 0
 # Define the input range and output range
 # pressure at 1014 & 88F at 100% accurate. sea level pressure affects temp?
-input_range = [50.0, 70, 75, 78, 80, 88.0, 120.0]
-output_range = [50.0 - 0.1, 70.0 - 2.0, 75 + 1.0, 78 + 1.5, 80 - 1.0, 88.0 - 0.0, 120.0 - 2.2]
+input_range = [50.0, 70, 76, 80, 88.0, 120.0]
+output_range = [50.0 - 0.1, 70.0 - 2.0, 76 - 1.4, 80 - 1.0, 88.0 - 0.0, 120.0 - 2.2]
 
 while True:
     debug_OWM = False  # Set True for Serial Print Debugging
