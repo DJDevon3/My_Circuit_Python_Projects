@@ -38,17 +38,28 @@
 - Good for debugging or if you don't have a display. Serial output to the REPL console can be helpful.
 ```py
 ===============================
-Board Uptime:  56 minutes
-Temp:  86.4131
-Actual Temp: 85.2
-===============================
-Connecting to WiFi...
-WiFi! ✅
-Connecting to Adafruit IO...
-Connected to MQTT Broker! ✅
-Publishing BME280-Unbiased: 86.41 | BME280-RealTemp: 85.22 | BME280-Pressure: 1012.1 | BME280-Humidity: 65.1
+Board Uptime:  11 hours
+Temp:  77.6511
+Actual Temp: 79.1
+| Connecting to WiFi...
+| ✅ WiFi!
+| | Attempting to GET Weather!
+| | Account within Request Limit
+| | ✅ Connected to OpenWeatherMap
+| | | Sunrise: 06:48
+| | | Sunset: 17:27
+| | | Temp: 65.98
+| | | Pressure: 1018
+| | | Humidity: 86
+| | | Weather Type: Clouds
+| | | Wind Speed: 1.01
+| | | Timestamp: 2023/11/23 21:06
+| | ✂️ Disconnected from OpenWeatherMap
+| | ✅ Connected to MQTT Broker!
+| | | ✅ Publishing BME280-Unbiased: 77.65 | BME280-RealTemp: 79.09 | BME280-Pressure: 1018.1 | BME280-Humidity: 60.1 | BME280-Altitude: 0.1
+| | ✂️ Disconnected from MQTT Broker
+| ✂️ Disconnected from Wifi
 Next Update:  15 minutes
-===============================
 ```
 
 # AdafruitIO Dashboard Example:
