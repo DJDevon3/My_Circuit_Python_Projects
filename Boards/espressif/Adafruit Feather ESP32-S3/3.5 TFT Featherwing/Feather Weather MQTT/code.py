@@ -37,8 +37,8 @@ DISPLAY_HEIGHT = 320
 pool = socketpool.SocketPool(wifi.radio)
 
 # Use settings.toml for credentials
-ssid = os.getenv("CIRCUITPY_WIFI_SSID")
-appw = os.getenv("CIRCUITPY_WIFI_PASSWORD")
+ssid = os.getenv("WIFI_SSID")
+appw = os.getenv("WIFI_PASSWORD")
 aio_username = os.getenv("aio_username")
 aio_key = os.getenv("aio_key")
 # Local time & weather from lat/lon
@@ -465,7 +465,7 @@ while True:
     requests = adafruit_requests.Session(pool, ssl.create_default_context())
     while not wifi.radio.connected:
         try:
-            wifi.radio.connect(os.getenv("CIRCUITPY_WIFI_SSID"), os.getenv("CIRCUITPY_WIFI_PASSWORD"))
+            wifi.radio.connect(ssid, appw)
         except ConnectionError as e:
             print("Connection Error:", e)
             print("Retrying in 10 seconds")
@@ -554,8 +554,8 @@ while True:
         try:
             io.connect()
             if (time.monotonic() - last) >= sleep_time:
-                io.loop
-                io.subscribe_to_errors()
+                #io.loop
+                #io.subscribe_to_errors()
                 print(
                         f"| | | ✅ Publishing {feed_01}: {temp_round} | {feed_02}: {display_temperature} | {feed_03}: {mqtt_pressure} | {feed_04}: {mqtt_humidity} | {feed_05}: {mqtt_altitude}"
                     )
