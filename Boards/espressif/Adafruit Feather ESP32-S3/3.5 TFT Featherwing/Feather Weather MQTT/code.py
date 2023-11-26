@@ -4,6 +4,7 @@
 # Coded for Circuit Python 8.2.x
 
 import os
+import microcontroller
 import supervisor
 import time
 import board
@@ -53,6 +54,8 @@ OWLON = os.getenv("openweather_lon")
 # Use this format for io.adafruit.com
 # /g/ is group and /f/ is feed
 mqtt_topic = aio_username + "/g/default"
+adafruitio_errors = aio_username + "/errors"
+adafruitio_throttled = aio_username + "/throttle"
 
 # Creates & Publishes to default AdafruitIO group
 feed_01 = "BME280-Unbiased"
@@ -301,27 +304,27 @@ def hide_warning():
 
 
 # Define callback methods when events occur
-def connect(mqtt_client):
+def connect(client):
     # Method when mqtt_client connected to the broker.
     print("| | ✅ Connected to MQTT Broker!")
 
 
-def disconnect(mqtt_client):
+def disconnect(client):
     # Method when the mqtt_client disconnects from broker.
     print("| | ✂️ Disconnected from MQTT Broker")
 
 
-def subscribe(mqtt_client, userdata, topic, granted_qos):
+def subscribe(client, userdata, topic, granted_qos):
     # Method when the mqtt_client subscribes to a new feed.
     print("Subscribed to {0} with QOS level {1}".format(topic, granted_qos))
 
 
-def unsubscribe(mqtt_client, userdata, topic, pid):
+def unsubscribe(client, userdata, topic, pid):
     # Method when the mqtt_client unsubscribes from a feed.
     print("Unsubscribed from {0} with PID {1}".format(topic, pid))
 
 
-def publish(mqtt_client, userdata, topic, pid):
+def publish(client, userdata, topic, pid):
     # Method when the mqtt_client publishes data to a feed.
     print("Published to {0} with PID {1}".format(topic, pid))
 
@@ -329,8 +332,12 @@ def publish(mqtt_client, userdata, topic, pid):
 def message(client, topic, message):
     # Method client's subscribed feed has a new value.
     print("New message on topic {0}: {1}".format(topic, message))
-    
+
 def ioerrors(client, topic, message):
+    # Method for callback errors.
+    print("New message on topic {0}: {1}".format(topic, message))
+
+def throttle(client, topic, message):
     # Method for callback errors.
     print("New message on topic {0}: {1}".format(topic, message))
 
@@ -356,6 +363,7 @@ io.on_unsubscribe = unsubscribe
 io.on_publish = publish
 io.on_message = message
 io.subscribe_to_errors = ioerrors
+io.subscribe_to_throttling = throttle
 
 last = 0
 display_temperature = 0
@@ -533,7 +541,7 @@ while True:
 
         except (ValueError, RuntimeError) as e:
             print("ValueError: Failed to get OWM data, retrying\n", e)
-            time.sleep(240)
+            supervisor.reload()
             break
         except OSError as g:
             if g.errno == -2:
@@ -546,20 +554,32 @@ while True:
         try:
             io.connect()
             if (time.monotonic() - last) >= sleep_time:
+                io.loop
+                io.subscribe_to_errors()
                 print(
                         f"| | | ✅ Publishing {feed_01}: {temp_round} | {feed_02}: {display_temperature} | {feed_03}: {mqtt_pressure} | {feed_04}: {mqtt_humidity} | {feed_05}: {mqtt_altitude}"
                     )
                 io.publish(feed_01, temp_round)
                 io.publish(feed_02, display_temperature)
                 io.publish_multiple([(feed_03, mqtt_pressure), (feed_04, mqtt_humidity), (feed_05, mqtt_altitude)])
+                
         except (ValueError, RuntimeError, ConnectionError, OSError, MMQTTException) as e:
             print("| | ❌ Failed to connect, retrying\n", e)
             time.sleep(240)
             continue
-        except (AdafruitIO_RequestError, AdafruitIO_ThrottleError, AdafruitIO_MQTTError) as e:
-            print("| | ❌ Failed to connect, passing\n", e)
+        except (AdafruitIO_RequestError) as e:
+            print("| | ❌ AdafruitIO_RequestError: \n", e)
+            supervisor.reload()
             pass
-            
+        except (AdafruitIO_ThrottleError) as e:
+            print("| | ❌ AdafruitIO_ThrottleError: \n", e)
+            supervisor.reload()
+            pass
+        except (AdafruitIO_MQTTError) as e:
+            print("| | ❌ AdafruitIO_MQTTError: \n", e)
+            supervisor.reload()
+            pass
+
         last = time.monotonic()
         io.disconnect()
 
