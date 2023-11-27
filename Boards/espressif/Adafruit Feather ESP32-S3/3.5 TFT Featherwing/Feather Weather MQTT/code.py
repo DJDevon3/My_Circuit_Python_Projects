@@ -3,6 +3,7 @@
 # Adafruit ESP32-S3 Feather Weather with MQTT
 # Coded for Circuit Python 8.2.x
 
+import traceback
 import os
 import microcontroller
 import supervisor
@@ -463,7 +464,7 @@ while True:
     print("| Connecting to WiFi...")
 
     requests = adafruit_requests.Session(pool, ssl.create_default_context())
-    while not wifi.radio.connected:
+    while not wifi.radio.ipv4_address:
         try:
             wifi.radio.connect(ssid, appw)
         except ConnectionError as e:
@@ -472,7 +473,7 @@ while True:
             time.sleep(10)
     print("| ✅ WiFi!")
 
-    while wifi.radio.connected:
+    while wifi.radio.ipv4_address:
         try:
             print("| | Attempting to GET Weather!")
             if debug_OWM:
@@ -562,6 +563,8 @@ while True:
                 io.publish(feed_01, temp_round)
                 io.publish(feed_02, display_temperature)
                 io.publish_multiple([(feed_03, mqtt_pressure), (feed_04, mqtt_humidity), (feed_05, mqtt_altitude)])
+            else:
+                print("Not time yet")
                 
         except (ValueError, RuntimeError, ConnectionError, OSError, MMQTTException) as e:
             print("| | ❌ Failed to connect, retrying\n", e)
@@ -575,8 +578,9 @@ while True:
             print("| | ❌ AdafruitIO_ThrottleError: \n", e)
             supervisor.reload()
             pass
-        except (AdafruitIO_MQTTError) as e:
-            print("| | ❌ AdafruitIO_MQTTError: \n", e)
+        except (AdafruitIO_MQTTError) as ex:
+            print("| | ❌ AdafruitIO_MQTTError: \n", ex)
+            traceback.print_exception(ex, ex, ex.__traceback__)
             supervisor.reload()
             pass
 
