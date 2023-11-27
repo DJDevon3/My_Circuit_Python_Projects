@@ -59,11 +59,11 @@ adafruitio_errors = aio_username + "/errors"
 adafruitio_throttled = aio_username + "/throttle"
 
 # Creates & Publishes to default AdafruitIO group
-feed_01 = "BME280-Unbiased"
-feed_02 = "BME280-RealTemp"
-feed_03 = "BME280-Pressure"
-feed_04 = "BME280-Humidity"
-feed_05 = "BME280-Altitude"
+feed_01 = aio_username + "/feeds/BME280-Unbiased"
+feed_02 = aio_username + "/feeds/BME280-RealTemp"
+feed_03 = aio_username + "/feeds/BME280-Pressure"
+feed_04 = aio_username + "/feeds/BME280-Humidity"
+feed_05 = aio_username + "/feeds/BME280-Altitude"
 
 # Time in seconds between updates (polling)
 # 600 = 10 mins, 900 = 15 mins, 1800 = 30 mins, 3600 = 1 hour
@@ -305,40 +305,40 @@ def hide_warning():
 
 
 # Define callback methods when events occur
-def connect(client):
+def connect(mqtt_client, userdata, flags, rc):
     # Method when mqtt_client connected to the broker.
     print("| | ✅ Connected to MQTT Broker!")
 
 
-def disconnect(client):
+def disconnect(mqtt_client, userdata, rc):
     # Method when the mqtt_client disconnects from broker.
     print("| | ✂️ Disconnected from MQTT Broker")
 
 
-def subscribe(client, userdata, topic, granted_qos):
+def subscribe(mqtt_client, userdata, topic, granted_qos):
     # Method when the mqtt_client subscribes to a new feed.
     print("Subscribed to {0} with QOS level {1}".format(topic, granted_qos))
 
 
-def unsubscribe(client, userdata, topic, pid):
+def unsubscribe(mqtt_client, userdata, topic, pid):
     # Method when the mqtt_client unsubscribes from a feed.
     print("Unsubscribed from {0} with PID {1}".format(topic, pid))
 
 
-def publish(client, userdata, topic, pid):
+def publish(mqtt_client, userdata, topic, pid):
     # Method when the mqtt_client publishes data to a feed.
-    print("Published to {0} with PID {1}".format(topic, pid))
+    print(f"| | | Published {topic} {userdata}")
 
 
-def message(client, topic, message):
+def message(mqtt_client, topic, message):
     # Method client's subscribed feed has a new value.
     print("New message on topic {0}: {1}".format(topic, message))
 
-def ioerrors(client, topic, message):
+def ioerrors(mqtt_client, topic, message):
     # Method for callback errors.
     print("New message on topic {0}: {1}".format(topic, message))
 
-def throttle(client, topic, message):
+def throttle(mqtt_client, topic, message):
     # Method for callback errors.
     print("New message on topic {0}: {1}".format(topic, message))
 
@@ -346,25 +346,27 @@ def throttle(client, topic, message):
 # Initialize a new MQTT Client object
 mqtt_client = MQTT.MQTT(
     broker="io.adafruit.com",
-    port=1883,
+    port=8883,
     username=aio_username,
     password=aio_key,
     socket_pool=pool,
     ssl_context=ssl.create_default_context(),
+    is_ssl=True,
+    keep_alive=20,
 )
 
 # Initialize an Adafruit IO MQTT Client
-io = IO_MQTT(mqtt_client)
+#io = IO_MQTT(mqtt_client)
 
 # Connect callback handlers to mqtt_client
-io.on_connect = connect
-io.on_disconnect = disconnect
-io.on_subscribe = subscribe
-io.on_unsubscribe = unsubscribe
-io.on_publish = publish
-io.on_message = message
-io.subscribe_to_errors = ioerrors
-io.subscribe_to_throttling = throttle
+mqtt_client.on_connect = connect
+mqtt_client.on_disconnect = disconnect
+mqtt_client.on_subscribe = subscribe
+mqtt_client.on_unsubscribe = unsubscribe
+mqtt_client.on_publish = publish
+mqtt_client.on_message = message
+mqtt_client.subscribe_to_errors = ioerrors
+mqtt_client.subscribe_to_throttling = throttle
 
 last = 0
 display_temperature = 0
@@ -553,18 +555,17 @@ while True:
 
         # Connect to Adafruit IO
         try:
-            io.connect()
-            if (time.monotonic() - last) >= sleep_time:
-                #io.loop
-                #io.subscribe_to_errors()
-                print(
-                        f"| | | ✅ Publishing {feed_01}: {temp_round} | {feed_02}: {display_temperature} | {feed_03}: {mqtt_pressure} | {feed_04}: {mqtt_humidity} | {feed_05}: {mqtt_altitude}"
-                    )
-                io.publish(feed_01, temp_round)
-                io.publish(feed_02, display_temperature)
-                io.publish_multiple([(feed_03, mqtt_pressure), (feed_04, mqtt_humidity), (feed_05, mqtt_altitude)])
-            else:
-                print("Not time yet")
+            mqtt_client.connect()
+            mqtt_client.publish(feed_01, temp_round)
+            time.sleep(0.001)
+            mqtt_client.publish(feed_02, display_temperature)
+            time.sleep(1)
+            mqtt_client.publish(feed_03, mqtt_pressure)
+            time.sleep(1)
+            mqtt_client.publish(feed_04, mqtt_humidity)
+            time.sleep(1)
+            mqtt_client.publish(feed_05, mqtt_altitude)
+            time.sleep(1)
                 
         except (ValueError, RuntimeError, ConnectionError, OSError, MMQTTException) as e:
             print("| | ❌ Failed to connect, retrying\n", e)
@@ -580,12 +581,12 @@ while True:
             pass
         except (AdafruitIO_MQTTError) as ex:
             print("| | ❌ AdafruitIO_MQTTError: \n", ex)
-            traceback.print_exception(ex, ex, ex.__traceback__)
+            # traceback.print_exception(ex, ex, ex.__traceback__)
             supervisor.reload()
             pass
 
         last = time.monotonic()
-        io.disconnect()
+        mqtt_client.disconnect()
 
         print("| ✂️ Disconnected from Wifi")
         print("Next Update: ", time_calc(sleep_time))
