@@ -327,7 +327,7 @@ def unsubscribe(mqtt_client, userdata, topic, pid):
 
 def publish(mqtt_client, userdata, topic, pid):
     # Method when the mqtt_client publishes data to a feed.
-    print(f"| | | Published {topic} {userdata}")
+    print(f"| | | Published {topic}")
 
 
 def message(mqtt_client, topic, message):
@@ -352,7 +352,6 @@ mqtt_client = MQTT.MQTT(
     socket_pool=pool,
     ssl_context=ssl.create_default_context(),
     is_ssl=True,
-    keep_alive=20,
 )
 
 # Initialize an Adafruit IO MQTT Client
@@ -374,6 +373,10 @@ display_temperature = 0
 # pressure at 1014 & 88F at 100% accurate. sea level pressure affects temp?
 input_range = [50.0, 70, 76, 80, 88.0, 120.0]
 output_range = [50.0 - 0.1, 70.0 - 2.0, 76 - 1.4, 80 - 1.0, 88.0 - 0.0, 120.0 - 2.2]
+
+# adafruit_requests.Session should always be outside the loop
+# otherwise you WILL get Out of Socket errors.
+requests = adafruit_requests.Session(pool, ssl.create_default_context())
 
 while True:
     debug_OWM = False  # Set True for Serial Print Debugging
@@ -465,7 +468,6 @@ while True:
 
     print("| Connecting to WiFi...")
 
-    requests = adafruit_requests.Session(pool, ssl.create_default_context())
     while not wifi.radio.ipv4_address:
         try:
             wifi.radio.connect(ssid, appw)
@@ -493,6 +495,7 @@ while True:
                         print(f"| | ❌ OpenWeatherMap Error:  {owm_response["message"]}")
                         owm_request.close()
                 except (KeyError) as e:
+                    owm_response = owm_request.json()
                     print("| | Account within Request Limit")
                     print("| | ✅ Connected to OpenWeatherMap")
 
@@ -539,7 +542,6 @@ while True:
                     owm_temp_data_label.text = f"{owm_temp:.1f}"
                     owm_humidity_data_label.text = f"{owm_humidity:.1f} %"
                     owm_barometric_data_label.text = f"{owm_pressure:.1f}"
-                    owm_request.close()
                     pass
 
         except (ValueError, RuntimeError) as e:
@@ -567,9 +569,10 @@ while True:
             mqtt_client.publish(feed_05, mqtt_altitude)
             time.sleep(1)
                 
-        except (ValueError, RuntimeError, ConnectionError, OSError, MMQTTException) as e:
-            print("| | ❌ Failed to connect, retrying\n", e)
-            time.sleep(240)
+        except (ValueError, RuntimeError, ConnectionError, OSError, MMQTTException) as ex:
+            print("| | ❌ Failed to connect, retrying\n", ex)
+            traceback.print_exception(ex, ex, ex.__traceback__)
+            supervisor.reload()
             continue
         except (AdafruitIO_RequestError) as e:
             print("| | ❌ AdafruitIO_RequestError: \n", e)
@@ -584,8 +587,6 @@ while True:
             # traceback.print_exception(ex, ex, ex.__traceback__)
             supervisor.reload()
             pass
-
-        last = time.monotonic()
         mqtt_client.disconnect()
 
         print("| ✂️ Disconnected from Wifi")
