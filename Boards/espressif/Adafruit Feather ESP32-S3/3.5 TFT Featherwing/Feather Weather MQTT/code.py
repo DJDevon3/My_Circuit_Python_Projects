@@ -3,9 +3,7 @@
 # Adafruit ESP32-S3 Feather Weather with MQTT
 # Coded for Circuit Python 8.2.x
 
-import traceback
 import os
-import microcontroller
 import supervisor
 import time
 import board
@@ -19,8 +17,6 @@ import adafruit_requests
 import ulab.numpy as np
 import adafruit_minimqtt.adafruit_minimqtt as MQTT
 from adafruit_minimqtt.adafruit_minimqtt import MMQTTException
-from adafruit_io.adafruit_io_errors import (AdafruitIO_RequestError,AdafruitIO_ThrottleError,AdafruitIO_MQTTError,)
-from adafruit_io.adafruit_io import IO_MQTT
 from adafruit_display_text import label
 from adafruit_display_shapes.roundrect import RoundRect
 from adafruit_bitmap_font import bitmap_font
@@ -49,16 +45,8 @@ OWLON = os.getenv("openweather_lon")
 
 # MQTT Topic
 # Use this format for a standard MQTT broker
-# mqtt_topic = "test/topic"
-
-# AdafruitIO MMQTT Topic
-# Use this format for io.adafruit.com
-# /g/ is group and /f/ is feed
-mqtt_topic = aio_username + "/g/default"
 adafruitio_errors = aio_username + "/errors"
 adafruitio_throttled = aio_username + "/throttle"
-
-# Creates & Publishes to default AdafruitIO group
 feed_01 = aio_username + "/feeds/BME280-Unbiased"
 feed_02 = aio_username + "/feeds/BME280-RealTemp"
 feed_03 = aio_username + "/feeds/BME280-Pressure"
@@ -354,9 +342,6 @@ mqtt_client = MQTT.MQTT(
     is_ssl=True,
 )
 
-# Initialize an Adafruit IO MQTT Client
-#io = IO_MQTT(mqtt_client)
-
 # Connect callback handlers to mqtt_client
 mqtt_client.on_connect = connect
 mqtt_client.on_disconnect = disconnect
@@ -367,7 +352,6 @@ mqtt_client.on_message = message
 mqtt_client.subscribe_to_errors = ioerrors
 mqtt_client.subscribe_to_throttling = throttle
 
-last = 0
 display_temperature = 0
 # Define the input range and output range
 # pressure at 1014 & 88F at 100% accurate. sea level pressure affects temp?
@@ -375,7 +359,7 @@ input_range = [50.0, 70, 76, 80, 88.0, 120.0]
 output_range = [50.0 - 0.1, 70.0 - 2.0, 76 - 1.4, 80 - 1.0, 88.0 - 0.0, 120.0 - 2.2]
 
 # adafruit_requests.Session should always be outside the loop
-# otherwise you WILL get Out of Socket errors.
+# otherwise you get Out of Socket errors.
 requests = adafruit_requests.Session(pool, ssl.create_default_context())
 
 while True:
@@ -492,39 +476,39 @@ while True:
                 try:
                     owm_response = owm_request.json()
                     if owm_response["message"]:
-                        print(f"| | ❌ OpenWeatherMap Error:  {owm_response["message"]}")
+                        print(f"| | ❌ OpenWeatherMap Error:  {owm_response['message']}")
                         owm_request.close()
                 except (KeyError) as e:
                     owm_response = owm_request.json()
-                    print("| | Account within Request Limit")
+                    print("| | Account within Request Limit", e)
                     print("| | ✅ Connected to OpenWeatherMap")
 
                     # Timezone & offset automatically returned based on lat/lon
-                    get_timezone_offset = int(owm_response["timezone_offset"]) #1
+                    get_timezone_offset = int(owm_response["timezone_offset"])  # 1
                     tz_offset_seconds = get_timezone_offset
                     if debug_OWM:
                         print(f"Timezone Offset (in seconds): {get_timezone_offset}")
-                    get_timestamp = int(owm_response["current"]["dt"] + int(tz_offset_seconds)) #2
+                    get_timestamp = int(owm_response["current"]["dt"] + int(tz_offset_seconds))  # 2
                     current_unix_time = time.localtime(get_timestamp)
                     current_struct_time = time.struct_time(current_unix_time)
                     current_date = "{}".format(_format_date(current_struct_time))
                     current_time = "{}".format(_format_time(current_struct_time))
 
-                    sunrise = int(owm_response["current"]["sunrise"] + int(tz_offset_seconds)) #3
+                    sunrise = int(owm_response["current"]["sunrise"] + int(tz_offset_seconds))  # 3
                     sunrise_unix_time = time.localtime(sunrise)
                     sunrise_struct_time = time.struct_time(sunrise_unix_time)
                     sunrise_time = "{}".format(_format_time(sunrise_struct_time))
 
-                    sunset = int(owm_response["current"]["sunset"] + int(tz_offset_seconds)) #4
+                    sunset = int(owm_response["current"]["sunset"] + int(tz_offset_seconds))  # 4
                     sunset_unix_time = time.localtime(sunset)
                     sunset_struct_time = time.struct_time(sunset_unix_time)
                     sunset_time = "{}".format(_format_time(sunset_struct_time))
 
-                    owm_temp = owm_response["current"]["temp"] #5
-                    owm_pressure = owm_response["current"]["pressure"] #6
-                    owm_humidity = owm_response["current"]["humidity"] #7
-                    weather_type = owm_response["current"]["weather"][0]["main"] #8
-                    owm_windspeed = float(owm_response["current"]["wind_speed"]) #9
+                    owm_temp = owm_response["current"]["temp"] # 5
+                    owm_pressure = owm_response["current"]["pressure"]  # 6
+                    owm_humidity = owm_response["current"]["humidity"]  # 7
+                    weather_type = owm_response["current"]["weather"][0]["main"]  # 8
+                    owm_windspeed = float(owm_response["current"]["wind_speed"])  # 9
 
                     print("| | | Sunrise:", sunrise_time)
                     print("| | | Sunset:", sunset_time)
@@ -559,6 +543,8 @@ while True:
         try:
             mqtt_client.connect()
             mqtt_client.publish(feed_01, temp_round)
+            # slight delay required between publishes!
+            # otherwise only the 1st publish will succeed
             time.sleep(0.001)
             mqtt_client.publish(feed_02, display_temperature)
             time.sleep(1)
@@ -568,25 +554,12 @@ while True:
             time.sleep(1)
             mqtt_client.publish(feed_05, mqtt_altitude)
             time.sleep(1)
-                
+
         except (ValueError, RuntimeError, ConnectionError, OSError, MMQTTException) as ex:
             print("| | ❌ Failed to connect, retrying\n", ex)
-            traceback.print_exception(ex, ex, ex.__traceback__)
-            supervisor.reload()
-            continue
-        except (AdafruitIO_RequestError) as e:
-            print("| | ❌ AdafruitIO_RequestError: \n", e)
-            supervisor.reload()
-            pass
-        except (AdafruitIO_ThrottleError) as e:
-            print("| | ❌ AdafruitIO_ThrottleError: \n", e)
-            supervisor.reload()
-            pass
-        except (AdafruitIO_MQTTError) as ex:
-            print("| | ❌ AdafruitIO_MQTTError: \n", ex)
             # traceback.print_exception(ex, ex, ex.__traceback__)
             supervisor.reload()
-            pass
+            continue
         mqtt_client.disconnect()
 
         print("| ✂️ Disconnected from Wifi")
