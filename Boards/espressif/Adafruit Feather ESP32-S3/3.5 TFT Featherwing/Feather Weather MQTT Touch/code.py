@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2023 DJDevon3
 # SPDX-License-Identifier: MIT
 # ESP32-S3 Feather Weather MQTT Touchscreen
-# Coded for Circuit Python 8.2.8
+# Coded for Circuit Python 8.2.x
 
 import os
 import supervisor
@@ -260,24 +260,63 @@ menu_roundrect = RoundRect(
     DISPLAY_WIDTH-200,  # width
     200,  # height
     10,  # corner radius
-    fill=0x0,
+    fill=None,
     outline=0xFFFFFF,
-    stroke=1,
+    stroke=0,
 )
 
 # --| Button Config |-------------------------------------------------
-BUTTON_WIDTH = 7 * 16
-BUTTON_HEIGHT = 2 * 16
+BUTTON_WIDTH = 16 * 16
+BUTTON_HEIGHT = 3 * 16
 BUTTON_MARGIN = 5
 
 # Defiine the button
 menu_button = SpriteButton(
     x=BUTTON_MARGIN,
     y=BUTTON_MARGIN,
-    width=BUTTON_WIDTH,
-    height=BUTTON_HEIGHT,
+    width=7*16,
+    height=2*16,
     label="MENU",
     label_font=small_font,
+    label_color=TEXT_WHITE,
+    bmp_path="icons/gradient_button_0.bmp",
+    selected_bmp_path="icons/gradient_button_1.bmp",
+    transparent_index=0,
+)
+
+item1_button = SpriteButton(
+    x=135,
+    y=15,
+    width=BUTTON_WIDTH,
+    height=BUTTON_HEIGHT,
+    label="Preferences",
+    label_font=arial_font,
+    label_color=TEXT_WHITE,
+    bmp_path="icons/gradient_button_0.bmp",
+    selected_bmp_path="icons/gradient_button_1.bmp",
+    transparent_index=0,
+)
+
+item2_button = SpriteButton(
+    x=135,
+    y=70,
+    width=BUTTON_WIDTH,
+    height=BUTTON_HEIGHT,
+    label="WiFi Credentials",
+    label_font=arial_font,
+    label_color=TEXT_WHITE,
+    bmp_path="icons/gradient_button_0.bmp",
+    selected_bmp_path="icons/gradient_button_1.bmp",
+    transparent_index=0,
+)
+
+item3_button = SpriteButton(
+    x=135,
+    y=125,
+    width=BUTTON_WIDTH,
+    height=BUTTON_HEIGHT,
+    label="RSSI Scan",
+    label_font=arial_font,
     label_color=TEXT_WHITE,
     bmp_path="icons/gradient_button_0.bmp",
     selected_bmp_path="icons/gradient_button_1.bmp",
@@ -334,6 +373,9 @@ text_group.append(redbmp_label)
 # Add Menu popup group
 menu_popout_group.append(menu_roundrect)
 menu_popout_group.append(menu_popout_label)
+menu_popout_group.append(item1_button)
+menu_popout_group.append(item2_button)
+menu_popout_group.append(item3_button)
 splash.append(menu_button)
 
 display.root_group = main_group
@@ -347,16 +389,15 @@ def show_warning(text):
 def hide_warning():
     # Function to hide weather popup warning
     warning_group.hidden = True
-
-def show_menu(text):
+    
+def show_menu():
     # Function to display popup menu
-    menu_popout_label.text = text
     menu_popout_group.hidden = False
 
 def hide_menu():
     # Function to hide popup menu
     menu_popout_group.hidden = True
-
+    
 hide_warning()
 hide_menu()
 
@@ -522,7 +563,7 @@ while True:
         show_warning("WARNING: Hail & Tornados?")
     else:
         hide_warning()  # Normal pressures: 1110-1018 (no message)
-
+    
     print("| Connecting to WiFi...")
 
     while not wifi.radio.ipv4_address:
@@ -637,23 +678,40 @@ while True:
         loading_group.remove(loading_label)
         print("| ✂️ Disconnected from Wifi")
         print("Next Update: ", time_calc(sleep_time))
-
+        
         print("Entering Sleep Loop")
         while (time.monotonic() - last) <= sleep_time:
             p = touchscreen.touch_point
             if p:
                 if menu_button.contains(p):
                     menu_button.selected = True
-                    print("Button Pressed")
-                    show_menu("Menu Item 1\nMenu Item 2\nMenu Item 3\nMenu Item 4")
-                    # Perform a task related to the button press here
-                    time.sleep(0.25)  # Wait a bit so we can see the button color change
+                    time.sleep(0.25)
+                    print("Menu Pressed")
+                    show_menu()
+                elif item1_button.contains(p):
+                    item1_button.selected = True
+                    time.sleep(0.25)
+                    print("Item 1 Pressed")
+                elif item2_button.contains(p):
+                    item2_button.selected = True
+                    time.sleep(0.25)
+                    print("Item 2 Pressed")
+                elif item3_button.contains(p):
+                    item3_button.selected = True
+                    time.sleep(0.25)
+                    print("Item 3 Pressed")
                 else:
+                    item1_button.selected = False
+                    item2_button.selected = False
+                    item3_button.selected = False
                     menu_button.selected = False  # When touch moves outside of button
                     hide_menu()
             else:
+                item1_button.selected = False
+                item2_button.selected = False
+                item3_button.selected = False
                 menu_button.selected = False  # When button is released
-
+                
         last = time.monotonic()
         print("Exited Sleep Loop")
         #time.sleep(sleep_time)
