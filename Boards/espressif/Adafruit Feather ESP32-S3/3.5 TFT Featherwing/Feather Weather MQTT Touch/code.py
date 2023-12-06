@@ -332,6 +332,7 @@ warning_group = displayio.Group()
 loading_group = displayio.Group()
 menu_popout_group = displayio.Group()
 main_group = displayio.Group()
+main_group2 = displayio.Group()
 
 # Add subgroups to main display group
 main_group.append(text_group)
@@ -474,245 +475,257 @@ requests = adafruit_requests.Session(pool, ssl.create_default_context())
 # Loading Label
 loading_label.text = "Loading..."
 last = time.monotonic()
-
 while True:
-    debug_OWM = False  # Set True for Serial Print Debugging
-    bme280.sea_level_pressure = bme280.pressure
-    loading_group.append(loading_label)
-    hello_label.text = "ESP32-S3 MQTT Feather Weather"
-    print("===============================")
+    while display.root_group is main_group:
+        debug_OWM = False  # Set True for Serial Print Debugging
+        bme280.sea_level_pressure = bme280.pressure
+        loading_group.append(loading_label)
+        hello_label.text = "ESP32-S3 MQTT Feather Weather"
+        print("===============================")
 
-    # USB Power Sensing
-    try:
-        vbat_label.text = f"{battery_monitor.cell_voltage:.2f}v"
-    except (ValueError, RuntimeError, OSError) as e:
-        print("LC709203F Error: \n", e)
-    # Set USB plug icon and voltage label to white
-    usb_sense = supervisor.runtime.usb_connected
-    if debug_OWM:
-        print("USB Sense: ", usb_sense)  # Boolean value
-    if usb_sense:  # if on USB power show plug sprite icon
-        vbat_label.color = TEXT_WHITE
-        sprite[0] = 5
-    if not usb_sense:  # if on battery power only
-        # Changes battery voltage color depending on charge level
-        if vbat_label.text >= "4.23":
+        # USB Power Sensing
+        try:
+            vbat_label.text = f"{battery_monitor.cell_voltage:.2f}v"
+        except (ValueError, RuntimeError, OSError) as e:
+            print("LC709203F Error: \n", e)
+        # Set USB plug icon and voltage label to white
+        usb_sense = supervisor.runtime.usb_connected
+        if debug_OWM:
+            print("USB Sense: ", usb_sense)  # Boolean value
+        if usb_sense:  # if on USB power show plug sprite icon
             vbat_label.color = TEXT_WHITE
             sprite[0] = 5
-        elif "4.10" <= vbat_label.text <= "4.22":
-            vbat_label.color = TEXT_GREEN
-            sprite[0] = 0
-        elif "4.00" <= vbat_label.text <= "4.09":
-            vbat_label.color = TEXT_LIGHTBLUE
-            sprite[0] = 1
-        elif "3.90" <= vbat_label.text <= "3.99":
-            vbat_label.color = TEXT_YELLOW
-            sprite[0] = 2
-        elif "3.80" <= vbat_label.text <= "3.89":
-            vbat_label.color = TEXT_ORANGE
-            sprite[0] = 3
-        # TFT cutoff voltage is 3.70
-        elif vbat_label.text <= "3.79":
-            vbat_label.color = TEXT_RED
-            sprite[0] = 4
+        if not usb_sense:  # if on battery power only
+            # Changes battery voltage color depending on charge level
+            if vbat_label.text >= "4.23":
+                vbat_label.color = TEXT_WHITE
+                sprite[0] = 5
+            elif "4.10" <= vbat_label.text <= "4.22":
+                vbat_label.color = TEXT_GREEN
+                sprite[0] = 0
+            elif "4.00" <= vbat_label.text <= "4.09":
+                vbat_label.color = TEXT_LIGHTBLUE
+                sprite[0] = 1
+            elif "3.90" <= vbat_label.text <= "3.99":
+                vbat_label.color = TEXT_YELLOW
+                sprite[0] = 2
+            elif "3.80" <= vbat_label.text <= "3.89":
+                vbat_label.color = TEXT_ORANGE
+                sprite[0] = 3
+            # TFT cutoff voltage is 3.70
+            elif vbat_label.text <= "3.79":
+                vbat_label.color = TEXT_RED
+                sprite[0] = 4
+            else:
+                vbat_label.color = TEXT_WHITE
+
+        # Local sensor data display
+        temp_label.text = "°F"
+
+        # Board Uptime
+        print("Board Uptime: ", time_calc(time.monotonic()))
+
+        # Account for PCB heating bias, gets slightly hotter as ambient increases
+        temperature = bme280.temperature * 1.8 + 32
+        temp_round = round(temperature, 2)
+        print("Temp: ", temperature)  # biased reading
+        display_temperature = np.interp(temperature, input_range, output_range)
+        BME280_temperature = round(display_temperature[0], 2)
+        print(f"Actual Temp: {BME280_temperature:.1f}")
+        if debug_OWM:
+            BME280_pressure = 1005  # Manually set debug warning message
+            print(f"BME280 Pressure: {BME280_pressure}")
         else:
-            vbat_label.color = TEXT_WHITE
+            BME280_pressure = round(bme280.pressure, 1)
+        BME280_humidity = round(bme280.relative_humidity, 1)
+        BME280_altitude = round(bme280.altitude, 2)
 
-    # Local sensor data display
-    temp_label.text = "°F"
+        temp_data_shadow.text = f"{BME280_temperature:.1f}"
+        temp_data_label.text = f"{BME280_temperature:.1f}"
+        humidity_label.text = "Humidity"
+        humidity_data_label.text = f"{BME280_humidity:.1f} %"
+        barometric_label.text = "Pressure"
+        barometric_data_label.text = f"{BME280_pressure:.1f}"
 
-    # Board Uptime
-    print("Board Uptime: ", time_calc(time.monotonic()))
-
-    # Account for PCB heating bias, gets slightly hotter as ambient increases
-    temperature = bme280.temperature * 1.8 + 32
-    temp_round = round(temperature, 2)
-    print("Temp: ", temperature)  # biased reading
-    display_temperature = np.interp(temperature, input_range, output_range)
-    BME280_temperature = round(display_temperature[0], 2)
-    print(f"Actual Temp: {BME280_temperature:.1f}")
-    if debug_OWM:
-        BME280_pressure = 1005  # Manually set debug warning message
-        print(f"BME280 Pressure: {BME280_pressure}")
-    else:
-        BME280_pressure = round(bme280.pressure, 1)
-    BME280_humidity = round(bme280.relative_humidity, 1)
-    BME280_altitude = round(bme280.altitude, 2)
-
-    temp_data_shadow.text = f"{BME280_temperature:.1f}"
-    temp_data_label.text = f"{BME280_temperature:.1f}"
-    humidity_label.text = "Humidity"
-    humidity_data_label.text = f"{BME280_humidity:.1f} %"
-    barometric_label.text = "Pressure"
-    barometric_data_label.text = f"{BME280_pressure:.1f}"
-
-    # Warnings based on local sensors
-    if BME280_pressure <= 919:  # pray you never see this message
-        show_warning("HOLY COW: Seek Shelter!")
-    elif 920 <= BME280_pressure <= 979:
-        show_warning("DANGER: Major Hurricane")
-    elif 980 <= BME280_pressure <= 989:
-        show_warning("DANGER: Minor Hurricane")
-    elif 990 <= BME280_pressure <= 1001:
-        show_warning("WARNING: Tropical Storm")
-    elif 1002 <= BME280_pressure <= 1009:  # sudden gusty downpours
-        show_warning("CAUTION: Low Pressure System")
-    elif 1019 <= BME280_pressure <= 1025:  # sudden light cold rain
-        show_warning("CAUTION: High Pressure System")
-    elif BME280_pressure >= 1026:
-        show_warning("WARNING: Hail & Tornados?")
-    else:
-        hide_warning()  # Normal pressures: 1110-1018 (no message)
-    
-    print("| Connecting to WiFi...")
-
-    while not wifi.radio.ipv4_address:
-        try:
-            wifi.radio.connect(ssid, appw)
-        except ConnectionError as e:
-            print("Connection Error:", e)
-            print("Retrying in 10 seconds")
-            time.sleep(10)
-    print("| ✅ WiFi!")
-
-    while wifi.radio.ipv4_address:
-        try:
-            print("| | Attempting to GET Weather!")
-            if debug_OWM:
-                print("Full API GET URL: ", DATA_SOURCE)
-                print("\n===============================")
-            with requests.get(DATA_SOURCE) as owm_request:
-
-                # uncomment the 2 lines below to see full json response
-                # warning: returns ALL JSON data, could crash your board
-                # dump_object = json.dumps(owm_request)
-                # print("JSON Dump: ", dump_object)
-                try:
-                    owm_response = owm_request.json()
-                    if owm_response["message"]:
-                        print(f"| | ❌ OpenWeatherMap Error:  {owm_response['message']}")
-                        owm_request.close()
-                except (KeyError) as e:
-                    owm_response = owm_request.json()
-                    print("| | Account within Request Limit", e)
-                    print("| | ✅ Connected to OpenWeatherMap")
-
-                    # Timezone & offset automatically returned based on lat/lon
-                    get_timezone_offset = int(owm_response["timezone_offset"])  # 1
-                    tz_offset_seconds = get_timezone_offset
-                    if debug_OWM:
-                        print(f"Timezone Offset (in seconds): {get_timezone_offset}")
-                    get_timestamp = int(owm_response["current"]["dt"] + int(tz_offset_seconds))  # 2
-                    current_unix_time = time.localtime(get_timestamp)
-                    current_struct_time = time.struct_time(current_unix_time)
-                    current_date = "{}".format(_format_date(current_struct_time))
-                    current_time = "{}".format(_format_time(current_struct_time))
-
-                    sunrise = int(owm_response["current"]["sunrise"] + int(tz_offset_seconds))  # 3
-                    sunrise_unix_time = time.localtime(sunrise)
-                    sunrise_struct_time = time.struct_time(sunrise_unix_time)
-                    sunrise_time = "{}".format(_format_time(sunrise_struct_time))
-
-                    sunset = int(owm_response["current"]["sunset"] + int(tz_offset_seconds))  # 4
-                    sunset_unix_time = time.localtime(sunset)
-                    sunset_struct_time = time.struct_time(sunset_unix_time)
-                    sunset_time = "{}".format(_format_time(sunset_struct_time))
-
-                    owm_temp = owm_response["current"]["temp"] # 5
-                    owm_pressure = owm_response["current"]["pressure"]  # 6
-                    owm_humidity = owm_response["current"]["humidity"]  # 7
-                    weather_type = owm_response["current"]["weather"][0]["main"]  # 8
-                    owm_windspeed = float(owm_response["current"]["wind_speed"])  # 9
-
-                    print("| | | Sunrise:", sunrise_time)
-                    print("| | | Sunset:", sunset_time)
-                    print("| | | Temp:", owm_temp)
-                    print("| | | Pressure:", owm_pressure)
-                    print("| | | Humidity:", owm_humidity)
-                    print("| | | Weather Type:", weather_type)
-                    print("| | | Wind Speed:", owm_windspeed)
-                    print("| | | Timestamp:", current_date + " " + current_time)
-
-                    date_label.text = current_date
-                    time_label.text = current_time
-                    owm_windspeed_label.text = f"{owm_windspeed:.1f} mph"
-                    owm_temp_data_shadow.text = f"{owm_temp:.1f}"
-                    owm_temp_data_label.text = f"{owm_temp:.1f}"
-                    owm_humidity_data_label.text = f"{owm_humidity:.1f} %"
-                    owm_barometric_data_label.text = f"{owm_pressure:.1f}"
-                    pass
-
-        except (ValueError, RuntimeError) as e:
-            print("ValueError: Failed to get OWM data, retrying\n", e)
-            supervisor.reload()
-            break
-        except OSError as g:
-            if g.errno == -2:
-                print("gaierror, breaking out of loop\n", g)
-                time.sleep(240)
-                break
-        print("| | ✂️ Disconnected from OpenWeatherMap")
-
-        # Connect to Adafruit IO
-        try:
-            mqtt_client.connect()
-            mqtt_client.publish(feed_01, temp_round)
-            # slight delay required between publishes!
-            # otherwise only the 1st publish will succeed
-            time.sleep(0.001)
-            mqtt_client.publish(feed_02, BME280_temperature)
-            time.sleep(1)
-            mqtt_client.publish(feed_03, BME280_pressure)
-            time.sleep(1)
-            mqtt_client.publish(feed_04, BME280_humidity)
-            time.sleep(1)
-            mqtt_client.publish(feed_05, BME280_altitude)
-            time.sleep(1)
-
-        except (ValueError, RuntimeError, ConnectionError, OSError, MMQTTException) as ex:
-            print("| | ❌ Failed to connect, retrying\n", ex)
-            # traceback.print_exception(ex, ex, ex.__traceback__)
-            # supervisor.reload()
-            continue
-        mqtt_client.disconnect()
-        loading_group.remove(loading_label)
-        print("| ✂️ Disconnected from Wifi")
-        print("Next Update: ", time_calc(sleep_time))
+        # Warnings based on local sensors
+        if BME280_pressure <= 919:  # pray you never see this message
+            show_warning("HOLY COW: Seek Shelter!")
+        elif 920 <= BME280_pressure <= 979:
+            show_warning("DANGER: Major Hurricane")
+        elif 980 <= BME280_pressure <= 989:
+            show_warning("DANGER: Minor Hurricane")
+        elif 990 <= BME280_pressure <= 1001:
+            show_warning("WARNING: Tropical Storm")
+        elif 1002 <= BME280_pressure <= 1009:  # sudden gusty downpours
+            show_warning("CAUTION: Low Pressure System")
+        elif 1019 <= BME280_pressure <= 1025:  # sudden light cold rain
+            show_warning("CAUTION: High Pressure System")
+        elif BME280_pressure >= 1026:
+            show_warning("WARNING: Hail & Tornados?")
+        else:
+            hide_warning()  # Normal pressures: 1110-1018 (no message)
         
-        print("Entering Sleep Loop")
-        while (time.monotonic() - last) <= sleep_time:
-            p = touchscreen.touch_point
-            if p:
-                if menu_button.contains(p):
-                    menu_button.selected = True
-                    time.sleep(0.25)
-                    print("Menu Pressed")
-                    show_menu()
-                elif item1_button.contains(p):
-                    item1_button.selected = True
-                    time.sleep(0.25)
-                    print("Item 1 Pressed")
-                elif item2_button.contains(p):
-                    item2_button.selected = True
-                    time.sleep(0.25)
-                    print("Item 2 Pressed")
-                elif item3_button.contains(p):
-                    item3_button.selected = True
-                    time.sleep(0.25)
-                    print("Item 3 Pressed")
+        print("| Connecting to WiFi...")
+
+        while not wifi.radio.ipv4_address and display.root_group is main_group:
+            try:
+                wifi.radio.connect(ssid, appw)
+            except ConnectionError as e:
+                print("Connection Error:", e)
+                print("Retrying in 10 seconds")
+                time.sleep(10)
+        print("| ✅ WiFi!")
+
+        while wifi.radio.ipv4_address and display.root_group is main_group:
+            try:
+                print("| | Attempting to GET Weather!")
+                if debug_OWM:
+                    print("Full API GET URL: ", DATA_SOURCE)
+                    print("\n===============================")
+                with requests.get(DATA_SOURCE) as owm_request:
+
+                    # uncomment the 2 lines below to see full json response
+                    # warning: returns ALL JSON data, could crash your board
+                    # dump_object = json.dumps(owm_request)
+                    # print("JSON Dump: ", dump_object)
+                    try:
+                        owm_response = owm_request.json()
+                        if owm_response["message"]:
+                            print(f"| | ❌ OpenWeatherMap Error:  {owm_response['message']}")
+                            owm_request.close()
+                    except (KeyError) as e:
+                        owm_response = owm_request.json()
+                        print("| | Account within Request Limit", e)
+                        print("| | ✅ Connected to OpenWeatherMap")
+
+                        # Timezone & offset automatically returned based on lat/lon
+                        get_timezone_offset = int(owm_response["timezone_offset"])  # 1
+                        tz_offset_seconds = get_timezone_offset
+                        if debug_OWM:
+                            print(f"Timezone Offset (in seconds): {get_timezone_offset}")
+                        get_timestamp = int(owm_response["current"]["dt"] + int(tz_offset_seconds))  # 2
+                        current_unix_time = time.localtime(get_timestamp)
+                        current_struct_time = time.struct_time(current_unix_time)
+                        current_date = "{}".format(_format_date(current_struct_time))
+                        current_time = "{}".format(_format_time(current_struct_time))
+
+                        sunrise = int(owm_response["current"]["sunrise"] + int(tz_offset_seconds))  # 3
+                        sunrise_unix_time = time.localtime(sunrise)
+                        sunrise_struct_time = time.struct_time(sunrise_unix_time)
+                        sunrise_time = "{}".format(_format_time(sunrise_struct_time))
+
+                        sunset = int(owm_response["current"]["sunset"] + int(tz_offset_seconds))  # 4
+                        sunset_unix_time = time.localtime(sunset)
+                        sunset_struct_time = time.struct_time(sunset_unix_time)
+                        sunset_time = "{}".format(_format_time(sunset_struct_time))
+
+                        owm_temp = owm_response["current"]["temp"] # 5
+                        owm_pressure = owm_response["current"]["pressure"]  # 6
+                        owm_humidity = owm_response["current"]["humidity"]  # 7
+                        weather_type = owm_response["current"]["weather"][0]["main"]  # 8
+                        owm_windspeed = float(owm_response["current"]["wind_speed"])  # 9
+
+                        print("| | | Sunrise:", sunrise_time)
+                        print("| | | Sunset:", sunset_time)
+                        print("| | | Temp:", owm_temp)
+                        print("| | | Pressure:", owm_pressure)
+                        print("| | | Humidity:", owm_humidity)
+                        print("| | | Weather Type:", weather_type)
+                        print("| | | Wind Speed:", owm_windspeed)
+                        print("| | | Timestamp:", current_date + " " + current_time)
+
+                        date_label.text = current_date
+                        time_label.text = current_time
+                        owm_windspeed_label.text = f"{owm_windspeed:.1f} mph"
+                        owm_temp_data_shadow.text = f"{owm_temp:.1f}"
+                        owm_temp_data_label.text = f"{owm_temp:.1f}"
+                        owm_humidity_data_label.text = f"{owm_humidity:.1f} %"
+                        owm_barometric_data_label.text = f"{owm_pressure:.1f}"
+                        pass
+
+            except (ValueError, RuntimeError) as e:
+                print("ValueError: Failed to get OWM data, retrying\n", e)
+                supervisor.reload()
+                break
+            except OSError as g:
+                if g.errno == -2:
+                    print("gaierror, breaking out of loop\n", g)
+                    time.sleep(240)
+                    break
+            print("| | ✂️ Disconnected from OpenWeatherMap")
+
+            # Connect to Adafruit IO
+            try:
+                mqtt_client.connect()
+                mqtt_client.publish(feed_01, temp_round)
+                # slight delay required between publishes!
+                # otherwise only the 1st publish will succeed
+                time.sleep(0.001)
+                mqtt_client.publish(feed_02, BME280_temperature)
+                time.sleep(1)
+                mqtt_client.publish(feed_03, BME280_pressure)
+                time.sleep(1)
+                mqtt_client.publish(feed_04, BME280_humidity)
+                time.sleep(1)
+                mqtt_client.publish(feed_05, BME280_altitude)
+                time.sleep(1)
+
+            except (ValueError, RuntimeError, ConnectionError, OSError, MMQTTException) as ex:
+                print("| | ❌ Failed to connect, retrying\n", ex)
+                # traceback.print_exception(ex, ex, ex.__traceback__)
+                # supervisor.reload()
+                continue
+            mqtt_client.disconnect()
+            loading_group.remove(loading_label)
+            print("| ✂️ Disconnected from Wifi")
+            print("Next Update: ", time_calc(sleep_time))
+            
+            print("Entering Sleep Loop")
+            while (time.monotonic() - last) <= sleep_time and display.root_group is main_group:
+                p = touchscreen.touch_point
+                if p:
+                    if menu_button.contains(p):
+                        menu_button.selected = True
+                        time.sleep(0.25)
+                        print("Menu Pressed")
+                        show_menu()
+                    elif item1_button.contains(p):
+                        item1_button.selected = True
+                        time.sleep(0.25)
+                        print("Item 1 Pressed")
+                        display.root_group = main_group2
+                        pass
+                            # Remove Menu, Remove Main Group, Show Page 
+                    elif item2_button.contains(p):
+                        item2_button.selected = True
+                        time.sleep(0.25)
+                        print("Item 2 Pressed")
+                    elif item3_button.contains(p):
+                        item3_button.selected = True
+                        time.sleep(0.25)
+                        print("Item 3 Pressed")
+                    else:
+                        item1_button.selected = False
+                        item2_button.selected = False
+                        item3_button.selected = False
+                        menu_button.selected = False  # When touch moves outside of button
+                        hide_menu()
                 else:
                     item1_button.selected = False
                     item2_button.selected = False
                     item3_button.selected = False
-                    menu_button.selected = False  # When touch moves outside of button
-                    hide_menu()
-            else:
-                item1_button.selected = False
-                item2_button.selected = False
-                item3_button.selected = False
-                menu_button.selected = False  # When button is released
+                    menu_button.selected = False  # When button is released
                 
-        last = time.monotonic()
-        print("Exited Sleep Loop")
-        #time.sleep(sleep_time)
-        break
+                if display.root_group is main_group2:
+                    print("Passed")
+                    pass
+            last = time.monotonic()
+            print("Exited Sleep Loop")
+            #time.sleep(sleep_time)
+            if display.root_group is main_group2:
+                pass
+            else:
+                break
+    while display.root_group is main_group2:
+            print("Page 2! Yep this works!")
+            time.sleep(5)
