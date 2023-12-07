@@ -26,6 +26,7 @@ from adafruit_bme280 import basic as adafruit_bme280
 from adafruit_hx8357 import HX8357
 import adafruit_stmpe610
 from adafruit_button.sprite_button import SpriteButton
+from adafruit_debouncer import Debouncer
 
 # 3.5" TFT Featherwing is 480x320
 displayio.release_displays()
@@ -163,30 +164,37 @@ def make_my_label(font, anchor_point, anchored_position, scale, color):
 
 # name_label (FONT, (ANCHOR POINT), (ANCHOR POSITION), SCALE, COLOR)
 # loading screen label
-loading_label = make_my_label(terminalio.FONT, (0.5, 0.5), (DISPLAY_WIDTH / 2, DISPLAY_HEIGHT-15), 2, TEXT_CYAN)
+loading_label = make_my_label(terminalio.FONT, (0.5, 0.5), (DISPLAY_WIDTH / 2, DISPLAY_HEIGHT-75), 2, TEXT_CYAN)
+loading_label_shadow = make_my_label(terminalio.FONT, (0.5, 0.5), (DISPLAY_WIDTH / 2 +3, DISPLAY_HEIGHT-75+3), 2, TEXT_BLACK)
 hello_label = make_my_label(
     terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH / 2, 15), 1, TEXT_WHITE
 )
+hello_label_page2 = make_my_label(
+    terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH / 2, 15), 1, TEXT_WHITE
+)
+hello_label_page3 = make_my_label(
+    terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH / 2, 15), 1, TEXT_WHITE
+)
 warning_label = make_my_label(
-    arial_font, (0.5, 0.5), (DISPLAY_WIDTH / 2, DISPLAY_HEIGHT - 113), 1, TEXT_RED
+    arial_font, (0.5, 0.5), (DISPLAY_WIDTH / 2, DISPLAY_HEIGHT - 103), 1, TEXT_RED
 )
 menu_popout_label = make_my_label(
     arial_font, (0.0, 0.0), (135, 15), 1, TEXT_CYAN
 )
-date_label = make_my_label(small_font, (0.0, 0.0), (5, 50), 1, TEXT_LIGHTBLUE)
-time_label = make_my_label(small_font, (0.0, 0.0), (5, 70), 2, TEXT_LIGHTBLUE)
-temp_label = make_my_label(small_font, (1.0, 1.0), (475, 145), 2, TEXT_ORANGE)
+date_label = make_my_label(small_font, (0.0, 0.0), (5, 45), 1, TEXT_LIGHTBLUE)
+time_label = make_my_label(small_font, (0.0, 0.0), (5, 65), 2, TEXT_LIGHTBLUE)
+temp_label = make_my_label(small_font, (1.0, 1.0), (475, 123), 2, TEXT_ORANGE)
 temp_data_label = make_my_label(
-    huge_font, (0.5, 1.0), (DISPLAY_WIDTH / 2, 210), 1, TEXT_ORANGE
+    huge_font, (0.5, 0.0), (DISPLAY_WIDTH / 2, 100), 1, TEXT_ORANGE
 )
 temp_data_shadow = make_my_label(
-    huge_font, (0.5, 1.0), (DISPLAY_WIDTH / 2 + 2, 210 + 2), 1, TEXT_BLACK
+    huge_font, (0.5, 0.0), (DISPLAY_WIDTH / 2 + 2, 100 + 2), 1, TEXT_BLACK
 )
 owm_temp_data_label = make_my_label(
-    medium_font, (0.5, 1.0), (DISPLAY_WIDTH / 2, 110), 1, TEXT_LIGHTBLUE
+    medium_font, (0.5, 0.0), (DISPLAY_WIDTH / 2, 65), 1, TEXT_LIGHTBLUE
 )
 owm_temp_data_shadow = make_my_label(
-    medium_font, (0.5, 1.0), (DISPLAY_WIDTH / 2 + 2, 110 + 2), 1, TEXT_BLACK
+    medium_font, (0.5, 0.0), (DISPLAY_WIDTH / 2 + 2, 65 + 2), 1, TEXT_BLACK
 )
 humidity_label = make_my_label(
     small_font, (0.0, 1.0), (5, DISPLAY_HEIGHT - 40), 1, TEXT_GRAY
@@ -244,7 +252,7 @@ sprite_group.y = 45
 # Warning label RoundRect
 roundrect = RoundRect(
     int(10),
-    int(DISPLAY_HEIGHT - 135),
+    int(DISPLAY_HEIGHT - 125),
     DISPLAY_WIDTH-10,
     40,
     10,
@@ -265,7 +273,8 @@ menu_roundrect = RoundRect(
     stroke=0,
 )
 
-# --| Button Config |-------------------------------------------------
+# Button width & height must be multiple of 16
+# otherwise you'll get a tilegrid_inflator error
 BUTTON_WIDTH = 16 * 16
 BUTTON_HEIGHT = 3 * 16
 BUTTON_MARGIN = 5
@@ -284,12 +293,38 @@ menu_button = SpriteButton(
     transparent_index=0,
 )
 
+next_button = SpriteButton(
+    x=DISPLAY_WIDTH-3*16,
+    y=BUTTON_MARGIN,
+    width=3*16,
+    height=2*16,
+    label=">",
+    label_font=arial_font,
+    label_color=TEXT_WHITE,
+    bmp_path="icons/gradient_button_0.bmp",
+    selected_bmp_path="icons/gradient_button_1.bmp",
+    transparent_index=0,
+)
+
+prev_button = SpriteButton(
+    x=DISPLAY_WIDTH-6*16-5,
+    y=BUTTON_MARGIN,
+    width=3*16,
+    height=2*16,
+    label="<",
+    label_font=arial_font,
+    label_color=TEXT_WHITE,
+    bmp_path="icons/gradient_button_0.bmp",
+    selected_bmp_path="icons/gradient_button_1.bmp",
+    transparent_index=0,
+)
+
 item1_button = SpriteButton(
     x=135,
     y=15,
     width=BUTTON_WIDTH,
     height=BUTTON_HEIGHT,
-    label="Preferences",
+    label="Page 2",
     label_font=arial_font,
     label_color=TEXT_WHITE,
     bmp_path="icons/gradient_button_0.bmp",
@@ -332,16 +367,23 @@ warning_group = displayio.Group()
 loading_group = displayio.Group()
 menu_popout_group = displayio.Group()
 main_group = displayio.Group()
+
+# Page 2 Groups
 main_group2 = displayio.Group()
+main_group2.append(hello_label_page2)
+
+# Page 3 Groups
+main_group3 = displayio.Group()
+main_group3.append(hello_label_page3)
 
 # Add subgroups to main display group
 main_group.append(text_group)
 main_group.append(warning_group)
 main_group.append(loading_group)
-main_group.append(splash)
 main_group.append(temp_group)
 main_group.append(sprite_group)
 main_group.append(menu_popout_group)
+main_group.append(splash)
 
 # Add warning popup group
 warning_group.append(roundrect)
@@ -378,6 +420,8 @@ menu_popout_group.append(item1_button)
 menu_popout_group.append(item2_button)
 menu_popout_group.append(item3_button)
 splash.append(menu_button)
+splash.append(next_button)
+splash.append(prev_button)
 
 display.root_group = main_group
 
@@ -466,19 +510,28 @@ display_temperature = 0
 # Define the input range and output range
 # pressure at 1014 & 88F at 100% accurate. sea level pressure affects temp?
 input_range = [50.0, 70, 76, 80, 88.0, 120.0]
-output_range = [50.0 - 0.1, 70.0 - 2.0, 76 - 1.4, 80 - 1.0, 88.0 - 0.0, 120.0 - 2.2]
+output_range = [50.0 - 0.1, 70.0 - 1.4, 76 - 1.5, 80 - 1.0, 88.0 - 0.0, 120.0 - 2.2]
 
 # adafruit_requests.Session should always be outside the loop
 # otherwise you get Out of Socket errors.
 requests = adafruit_requests.Session(pool, ssl.create_default_context())
 
 # Loading Label
+loading_label_shadow.text = "Loading..."
 loading_label.text = "Loading..."
 last = time.monotonic()
+LAST_PRESS_TIME = -1
 while True:
     while display.root_group is main_group:
+        item1_button.selected = False
+        item2_button.selected = False
+        item3_button.selected = False
+        menu_button.selected = False
+        prev_button.selected = False
+        next_button.selected = False
         debug_OWM = False  # Set True for Serial Print Debugging
         bme280.sea_level_pressure = bme280.pressure
+        loading_group.append(loading_label_shadow)
         loading_group.append(loading_label)
         hello_label.text = "ESP32-S3 MQTT Feather Weather"
         print("===============================")
@@ -566,6 +619,8 @@ while True:
             hide_warning()  # Normal pressures: 1110-1018 (no message)
         
         print("| Connecting to WiFi...")
+        loading_label_shadow.text = "Checking Wifi..."
+        loading_label.text = "Checking Wifi..."
 
         while not wifi.radio.ipv4_address and display.root_group is main_group:
             try:
@@ -594,6 +649,8 @@ while True:
                             print(f"| | ❌ OpenWeatherMap Error:  {owm_response['message']}")
                             owm_request.close()
                     except (KeyError) as e:
+                        loading_label_shadow.text = "Getting Weather..."
+                        loading_label.text = "Getting Weather..."
                         owm_response = owm_request.json()
                         print("| | Account within Request Limit", e)
                         print("| | ✅ Connected to OpenWeatherMap")
@@ -657,6 +714,8 @@ while True:
             # Connect to Adafruit IO
             try:
                 mqtt_client.connect()
+                loading_label_shadow.text = "Publishing..."
+                loading_label.text = "Publishing..."
                 mqtt_client.publish(feed_01, temp_round)
                 # slight delay required between publishes!
                 # otherwise only the 1st publish will succeed
@@ -676,6 +735,7 @@ while True:
                 # supervisor.reload()
                 continue
             mqtt_client.disconnect()
+            loading_group.remove(loading_label_shadow)
             loading_group.remove(loading_label)
             print("| ✂️ Disconnected from Wifi")
             print("Next Update: ", time_calc(sleep_time))
@@ -684,18 +744,125 @@ while True:
             while (time.monotonic() - last) <= sleep_time and display.root_group is main_group:
                 p = touchscreen.touch_point
                 if p:
+                    _now = time.monotonic()
+                    if _now - LAST_PRESS_TIME > 2:
+                        if menu_button.contains(p):
+                            menu_button.selected = True
+                            time.sleep(0.25)
+                            print("Menu Pressed")
+                            show_menu()
+                        elif prev_button.contains(p):
+                            prev_button.selected = True
+                            next_button.selected = False
+                            time.sleep(0.25)
+                            print("Previous Pressed")
+                            hide_menu()
+                            main_group.remove(menu_popout_group)
+                            main_group.remove(splash)
+                            main_group3.append(menu_popout_group)
+                            main_group3.append(splash)
+                            display.root_group = main_group3
+                        elif next_button.contains(p):
+                            next_button.selected = True
+                            next_button.selected = False
+                            time.sleep(0.25)
+                            print("Next Pressed")
+                            hide_menu()
+                            main_group.remove(menu_popout_group)
+                            main_group.remove(splash)
+                            main_group2.append(menu_popout_group)
+                            main_group2.append(splash)
+                            display.root_group = main_group2
+                            pass
+                                # Remove Menu, Remove Main Group, Show Page 
+                        elif item1_button.contains(p):
+                            item1_button.selected = True
+                            time.sleep(0.25)
+                            print("Item 1 Pressed") 
+                        elif item2_button.contains(p):
+                            item2_button.selected = True
+                            time.sleep(0.25)
+                            print("Item 2 Pressed")
+                        elif item3_button.contains(p):
+                            item3_button.selected = True
+                            time.sleep(0.25)
+                            print("Item 3 Pressed")
+                        else:
+                            item1_button.selected = False
+                            item2_button.selected = False
+                            item3_button.selected = False
+                            menu_button.selected = False  # When touch moves outside of button
+                            prev_button.selected = False
+                            next_button.selected = False
+                            hide_menu()
+                    LAST_PRESS_TIME = _now
+                else:
+                    item1_button.selected = False
+                    item2_button.selected = False
+                    item3_button.selected = False
+                    menu_button.selected = False  # When button is released
+                    prev_button.selected = False
+                    next_button.selected = False
+                
+                if display.root_group is main_group2:
+                    print("Passed")
+                    pass
+            last = time.monotonic()
+            print("Exited Sleep Loop")
+            #time.sleep(sleep_time)
+            if display.root_group is main_group2 or main_group3:
+                pass
+            else:
+                break
+                
+    while display.root_group is main_group2:
+        item1_button.selected = False
+        item2_button.selected = False
+        item3_button.selected = False
+        menu_button.selected = False
+        prev_button.selected = False
+        next_button.selected = False
+        hello_label_page2.text = "Feather Weather Page 2"
+        print("Page 2! Yep this works!")
+        while (time.monotonic() - last) <= sleep_time and display.root_group is main_group2:
+            p = touchscreen.touch_point
+            if p:
+                _now = time.monotonic()
+                if _now - LAST_PRESS_TIME > 2:
                     if menu_button.contains(p):
                         menu_button.selected = True
                         time.sleep(0.25)
                         print("Menu Pressed")
                         show_menu()
+                    elif prev_button.contains(p):
+                        prev_button.selected = True
+                        prev_button.selected = False
+                        time.sleep(0.25)
+                        print("Previous Pressed")
+                        hide_menu()
+                        main_group2.remove(menu_popout_group)
+                        main_group2.remove(splash)
+                        main_group.append(menu_popout_group)
+                        main_group.append(splash)
+                        display.root_group = main_group
+                        prev_button.selected = False
+                    elif next_button.contains(p):
+                        next_button.selected = True
+                        next_button.selected = False
+                        time.sleep(0.25)
+                        print("Next Pressed")
+                        hide_menu()
+                        main_group2.remove(menu_popout_group)
+                        main_group2.remove(splash)
+                        main_group3.append(menu_popout_group)
+                        main_group3.append(splash)
+                        display.root_group = main_group3
+                        pass
+                            # Remove Menu, Remove Main Group, Show Page 
                     elif item1_button.contains(p):
                         item1_button.selected = True
                         time.sleep(0.25)
-                        print("Item 1 Pressed")
-                        display.root_group = main_group2
-                        pass
-                            # Remove Menu, Remove Main Group, Show Page 
+                        print("Item 1 Pressed") 
                     elif item2_button.contains(p):
                         item2_button.selected = True
                         time.sleep(0.25)
@@ -709,23 +876,92 @@ while True:
                         item2_button.selected = False
                         item3_button.selected = False
                         menu_button.selected = False  # When touch moves outside of button
+                        prev_button.selected = False
+                        next_button.selected = False
                         hide_menu()
-                else:
-                    item1_button.selected = False
-                    item2_button.selected = False
-                    item3_button.selected = False
-                    menu_button.selected = False  # When button is released
-                
-                if display.root_group is main_group2:
-                    print("Passed")
-                    pass
-            last = time.monotonic()
-            print("Exited Sleep Loop")
-            #time.sleep(sleep_time)
-            if display.root_group is main_group2:
-                pass
+                LAST_PRESS_TIME = _now
             else:
-                break
-    while display.root_group is main_group2:
-            print("Page 2! Yep this works!")
-            time.sleep(5)
+                item1_button.selected = False
+                item2_button.selected = False
+                item3_button.selected = False
+                menu_button.selected = False  # When button is released
+                prev_button.selected = False
+                next_button.selected = False
+        last = time.monotonic()
+        if display.root_group is main_group2 or main_group3:
+            pass
+        else:
+            break
+                
+    while display.root_group is main_group3:
+        item1_button.selected = False
+        item2_button.selected = False
+        item3_button.selected = False
+        menu_button.selected = False
+        prev_button.selected = False
+        next_button.selected = False
+        hello_label_page3.text = "Feather Weather Page 3"
+        print("Page 3! Yep this works!")
+        while (time.monotonic() - last) <= sleep_time and display.root_group is main_group3:
+            p = touchscreen.touch_point
+            if p:
+                _now = time.monotonic()
+                if _now - LAST_PRESS_TIME > 2:
+                    if menu_button.contains(p):
+                        menu_button.selected = True
+                        time.sleep(0.25)
+                        print("Menu Pressed")
+                        show_menu()
+                    elif prev_button.contains(p):
+                        prev_button.selected = True
+                        prev_button.selected = False
+                        time.sleep(0.25)
+                        print("Previous Pressed")
+                        hide_menu()
+                        main_group3.remove(menu_popout_group)
+                        main_group3.remove(splash)
+                        main_group2.append(menu_popout_group)
+                        main_group2.append(splash)
+                        display.root_group = main_group2
+                    elif next_button.contains(p):
+                        next_button.selected = True
+                        next_button.selected = False
+                        time.sleep(0.25)
+                        print("Next Pressed")
+                        hide_menu()
+                        main_group3.remove(menu_popout_group)
+                        main_group3.remove(splash)
+                        main_group.append(menu_popout_group)
+                        main_group.append(splash)
+                        display.root_group = main_group
+                        pass
+                            # Remove Menu, Remove Main Group, Show Page 
+                    elif item1_button.contains(p):
+                        item1_button.selected = True
+                        time.sleep(0.25)
+                        print("Item 1 Pressed") 
+                    elif item2_button.contains(p):
+                        item2_button.selected = True
+                        time.sleep(0.25)
+                        print("Item 2 Pressed")
+                    elif item3_button.contains(p):
+                        item3_button.selected = True
+                        time.sleep(0.25)
+                        print("Item 3 Pressed")
+                    else:
+                        item1_button.selected = False
+                        item2_button.selected = False
+                        item3_button.selected = False
+                        menu_button.selected = False  # When touch moves outside of button
+                        prev_button.selected = False
+                        next_button.selected = False
+                        hide_menu()
+                LAST_PRESS_TIME = _now
+            else:
+                item1_button.selected = False
+                item2_button.selected = False
+                item3_button.selected = False
+                menu_button.selected = False  # When button is released
+                prev_button.selected = False
+                next_button.selected = False
+        last = time.monotonic()
