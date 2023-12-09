@@ -76,6 +76,8 @@ Timestamp: 08/17/2022 15:36:10
 
 ## Seconds to Minutes/Hours/Days function (good for sleep or update functions)
 ```py
+# Converts seconds to minutes/hours/days
+# Attribution: Written by DJDevon3 & refined by Elpekenin
 import time
 # 900 = 15 mins, 1800 = 30 mins, 3600 = 1 hour
 sleep_time = 1800
