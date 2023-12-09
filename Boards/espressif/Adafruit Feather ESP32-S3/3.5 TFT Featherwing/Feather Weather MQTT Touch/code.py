@@ -27,6 +27,7 @@ from adafruit_hx8357 import HX8357
 import adafruit_stmpe610
 from adafruit_button.sprite_button import SpriteButton
 from adafruit_debouncer import Debouncer
+_now = time.monotonic()
 
 # 3.5" TFT Featherwing is 480x320
 displayio.release_displays()
@@ -621,7 +622,8 @@ while True:
         print("| Connecting to WiFi...")
         loading_label_shadow.text = "Checking Wifi..."
         loading_label.text = "Checking Wifi..."
-
+        First_Run = True
+        
         while not wifi.radio.ipv4_address and display.root_group is main_group:
             try:
                 wifi.radio.connect(ssid, appw)
@@ -735,17 +737,24 @@ while True:
                 # supervisor.reload()
                 continue
             mqtt_client.disconnect()
-            loading_group.remove(loading_label_shadow)
-            loading_group.remove(loading_label)
+            
+            if First_Run:
+                loading_group.remove(loading_label_shadow)
+                loading_group.remove(loading_label)
             print("| ✂️ Disconnected from Wifi")
+            print(f"Loading Time: {time.monotonic() - _now}")
             print("Next Update: ", time_calc(sleep_time))
+            First_Run = False
             
             print("Entering Sleep Loop")
             while (time.monotonic() - last) <= sleep_time and display.root_group is main_group:
                 p = touchscreen.touch_point
+                _now = time.monotonic()
                 if p:
-                    _now = time.monotonic()
-                    if _now - LAST_PRESS_TIME > 2:
+                    print(f"if p: {p[0]}")
+                    print(f"Loading Time: {_now - LAST_PRESS_TIME}")
+                    if _now - LAST_PRESS_TIME > 15:
+                        print(f"Now - Last Press: {(p[0], p[1], p[2])}")
                         if menu_button.contains(p):
                             menu_button.selected = True
                             time.sleep(0.25)
@@ -753,8 +762,7 @@ while True:
                             show_menu()
                         elif prev_button.contains(p):
                             prev_button.selected = True
-                            next_button.selected = False
-                            time.sleep(0.25)
+                            time.sleep(0.1)
                             print("Previous Pressed")
                             hide_menu()
                             main_group.remove(menu_popout_group)
@@ -764,8 +772,7 @@ while True:
                             display.root_group = main_group3
                         elif next_button.contains(p):
                             next_button.selected = True
-                            next_button.selected = False
-                            time.sleep(0.25)
+                            time.sleep(0.1)
                             print("Next Pressed")
                             hide_menu()
                             main_group.remove(menu_popout_group)
@@ -773,8 +780,6 @@ while True:
                             main_group2.append(menu_popout_group)
                             main_group2.append(splash)
                             display.root_group = main_group2
-                            pass
-                                # Remove Menu, Remove Main Group, Show Page 
                         elif item1_button.contains(p):
                             item1_button.selected = True
                             time.sleep(0.25)
@@ -788,6 +793,7 @@ while True:
                             time.sleep(0.25)
                             print("Item 3 Pressed")
                         else:
+                            print("Else end why")
                             item1_button.selected = False
                             item2_button.selected = False
                             item3_button.selected = False
@@ -797,6 +803,7 @@ while True:
                             hide_menu()
                     LAST_PRESS_TIME = _now
                 else:
+                    # Default state always running
                     item1_button.selected = False
                     item2_button.selected = False
                     item3_button.selected = False
@@ -826,9 +833,12 @@ while True:
         print("Page 2! Yep this works!")
         while (time.monotonic() - last) <= sleep_time and display.root_group is main_group2:
             p = touchscreen.touch_point
+            _now = time.monotonic()
             if p:
-                _now = time.monotonic()
-                if _now - LAST_PRESS_TIME > 2:
+                print(f"if p: {p[0]}")
+                print(f"Loading Time: {_now - LAST_PRESS_TIME}")
+                if _now - LAST_PRESS_TIME > 1:
+                    print(f"Now - Last Press: {(p[0], p[1], p[2])}")
                     if menu_button.contains(p):
                         menu_button.selected = True
                         time.sleep(0.25)
@@ -836,8 +846,7 @@ while True:
                         show_menu()
                     elif prev_button.contains(p):
                         prev_button.selected = True
-                        prev_button.selected = False
-                        time.sleep(0.25)
+                        time.sleep(0.5)
                         print("Previous Pressed")
                         hide_menu()
                         main_group2.remove(menu_popout_group)
@@ -845,11 +854,9 @@ while True:
                         main_group.append(menu_popout_group)
                         main_group.append(splash)
                         display.root_group = main_group
-                        prev_button.selected = False
                     elif next_button.contains(p):
                         next_button.selected = True
-                        next_button.selected = False
-                        time.sleep(0.25)
+                        time.sleep(0.1)
                         print("Next Pressed")
                         hide_menu()
                         main_group2.remove(menu_popout_group)
@@ -857,8 +864,6 @@ while True:
                         main_group3.append(menu_popout_group)
                         main_group3.append(splash)
                         display.root_group = main_group3
-                        pass
-                            # Remove Menu, Remove Main Group, Show Page 
                     elif item1_button.contains(p):
                         item1_button.selected = True
                         time.sleep(0.25)
@@ -872,6 +877,7 @@ while True:
                         time.sleep(0.25)
                         print("Item 3 Pressed")
                     else:
+                        print("Else end why")
                         item1_button.selected = False
                         item2_button.selected = False
                         item3_button.selected = False
@@ -881,6 +887,7 @@ while True:
                         hide_menu()
                 LAST_PRESS_TIME = _now
             else:
+                # Default state always running
                 item1_button.selected = False
                 item2_button.selected = False
                 item3_button.selected = False
@@ -904,9 +911,12 @@ while True:
         print("Page 3! Yep this works!")
         while (time.monotonic() - last) <= sleep_time and display.root_group is main_group3:
             p = touchscreen.touch_point
+            _now = time.monotonic()
             if p:
-                _now = time.monotonic()
-                if _now - LAST_PRESS_TIME > 2:
+                print(f"if p: {p[0]}")
+                print(f"Loading Time: {_now - LAST_PRESS_TIME}")
+                if _now - LAST_PRESS_TIME > 1:
+                    print(f"Now - Last Press: {(p[0], p[1], p[2])}")
                     if menu_button.contains(p):
                         menu_button.selected = True
                         time.sleep(0.25)
@@ -914,8 +924,7 @@ while True:
                         show_menu()
                     elif prev_button.contains(p):
                         prev_button.selected = True
-                        prev_button.selected = False
-                        time.sleep(0.25)
+                        time.sleep(0.1)
                         print("Previous Pressed")
                         hide_menu()
                         main_group3.remove(menu_popout_group)
@@ -925,17 +934,15 @@ while True:
                         display.root_group = main_group2
                     elif next_button.contains(p):
                         next_button.selected = True
-                        next_button.selected = False
-                        time.sleep(0.25)
+                        time.sleep(0.5)
                         print("Next Pressed")
                         hide_menu()
+                        print(f"After Hide Menu {p}")
                         main_group3.remove(menu_popout_group)
                         main_group3.remove(splash)
                         main_group.append(menu_popout_group)
                         main_group.append(splash)
                         display.root_group = main_group
-                        pass
-                            # Remove Menu, Remove Main Group, Show Page 
                     elif item1_button.contains(p):
                         item1_button.selected = True
                         time.sleep(0.25)
@@ -949,6 +956,7 @@ while True:
                         time.sleep(0.25)
                         print("Item 3 Pressed")
                     else:
+                        print("Bottom Else, Why?")
                         item1_button.selected = False
                         item2_button.selected = False
                         item3_button.selected = False
@@ -958,6 +966,7 @@ while True:
                         hide_menu()
                 LAST_PRESS_TIME = _now
             else:
+                # Default state always running
                 item1_button.selected = False
                 item2_button.selected = False
                 item3_button.selected = False
