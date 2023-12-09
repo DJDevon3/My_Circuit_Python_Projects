@@ -4,6 +4,44 @@ Check out [TodBot's Circuit Python Tricks](https://github.com/todbot/circuitpyth
 
 These are a few common code snippets that I continually find myself looking at past projects to snag. No sense in re-inventing the wheel. 
 
+## Make_My_Label (short form label creation function)
+- This is particularly useful when you have tons of labels. Each label requires much fewer lines.
+```py
+# Function for minimizing labels to 1 liners
+# Attribution: Anecdata (thanks!)
+def make_my_label(font, anchor_point, anchored_position, scale, color):
+    func_label = label.Label(font)
+    func_label.anchor_point = anchor_point
+    func_label.anchored_position = anchored_position
+    func_label.scale = scale
+    func_label.color = color
+    return func_label
+
+hello_label = make_my_label(terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH / 2, 15), 1, TEXT_WHITE)
+
+main_group = displayio.Group()
+main_group.append(hello_label)
+display.root_group = main_group
+hello_label.text = "Hello World!"
+```
+Code.py output:
+```
+Hello World!
+```
+
+## Display RSSI Scan on a TFT
+- I couldn't find an example of displaying an RSSI scan on a TFT for Circuit Python... so I made it... with the help of ChatGPT.
+```py
+main_group = displayio.Group()
+display.root_group = main_group
+print("Available WiFi networks:")
+        for i, network in enumerate(sorted(wifi.radio.start_scanning_networks(), key=lambda x: x.rssi, reverse=True)):
+            rssi_data_label = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50 + i * 20), 1, TEXT_WHITE)
+            rssi_data_label.text = f"{network.ssid:<20}\t{network.rssi:<10}\t{network.channel}"
+            main_group.append(rssi_data_label)
+        wifi.radio.stop_scanning_networks()
+```
+
 ## Unix to Struct Time Formatting (with timezone offset)
 ```py
 import time
