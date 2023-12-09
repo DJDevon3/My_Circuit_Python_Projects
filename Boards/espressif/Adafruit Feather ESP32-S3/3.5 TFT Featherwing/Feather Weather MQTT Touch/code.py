@@ -176,6 +176,15 @@ hello_label_page2 = make_my_label(
 hello_label_page3 = make_my_label(
     terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH / 2, 15), 1, TEXT_WHITE
 )
+hello_label_preferences = make_my_label(
+    terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH / 2, 15), 1, TEXT_WHITE
+)
+hello_label_wifi_settings = make_my_label(
+    terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH / 2, 15), 1, TEXT_WHITE
+)
+hello_label_rssi = make_my_label(
+    terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH / 2, 15), 1, TEXT_WHITE
+)
 warning_label = make_my_label(
     arial_font, (0.5, 0.5), (DISPLAY_WIDTH / 2, DISPLAY_HEIGHT - 103), 1, TEXT_RED
 )
@@ -377,6 +386,18 @@ main_group2.append(hello_label_page2)
 main_group3 = displayio.Group()
 main_group3.append(hello_label_page3)
 
+# Preferences Group
+preferences_group = displayio.Group()
+preferences_group.append(hello_label_preferences)
+
+# Wifi Settings Group
+wifi_settings_group = displayio.Group()
+wifi_settings_group.append(hello_label_wifi_settings)
+
+# RSSI Scan Group
+rssi_group = displayio.Group()
+rssi_text_group = displayio.Group()
+
 # Add subgroups to main display group
 main_group.append(text_group)
 main_group.append(warning_group)
@@ -522,6 +543,7 @@ loading_label_shadow.text = "Loading..."
 loading_label.text = "Loading..."
 last = time.monotonic()
 LAST_PRESS_TIME = -1
+discovered_networks = []
 while True:
     while display.root_group is main_group:
         item1_button.selected = False
@@ -783,15 +805,33 @@ while True:
                         elif item1_button.contains(p):
                             item1_button.selected = True
                             time.sleep(0.25)
-                            print("Item 1 Pressed") 
+                            print("Item 1 Pressed")
+                            hide_menu()
+                            main_group.remove(menu_popout_group)
+                            main_group.remove(splash)
+                            preferences_group.append(menu_popout_group)
+                            preferences_group.append(splash)
+                            display.root_group = preferences_group
                         elif item2_button.contains(p):
                             item2_button.selected = True
                             time.sleep(0.25)
                             print("Item 2 Pressed")
+                            hide_menu()
+                            main_group.remove(menu_popout_group)
+                            main_group.remove(splash)
+                            wifi_settings_group.append(menu_popout_group)
+                            wifi_settings_group.append(splash)
+                            display.root_group = wifi_settings_group
                         elif item3_button.contains(p):
                             item3_button.selected = True
                             time.sleep(0.25)
                             print("Item 3 Pressed")
+                            hide_menu()
+                            main_group.remove(menu_popout_group)
+                            main_group.remove(splash)
+                            rssi_group.append(menu_popout_group)
+                            rssi_group.append(splash)
+                            display.root_group = rssi_group
                         else:
                             print("Else end why")
                             item1_button.selected = False
@@ -867,15 +907,33 @@ while True:
                     elif item1_button.contains(p):
                         item1_button.selected = True
                         time.sleep(0.25)
-                        print("Item 1 Pressed") 
+                        print("Item 1 Pressed")
+                        hide_menu()
+                        main_group2.remove(menu_popout_group)
+                        main_group2.remove(splash)
+                        preferences_group.append(menu_popout_group)
+                        preferences_group.append(splash)
+                        display.root_group = preferences_group
                     elif item2_button.contains(p):
                         item2_button.selected = True
                         time.sleep(0.25)
                         print("Item 2 Pressed")
+                        hide_menu()
+                        main_group2.remove(menu_popout_group)
+                        main_group2.remove(splash)
+                        wifi_settings_group.append(menu_popout_group)
+                        wifi_settings_group.append(splash)
+                        display.root_group = wifi_settings_group
                     elif item3_button.contains(p):
                         item3_button.selected = True
                         time.sleep(0.25)
                         print("Item 3 Pressed")
+                        hide_menu()
+                        main_group2.remove(menu_popout_group)
+                        main_group2.remove(splash)
+                        rssi_group.append(menu_popout_group)
+                        rssi_group.append(splash)
+                        display.root_group = rssi_group
                     else:
                         print("Else end why")
                         item1_button.selected = False
@@ -946,15 +1004,315 @@ while True:
                     elif item1_button.contains(p):
                         item1_button.selected = True
                         time.sleep(0.25)
-                        print("Item 1 Pressed") 
+                        print("Item 1 Pressed")
+                        hide_menu()
+                        main_group3.remove(menu_popout_group)
+                        main_group3.remove(splash)
+                        preferences_group.append(menu_popout_group)
+                        preferences_group.append(splash)
+                        display.root_group = preferences_group
                     elif item2_button.contains(p):
                         item2_button.selected = True
                         time.sleep(0.25)
                         print("Item 2 Pressed")
+                        hide_menu()
+                        main_group3.remove(menu_popout_group)
+                        main_group3.remove(splash)
+                        wifi_settings_group.append(menu_popout_group)
+                        wifi_settings_group.append(splash)
+                        display.root_group = wifi_settings_group
                     elif item3_button.contains(p):
                         item3_button.selected = True
                         time.sleep(0.25)
                         print("Item 3 Pressed")
+                        hide_menu()
+                        main_group3.remove(menu_popout_group)
+                        main_group3.remove(splash)
+                        rssi_group.append(menu_popout_group)
+                        rssi_group.append(splash)
+                        display.root_group = rssi_group
+                    else:
+                        print("Bottom Else, Why?")
+                        item1_button.selected = False
+                        item2_button.selected = False
+                        item3_button.selected = False
+                        menu_button.selected = False  # When touch moves outside of button
+                        prev_button.selected = False
+                        next_button.selected = False
+                        hide_menu()
+                LAST_PRESS_TIME = _now
+            else:
+                # Default state always running
+                item1_button.selected = False
+                item2_button.selected = False
+                item3_button.selected = False
+                menu_button.selected = False  # When button is released
+                prev_button.selected = False
+                next_button.selected = False
+    while display.root_group is preferences_group:
+        item1_button.selected = False
+        item2_button.selected = False
+        item3_button.selected = False
+        menu_button.selected = False
+        prev_button.selected = False
+        next_button.selected = False
+        hello_label_preferences.text = "Feather Weather Preferences"
+        print("Preferences! Yep this works!")
+        while (time.monotonic() - last) <= sleep_time and display.root_group is preferences_group:
+            p = touchscreen.touch_point
+            _now = time.monotonic()
+            if p:
+                print(f"if p: {p[0]}")
+                print(f"Loading Time: {_now - LAST_PRESS_TIME}")
+                if _now - LAST_PRESS_TIME > 1:
+                    print(f"Now - Last Press: {(p[0], p[1], p[2])}")
+                    if menu_button.contains(p):
+                        menu_button.selected = True
+                        time.sleep(0.25)
+                        print("Menu Pressed")
+                        show_menu()
+                    elif prev_button.contains(p):
+                        prev_button.selected = True
+                        time.sleep(0.1)
+                        print("Previous Pressed")
+                        hide_menu()
+                        preferences_group.remove(menu_popout_group)
+                        preferences_group.remove(splash)
+                        main_group.append(menu_popout_group)
+                        main_group.append(splash)
+                        display.root_group = main_group
+                    elif next_button.contains(p):
+                        next_button.selected = True
+                        time.sleep(0.5)
+                        print("Next Pressed")
+                        hide_menu()
+                        print(f"After Hide Menu {p}")
+                        preferences_group.remove(menu_popout_group)
+                        preferences_group.remove(splash)
+                        main_group.append(menu_popout_group)
+                        main_group.append(splash)
+                        display.root_group = main_group
+                    elif item1_button.contains(p):
+                        item1_button.selected = True
+                        time.sleep(0.25)
+                        print("Item 1 Pressed")
+                        hide_menu()
+                        preferences_group.remove(menu_popout_group)
+                        preferences_group.remove(splash)
+                        preferences_group.append(menu_popout_group)
+                        preferences_group.append(splash)
+                        display.root_group = preferences_group
+                    elif item2_button.contains(p):
+                        item2_button.selected = True
+                        time.sleep(0.25)
+                        print("Item 2 Pressed")
+                        hide_menu()
+                        preferences_group.remove(menu_popout_group)
+                        preferences_group.remove(splash)
+                        wifi_settings_group.append(menu_popout_group)
+                        wifi_settings_group.append(splash)
+                        display.root_group = wifi_settings_group
+                    elif item3_button.contains(p):
+                        item3_button.selected = True
+                        time.sleep(0.25)
+                        print("Item 3 Pressed")
+                        hide_menu()
+                        preferences_group.remove(menu_popout_group)
+                        preferences_group.remove(splash)
+                        rssi_group.append(menu_popout_group)
+                        rssi_group.append(splash)
+                        display.root_group = rssi_group
+                    else:
+                        print("Bottom Else, Why?")
+                        item1_button.selected = False
+                        item2_button.selected = False
+                        item3_button.selected = False
+                        menu_button.selected = False  # When touch moves outside of button
+                        prev_button.selected = False
+                        next_button.selected = False
+                        hide_menu()
+                LAST_PRESS_TIME = _now
+            else:
+                # Default state always running
+                item1_button.selected = False
+                item2_button.selected = False
+                item3_button.selected = False
+                menu_button.selected = False  # When button is released
+                prev_button.selected = False
+                next_button.selected = False
+    while display.root_group is wifi_settings_group:
+        item1_button.selected = False
+        item2_button.selected = False
+        item3_button.selected = False
+        menu_button.selected = False
+        prev_button.selected = False
+        next_button.selected = False
+        hello_label_wifi_settings.text = "Feather Weather Wifi Settings"
+        print("Settings! Yep this works!")
+        while (time.monotonic() - last) <= sleep_time and display.root_group is wifi_settings_group:
+            p = touchscreen.touch_point
+            _now = time.monotonic()
+            if p:
+                print(f"if p: {p[0]}")
+                print(f"Loading Time: {_now - LAST_PRESS_TIME}")
+                if _now - LAST_PRESS_TIME > 1:
+                    print(f"Now - Last Press: {(p[0], p[1], p[2])}")
+                    if menu_button.contains(p):
+                        menu_button.selected = True
+                        time.sleep(0.25)
+                        print("Menu Pressed")
+                        show_menu()
+                    elif prev_button.contains(p):
+                        prev_button.selected = True
+                        time.sleep(0.1)
+                        print("Previous Pressed")
+                        hide_menu()
+                        wifi_settings_group.remove(menu_popout_group)
+                        wifi_settings_group.remove(splash)
+                        main_group.append(menu_popout_group)
+                        main_group.append(splash)
+                        display.root_group = main_group
+                    elif next_button.contains(p):
+                        next_button.selected = True
+                        time.sleep(0.5)
+                        print("Next Pressed")
+                        hide_menu()
+                        print(f"After Hide Menu {p}")
+                        wifi_settings_group.remove(menu_popout_group)
+                        wifi_settings_group.remove(splash)
+                        main_group.append(menu_popout_group)
+                        main_group.append(splash)
+                        display.root_group = main_group
+                    elif item1_button.contains(p):
+                        item1_button.selected = True
+                        time.sleep(0.25)
+                        print("Item 1 Pressed")
+                        hide_menu()
+                        wifi_settings_group.remove(menu_popout_group)
+                        wifi_settings_group.remove(splash)
+                        preferences_group.append(menu_popout_group)
+                        preferences_group.append(splash)
+                        display.root_group = preferences_group
+                    elif item2_button.contains(p):
+                        item2_button.selected = True
+                        time.sleep(0.25)
+                        print("Item 2 Pressed")
+                        hide_menu()
+                        wifi_settings_group.remove(menu_popout_group)
+                        wifi_settings_group.remove(splash)
+                        wifi_settings_group.append(menu_popout_group)
+                        wifi_settings_group.append(splash)
+                        display.root_group = wifi_settings_group
+                    elif item3_button.contains(p):
+                        item3_button.selected = True
+                        time.sleep(0.25)
+                        print("Item 3 Pressed")
+                        hide_menu()
+                        wifi_settings_group.remove(menu_popout_group)
+                        wifi_settings_group.remove(splash)
+                        rssi_group.append(menu_popout_group)
+                        rssi_group.append(splash)
+                        display.root_group = rssi_group
+                    else:
+                        print("Bottom Else, Why?")
+                        item1_button.selected = False
+                        item2_button.selected = False
+                        item3_button.selected = False
+                        menu_button.selected = False  # When touch moves outside of button
+                        prev_button.selected = False
+                        next_button.selected = False
+                        hide_menu()
+                LAST_PRESS_TIME = _now
+            else:
+                # Default state always running
+                item1_button.selected = False
+                item2_button.selected = False
+                item3_button.selected = False
+                menu_button.selected = False  # When button is released
+                prev_button.selected = False
+                next_button.selected = False
+    while display.root_group is rssi_group:
+        item1_button.selected = False
+        item2_button.selected = False
+        item3_button.selected = False
+        menu_button.selected = False
+        prev_button.selected = False
+        next_button.selected = False
+        
+        print("Available WiFi networks:")
+        for i, network in enumerate(sorted(wifi.radio.start_scanning_networks(), key=lambda x: x.rssi, reverse=True)):
+            rssi_data_label = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50 + i * 20), 1, TEXT_WHITE)
+            rssi_data_label.text = f"{network.ssid:<20}\t{network.rssi:<10}\t{network.channel}"
+            rssi_group.append(rssi_data_label)
+        wifi.radio.stop_scanning_networks()
+        hello_label_rssi.text = "Feather Weather RSSI Scan"
+        rssi_group.append(hello_label_rssi)
+
+
+        while (time.monotonic() - last) <= sleep_time and display.root_group is rssi_group:
+            p = touchscreen.touch_point
+            _now = time.monotonic()
+            if p:
+                print(f"if p: {p[0]}")
+                print(f"Loading Time: {_now - LAST_PRESS_TIME}")
+                if _now - LAST_PRESS_TIME > 5:
+                    print(f"Now - Last Press: {(p[0], p[1], p[2])}")
+                    if menu_button.contains(p):
+                        menu_button.selected = True
+                        time.sleep(0.25)
+                        print("Menu Pressed")
+                        show_menu()
+                    elif prev_button.contains(p):
+                        prev_button.selected = True
+                        time.sleep(0.1)
+                        print("Previous Pressed")
+                        hide_menu()
+                        rssi_group.remove(menu_popout_group)
+                        rssi_group.remove(splash)
+                        main_group.append(menu_popout_group)
+                        main_group.append(splash)
+                        display.root_group = main_group
+                    elif next_button.contains(p):
+                        next_button.selected = True
+                        time.sleep(0.5)
+                        print("Next Pressed")
+                        hide_menu()
+                        print(f"After Hide Menu {p}")
+                        rssi_group.remove(menu_popout_group)
+                        rssi_group.remove(splash)
+                        main_group.append(menu_popout_group)
+                        main_group.append(splash)
+                        display.root_group = main_group
+                    elif item1_button.contains(p):
+                        item1_button.selected = True
+                        time.sleep(0.25)
+                        print("Item 1 Pressed")
+                        hide_menu()
+                        rssi_group.remove(menu_popout_group)
+                        rssi_group.remove(splash)
+                        preferences_group.append(menu_popout_group)
+                        preferences_group.append(splash)
+                        display.root_group = preferences_group
+                    elif item2_button.contains(p):
+                        item2_button.selected = True
+                        time.sleep(0.25)
+                        print("Item 2 Pressed")
+                        hide_menu()
+                        rssi_group.remove(menu_popout_group)
+                        rssi_group.remove(splash)
+                        wifi_settings_group.append(menu_popout_group)
+                        wifi_settings_group.append(splash)
+                        display.root_group = wifi_settings_group
+                    elif item3_button.contains(p):
+                        item3_button.selected = True
+                        time.sleep(0.25)
+                        print("Item 3 Pressed")
+                        hide_menu()
+                        rssi_group.remove(menu_popout_group)
+                        rssi_group.remove(splash)
+                        rssi_group.append(menu_popout_group)
+                        rssi_group.append(splash)
+                        display.root_group = rssi_group
                     else:
                         print("Bottom Else, Why?")
                         item1_button.selected = False
