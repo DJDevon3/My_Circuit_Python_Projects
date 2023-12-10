@@ -11,6 +11,8 @@ import displayio
 import digitalio
 import terminalio
 import adafruit_imageload
+import adafruit_sdcard
+import storage
 import ssl
 import wifi
 import socketpool
@@ -99,6 +101,10 @@ battery_monitor = LC709203F(board.I2C())
 battery_monitor.thermistor_bconstant = 3950
 battery_monitor.thermistor_enable = True
 
+# Initialize TFT Featherwing SD Card
+cs = digitalio.DigitalInOut(board.D5)
+sdcard = adafruit_sdcard.SDCard(spi, cs)
+
 # Converts seconds in minutes/hours/days
 # Attribution: Written by DJDevon3 & refined by Elpekenin
 def time_calc(input_time):
@@ -165,8 +171,7 @@ def make_my_label(font, anchor_point, anchored_position, scale, color):
 
 # name_label (FONT, (ANCHOR POINT), (ANCHOR POSITION), SCALE, COLOR)
 # loading screen label
-loading_label = make_my_label(terminalio.FONT, (0.5, 0.5), (DISPLAY_WIDTH / 2, DISPLAY_HEIGHT-75), 2, TEXT_CYAN)
-loading_label_shadow = make_my_label(terminalio.FONT, (0.5, 0.5), (DISPLAY_WIDTH / 2 +3, DISPLAY_HEIGHT-75+3), 2, TEXT_BLACK)
+loading_label = make_my_label(terminalio.FONT, (0.5, 0.5), (DISPLAY_WIDTH / 2, DISPLAY_HEIGHT-20), 1, TEXT_WHITE)
 hello_label = make_my_label(
     terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH / 2, 15), 1, TEXT_WHITE
 )
@@ -185,6 +190,15 @@ hello_label_wifi_settings = make_my_label(
 hello_label_rssi = make_my_label(
     terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH / 2, 15), 1, TEXT_WHITE
 )
+hello_label_sys_info = make_my_label(
+    terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH / 2, 15), 1, TEXT_WHITE
+)
+sys_info_data_label1 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50), 2, TEXT_WHITE)
+sys_info_data_label2 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 150), 1, TEXT_WHITE)
+sys_info_data_label3 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 150+32), 1, TEXT_WHITE)
+sys_info_data_label4 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 150+48), 1, TEXT_WHITE)
+sys_info_data_label5 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 150+64), 1, TEXT_WHITE)
+sys_info_data_label6 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 150+80), 1, TEXT_WHITE)
 warning_label = make_my_label(
     arial_font, (0.5, 0.5), (DISPLAY_WIDTH / 2, DISPLAY_HEIGHT - 103), 1, TEXT_RED
 )
@@ -283,9 +297,9 @@ menu_roundrect = RoundRect(
     stroke=0,
 )
 
-# Button width & height must be multiple of 16
+# Button width & height must be multiple of 3
 # otherwise you'll get a tilegrid_inflator error
-BUTTON_WIDTH = 16 * 16
+BUTTON_WIDTH = 12 * 16
 BUTTON_HEIGHT = 3 * 16
 BUTTON_MARGIN = 5
 
@@ -334,7 +348,7 @@ item1_button = SpriteButton(
     y=15,
     width=BUTTON_WIDTH,
     height=BUTTON_HEIGHT,
-    label="Page 2",
+    label="Preferences",
     label_font=arial_font,
     label_color=TEXT_WHITE,
     bmp_path="icons/gradient_button_0.bmp",
@@ -361,6 +375,19 @@ item3_button = SpriteButton(
     width=BUTTON_WIDTH,
     height=BUTTON_HEIGHT,
     label="RSSI Scan",
+    label_font=arial_font,
+    label_color=TEXT_WHITE,
+    bmp_path="icons/gradient_button_0.bmp",
+    selected_bmp_path="icons/gradient_button_1.bmp",
+    transparent_index=0,
+)
+
+item4_button = SpriteButton(
+    x=135,
+    y=180,
+    width=BUTTON_WIDTH,
+    height=BUTTON_HEIGHT,
+    label="System Info",
     label_font=arial_font,
     label_color=TEXT_WHITE,
     bmp_path="icons/gradient_button_0.bmp",
@@ -397,6 +424,16 @@ wifi_settings_group.append(hello_label_wifi_settings)
 # RSSI Scan Group
 rssi_group = displayio.Group()
 rssi_text_group = displayio.Group()
+
+# RSSI Scan Group
+sys_info_group = displayio.Group()
+sys_info_group.append(hello_label_sys_info)
+sys_info_group.append(sys_info_data_label1)
+sys_info_group.append(sys_info_data_label2)
+sys_info_group.append(sys_info_data_label3)
+sys_info_group.append(sys_info_data_label4)
+sys_info_group.append(sys_info_data_label5)
+sys_info_group.append(sys_info_data_label6)
 
 # Add subgroups to main display group
 main_group.append(text_group)
@@ -441,6 +478,7 @@ menu_popout_group.append(menu_popout_label)
 menu_popout_group.append(item1_button)
 menu_popout_group.append(item2_button)
 menu_popout_group.append(item3_button)
+menu_popout_group.append(item4_button)
 splash.append(menu_button)
 splash.append(next_button)
 splash.append(prev_button)
@@ -456,7 +494,7 @@ def show_warning(text):
 def hide_warning():
     # Function to hide weather popup warning
     warning_group.hidden = True
-    
+
 def show_menu():
     # Function to display popup menu
     menu_popout_group.hidden = False
@@ -464,7 +502,7 @@ def show_menu():
 def hide_menu():
     # Function to hide popup menu
     menu_popout_group.hidden = True
-    
+
 hide_warning()
 hide_menu()
 
@@ -539,7 +577,6 @@ output_range = [50.0 - 0.1, 70.0 - 1.4, 76 - 1.5, 80 - 1.0, 88.0 - 0.0, 120.0 - 
 requests = adafruit_requests.Session(pool, ssl.create_default_context())
 
 # Loading Label
-loading_label_shadow.text = "Loading..."
 loading_label.text = "Loading..."
 last = time.monotonic()
 LAST_PRESS_TIME = -1
@@ -549,12 +586,12 @@ while True:
         item1_button.selected = False
         item2_button.selected = False
         item3_button.selected = False
+        item4_button.selected = False
         menu_button.selected = False
         prev_button.selected = False
         next_button.selected = False
         debug_OWM = False  # Set True for Serial Print Debugging
         bme280.sea_level_pressure = bme280.pressure
-        loading_group.append(loading_label_shadow)
         loading_group.append(loading_label)
         hello_label.text = "ESP32-S3 MQTT Feather Weather"
         print("===============================")
@@ -640,12 +677,11 @@ while True:
             show_warning("WARNING: Hail & Tornados?")
         else:
             hide_warning()  # Normal pressures: 1110-1018 (no message)
-        
+
         print("| Connecting to WiFi...")
-        loading_label_shadow.text = "Checking Wifi..."
         loading_label.text = "Checking Wifi..."
         First_Run = True
-        
+
         while not wifi.radio.ipv4_address and display.root_group is main_group:
             try:
                 wifi.radio.connect(ssid, appw)
@@ -673,7 +709,6 @@ while True:
                             print(f"| | ❌ OpenWeatherMap Error:  {owm_response['message']}")
                             owm_request.close()
                     except (KeyError) as e:
-                        loading_label_shadow.text = "Getting Weather..."
                         loading_label.text = "Getting Weather..."
                         owm_response = owm_request.json()
                         print("| | Account within Request Limit", e)
@@ -738,7 +773,6 @@ while True:
             # Connect to Adafruit IO
             try:
                 mqtt_client.connect()
-                loading_label_shadow.text = "Publishing..."
                 loading_label.text = "Publishing..."
                 mqtt_client.publish(feed_01, temp_round)
                 # slight delay required between publishes!
@@ -759,15 +793,14 @@ while True:
                 # supervisor.reload()
                 continue
             mqtt_client.disconnect()
-            
+
             if First_Run:
-                loading_group.remove(loading_label_shadow)
                 loading_group.remove(loading_label)
             print("| ✂️ Disconnected from Wifi")
             print(f"Loading Time: {time.monotonic() - _now}")
             print("Next Update: ", time_calc(sleep_time))
             First_Run = False
-            
+
             print("Entering Sleep Loop")
             while (time.monotonic() - last) <= sleep_time and display.root_group is main_group:
                 p = touchscreen.touch_point
@@ -832,11 +865,22 @@ while True:
                             rssi_group.append(menu_popout_group)
                             rssi_group.append(splash)
                             display.root_group = rssi_group
+                        elif item4_button.contains(p):
+                            item4_button.selected = True
+                            time.sleep(0.25)
+                            print("Item 4 Pressed")
+                            hide_menu()
+                            main_group.remove(menu_popout_group)
+                            main_group.remove(splash)
+                            sys_info_group.append(menu_popout_group)
+                            sys_info_group.append(splash)
+                            display.root_group = sys_info_group
                         else:
                             print("Else end why")
                             item1_button.selected = False
                             item2_button.selected = False
                             item3_button.selected = False
+                            item4_button.selected = False
                             menu_button.selected = False  # When touch moves outside of button
                             prev_button.selected = False
                             next_button.selected = False
@@ -847,10 +891,11 @@ while True:
                     item1_button.selected = False
                     item2_button.selected = False
                     item3_button.selected = False
+                    item4_button.selected = False
                     menu_button.selected = False  # When button is released
                     prev_button.selected = False
                     next_button.selected = False
-                
+
                 if display.root_group is main_group2:
                     print("Passed")
                     pass
@@ -861,11 +906,12 @@ while True:
                 pass
             else:
                 break
-                
+
     while display.root_group is main_group2:
         item1_button.selected = False
         item2_button.selected = False
         item3_button.selected = False
+        item4_button.selected = False
         menu_button.selected = False
         prev_button.selected = False
         next_button.selected = False
@@ -934,11 +980,22 @@ while True:
                         rssi_group.append(menu_popout_group)
                         rssi_group.append(splash)
                         display.root_group = rssi_group
+                    elif item4_button.contains(p):
+                        item4_button.selected = True
+                        time.sleep(0.25)
+                        print("Item 4 Pressed")
+                        hide_menu()
+                        main_group2.remove(menu_popout_group)
+                        main_group2.remove(splash)
+                        sys_info_group.append(menu_popout_group)
+                        sys_info_group.append(splash)
+                        display.root_group = sys_info_group
                     else:
                         print("Else end why")
                         item1_button.selected = False
                         item2_button.selected = False
                         item3_button.selected = False
+                        item4_button.selected = False
                         menu_button.selected = False  # When touch moves outside of button
                         prev_button.selected = False
                         next_button.selected = False
@@ -949,6 +1006,7 @@ while True:
                 item1_button.selected = False
                 item2_button.selected = False
                 item3_button.selected = False
+                item4_button.selected = False
                 menu_button.selected = False  # When button is released
                 prev_button.selected = False
                 next_button.selected = False
@@ -957,11 +1015,12 @@ while True:
             pass
         else:
             break
-                
+
     while display.root_group is main_group3:
         item1_button.selected = False
         item2_button.selected = False
         item3_button.selected = False
+        item4_button.selected = False
         menu_button.selected = False
         prev_button.selected = False
         next_button.selected = False
@@ -1031,11 +1090,22 @@ while True:
                         rssi_group.append(menu_popout_group)
                         rssi_group.append(splash)
                         display.root_group = rssi_group
+                    elif item4_button.contains(p):
+                        item4_button.selected = True
+                        time.sleep(0.25)
+                        print("Item 4 Pressed")
+                        hide_menu()
+                        main_group3.remove(menu_popout_group)
+                        main_group3.remove(splash)
+                        sys_info_group.append(menu_popout_group)
+                        sys_info_group.append(splash)
+                        display.root_group = sys_info_group
                     else:
                         print("Bottom Else, Why?")
                         item1_button.selected = False
                         item2_button.selected = False
                         item3_button.selected = False
+                        item4_button.selected = False
                         menu_button.selected = False  # When touch moves outside of button
                         prev_button.selected = False
                         next_button.selected = False
@@ -1046,6 +1116,7 @@ while True:
                 item1_button.selected = False
                 item2_button.selected = False
                 item3_button.selected = False
+                item4_button.selected = False
                 menu_button.selected = False  # When button is released
                 prev_button.selected = False
                 next_button.selected = False
@@ -1053,6 +1124,7 @@ while True:
         item1_button.selected = False
         item2_button.selected = False
         item3_button.selected = False
+        item4_button.selected = False
         menu_button.selected = False
         prev_button.selected = False
         next_button.selected = False
@@ -1122,11 +1194,22 @@ while True:
                         rssi_group.append(menu_popout_group)
                         rssi_group.append(splash)
                         display.root_group = rssi_group
+                    elif item4_button.contains(p):
+                        item4_button.selected = True
+                        time.sleep(0.25)
+                        print("Item 4 Pressed")
+                        hide_menu()
+                        preferences_group.remove(menu_popout_group)
+                        preferences_group.remove(splash)
+                        sys_info_group.append(menu_popout_group)
+                        sys_info_group.append(splash)
+                        display.root_group = sys_info_group
                     else:
                         print("Bottom Else, Why?")
                         item1_button.selected = False
                         item2_button.selected = False
                         item3_button.selected = False
+                        item4_button.selected = False
                         menu_button.selected = False  # When touch moves outside of button
                         prev_button.selected = False
                         next_button.selected = False
@@ -1137,6 +1220,7 @@ while True:
                 item1_button.selected = False
                 item2_button.selected = False
                 item3_button.selected = False
+                item4_button.selected = False
                 menu_button.selected = False  # When button is released
                 prev_button.selected = False
                 next_button.selected = False
@@ -1144,6 +1228,7 @@ while True:
         item1_button.selected = False
         item2_button.selected = False
         item3_button.selected = False
+        item4_button.selected = False
         menu_button.selected = False
         prev_button.selected = False
         next_button.selected = False
@@ -1213,11 +1298,22 @@ while True:
                         rssi_group.append(menu_popout_group)
                         rssi_group.append(splash)
                         display.root_group = rssi_group
+                    elif item4_button.contains(p):
+                        item4_button.selected = True
+                        time.sleep(0.25)
+                        print("Item 4 Pressed")
+                        hide_menu()
+                        wifi_settings_group.remove(menu_popout_group)
+                        wifi_settings_group.remove(splash)
+                        sys_info_group.append(menu_popout_group)
+                        sys_info_group.append(splash)
+                        display.root_group = sys_info_group
                     else:
                         print("Bottom Else, Why?")
                         item1_button.selected = False
                         item2_button.selected = False
                         item3_button.selected = False
+                        item4_button.selected = False
                         menu_button.selected = False  # When touch moves outside of button
                         prev_button.selected = False
                         next_button.selected = False
@@ -1228,6 +1324,7 @@ while True:
                 item1_button.selected = False
                 item2_button.selected = False
                 item3_button.selected = False
+                item4_button.selected = False
                 menu_button.selected = False  # When button is released
                 prev_button.selected = False
                 next_button.selected = False
@@ -1235,10 +1332,11 @@ while True:
         item1_button.selected = False
         item2_button.selected = False
         item3_button.selected = False
+        item4_button.selected = False
         menu_button.selected = False
         prev_button.selected = False
         next_button.selected = False
-        
+
         print("Available WiFi networks:")
         for i, network in enumerate(sorted(wifi.radio.start_scanning_networks(), key=lambda x: x.rssi, reverse=True)):
             rssi_data_label = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50 + i * 20), 1, TEXT_WHITE)
@@ -1313,11 +1411,22 @@ while True:
                         rssi_group.append(menu_popout_group)
                         rssi_group.append(splash)
                         display.root_group = rssi_group
+                    elif item4_button.contains(p):
+                        item4_button.selected = True
+                        time.sleep(0.25)
+                        print("Item 4 Pressed")
+                        hide_menu()
+                        rssi_group.remove(menu_popout_group)
+                        rssi_group.remove(splash)
+                        sys_info_group.append(menu_popout_group)
+                        sys_info_group.append(splash)
+                        display.root_group = sys_info_group
                     else:
                         print("Bottom Else, Why?")
                         item1_button.selected = False
                         item2_button.selected = False
                         item3_button.selected = False
+                        item4_button.selected = False
                         menu_button.selected = False  # When touch moves outside of button
                         prev_button.selected = False
                         next_button.selected = False
@@ -1328,6 +1437,142 @@ while True:
                 item1_button.selected = False
                 item2_button.selected = False
                 item3_button.selected = False
+                item4_button.selected = False
+                menu_button.selected = False  # When button is released
+                prev_button.selected = False
+                next_button.selected = False
+                
+    while display.root_group is sys_info_group:
+        item1_button.selected = False
+        item2_button.selected = False
+        item3_button.selected = False
+        item4_button.selected = False
+        menu_button.selected = False
+        prev_button.selected = False
+        next_button.selected = False
+        hello_label_sys_info.text = "System Information"
+        print("Sys Info! Yep this works!")
+        # System Stats
+        u_name = os.uname()
+        sys_info_data_label1.text = f"Circuit Python Version:\n{u_name[3]}"
+        sys_info_data_label2.text = f"Board: \n{u_name[4]}"
+        sys_info_data_label3.text = f"Logic Chip: {u_name[0]}"
+        fs_stat = os.statvfs('/')
+        NORdisk_size = fs_stat[0] * fs_stat[2] / 1024 / 1024
+        NORfree_space = fs_stat[0] * fs_stat[3] / 1024 / 1024
+        print(f"Disk Size MB: {NORdisk_size:.2f}")
+        sys_info_data_label4.text = f"Flash Chip Size: {NORdisk_size:.2f} MB"
+        sys_info_data_label5.text = f"Flash Chip Free: {NORfree_space:.2f} MB"
+        
+        # Volume Information Stats
+        try:
+            vfs = storage.VfsFat(sdcard)
+            virtual_root = "/sd"
+            storage.mount(vfs, virtual_root)
+            SD_Card_Size = os.statvfs(virtual_root)
+            SD_Card_FREE_TOTAL = SD_Card_Size[0] * SD_Card_Size[3] / 1024 / 1024 / 1024
+            if (SD_Card_FREE_TOTAL) >= 1.0:
+                sys_info_data_label6.text = f"SD Card Free Space: {SD_Card_FREE_TOTAL:.2f} GB"
+            if (SD_Card_FREE_TOTAL) <= 1.0:
+                SD_Card_FREE_TOTAL_MB = SD_Card_Size[0] * SD_Card_Size[3] / 1024 / 1024
+                sys_info_data_label6.text = f"SD Card Free Space: {SD_Card_FREE_TOTAL_MB:.2f} MB"
+            storage.umount(vfs)
+        except Exception as e:
+            print(e)
+            pass
+
+        
+        while (time.monotonic() - last) <= sleep_time and display.root_group is sys_info_group:
+            p = touchscreen.touch_point
+            _now = time.monotonic()
+            if p:
+                print(f"if p: {p[0]}")
+                print(f"Loading Time: {_now - LAST_PRESS_TIME}")
+                if _now - LAST_PRESS_TIME > 5:
+                    print(f"Now - Last Press: {(p[0], p[1], p[2])}")
+                    if menu_button.contains(p):
+                        menu_button.selected = True
+                        time.sleep(0.25)
+                        print("Menu Pressed")
+                        show_menu()
+                    elif prev_button.contains(p):
+                        prev_button.selected = True
+                        time.sleep(0.1)
+                        print("Previous Pressed")
+                        hide_menu()
+                        sys_info_group.remove(menu_popout_group)
+                        sys_info_group.remove(splash)
+                        main_group.append(menu_popout_group)
+                        main_group.append(splash)
+                        display.root_group = main_group
+                    elif next_button.contains(p):
+                        next_button.selected = True
+                        time.sleep(0.5)
+                        print("Next Pressed")
+                        hide_menu()
+                        print(f"After Hide Menu {p}")
+                        sys_info_group.remove(menu_popout_group)
+                        sys_info_group.remove(splash)
+                        main_group.append(menu_popout_group)
+                        main_group.append(splash)
+                        display.root_group = main_group
+                    elif item1_button.contains(p):
+                        item1_button.selected = True
+                        time.sleep(0.25)
+                        print("Item 1 Pressed")
+                        hide_menu()
+                        sys_info_group.remove(menu_popout_group)
+                        sys_info_group.remove(splash)
+                        preferences_group.append(menu_popout_group)
+                        preferences_group.append(splash)
+                        display.root_group = preferences_group
+                    elif item2_button.contains(p):
+                        item2_button.selected = True
+                        time.sleep(0.25)
+                        print("Item 2 Pressed")
+                        hide_menu()
+                        sys_info_group.remove(menu_popout_group)
+                        sys_info_group.remove(splash)
+                        wifi_settings_group.append(menu_popout_group)
+                        wifi_settings_group.append(splash)
+                        display.root_group = wifi_settings_group
+                    elif item3_button.contains(p):
+                        item3_button.selected = True
+                        time.sleep(0.25)
+                        print("Item 3 Pressed")
+                        hide_menu()
+                        sys_info_group.remove(menu_popout_group)
+                        sys_info_group.remove(splash)
+                        rssi_group.append(menu_popout_group)
+                        rssi_group.append(splash)
+                        display.root_group = rssi_group
+                    elif item4_button.contains(p):
+                        item4_button.selected = True
+                        time.sleep(0.25)
+                        print("Item 4 Pressed")
+                        hide_menu()
+                        sys_info_group.remove(menu_popout_group)
+                        sys_info_group.remove(splash)
+                        sys_info_group.append(menu_popout_group)
+                        sys_info_group.append(splash)
+                        display.root_group = sys_info_group
+                    else:
+                        print("Bottom Else, Why?")
+                        item1_button.selected = False
+                        item2_button.selected = False
+                        item3_button.selected = False
+                        item4_button.selected = False
+                        menu_button.selected = False  # When touch moves outside of button
+                        prev_button.selected = False
+                        next_button.selected = False
+                        hide_menu()
+                LAST_PRESS_TIME = _now
+            else:
+                # Default state always running
+                item1_button.selected = False
+                item2_button.selected = False
+                item3_button.selected = False
+                item4_button.selected = False
                 menu_button.selected = False  # When button is released
                 prev_button.selected = False
                 next_button.selected = False
