@@ -28,7 +28,6 @@ from adafruit_bme280 import basic as adafruit_bme280
 from adafruit_hx8357 import HX8357
 import adafruit_stmpe610
 from adafruit_button.sprite_button import SpriteButton
-from adafruit_debouncer import Debouncer
 _now = time.monotonic()
 
 # 3.5" TFT Featherwing is 480x320
@@ -638,7 +637,6 @@ requests = adafruit_requests.Session(pool, ssl.create_default_context())
 loading_label.text = "Loading..."
 last = time.monotonic()
 LAST_PRESS_TIME = -1
-discovered_networks = []
 while True:
     while display.root_group is main_group:
         debug_OWM = False  # Set True for Serial Print Debugging
@@ -852,12 +850,11 @@ while True:
             print("Next Update: ", time_calc(sleep_time))
             First_Run = False
 
-            print("Entering Sleep Loop")
+            print("Entering Touch Loop")
             while (time.monotonic() - last) <= sleep_time and display.root_group is main_group:
                 p = touchscreen.touch_point
                 _now = time.monotonic()
                 if p:
-                    print(f"if p: {p[0]}")
                     print(f"Loading Time: {_now - LAST_PRESS_TIME}")
                     if _now - LAST_PRESS_TIME > 15:
                         print(f"Now - Last Press: {(p[0], p[1], p[2])}")
@@ -869,16 +866,14 @@ while True:
                     
             last = time.monotonic()
             print("Exited Sleep Loop")
-            #time.sleep(sleep_time)
+            # time.sleep(sleep_time)
 
     while display.root_group is main_group2:
         hello_label_page2.text = "Feather Weather Page 2"
-        print("Page 2! Yep this works!")
         while (time.monotonic() - last) <= sleep_time and display.root_group is main_group2:
             p = touchscreen.touch_point
             _now = time.monotonic()
             if p:
-                print(f"if p: {p[0]}")
                 print(f"Loading Time: {_now - LAST_PRESS_TIME}")
                 if _now - LAST_PRESS_TIME > 1:
                     print(f"Now - Last Press: {(p[0], p[1], p[2])}")
@@ -891,12 +886,10 @@ while True:
 
     while display.root_group is main_group3:
         hello_label_page3.text = "Feather Weather Page 3"
-        print("Page 3! Yep this works!")
         while (time.monotonic() - last) <= sleep_time and display.root_group is main_group3:
             p = touchscreen.touch_point
             _now = time.monotonic()
             if p:
-                print(f"if p: {p[0]}")
                 print(f"Loading Time: {_now - LAST_PRESS_TIME}")
                 if _now - LAST_PRESS_TIME > 1:
                     print(f"Now - Last Press: {(p[0], p[1], p[2])}")
@@ -908,12 +901,10 @@ while True:
                 
     while display.root_group is preferences_group:
         hello_label_preferences.text = "Feather Weather Preferences"
-        print("Preferences! Yep this works!")
         while (time.monotonic() - last) <= sleep_time and display.root_group is preferences_group:
             p = touchscreen.touch_point
             _now = time.monotonic()
             if p:
-                print(f"if p: {p[0]}")
                 print(f"Loading Time: {_now - LAST_PRESS_TIME}")
                 if _now - LAST_PRESS_TIME > 1:
                     print(f"Now - Last Press: {(p[0], p[1], p[2])}")
@@ -925,7 +916,6 @@ while True:
                 
     while display.root_group is wifi_settings_group:
         hello_label_wifi_settings.text = "Feather Weather Wifi Settings"
-        print("Settings! Yep this works!")
         while (time.monotonic() - last) <= sleep_time and display.root_group is wifi_settings_group:
             p = touchscreen.touch_point
             _now = time.monotonic()
@@ -941,7 +931,7 @@ while True:
                 group_cleanup()
                 
     while display.root_group is rssi_group:
-        print("Available WiFi networks:")
+        # Displays available networks sorted by RSSI
         for i, network in enumerate(sorted(wifi.radio.start_scanning_networks(), key=lambda x: x.rssi, reverse=True)):
             rssi_data_label = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50 + i * 20), 1, TEXT_WHITE)
             rssi_data_label.text = f"{network.ssid:<20}\t{network.rssi:<10}\t{network.channel}"
@@ -950,12 +940,10 @@ while True:
         hello_label_rssi.text = "Feather Weather RSSI Scan"
         rssi_group.append(hello_label_rssi)
 
-
         while (time.monotonic() - last) <= sleep_time and display.root_group is rssi_group:
             p = touchscreen.touch_point
             _now = time.monotonic()
             if p:
-                print(f"if p: {p[0]}")
                 print(f"Loading Time: {_now - LAST_PRESS_TIME}")
                 if _now - LAST_PRESS_TIME > 5:
                     print(f"Now - Last Press: {(p[0], p[1], p[2])}")
@@ -967,7 +955,6 @@ while True:
                 
     while display.root_group is sys_info_group:
         hello_label_sys_info.text = "System Information"
-        print("Sys Info! Yep this works!")
         # System Stats
         u_name = os.uname()
         sys_info_data_label1.text = f"Circuit Python Version:\n{u_name[3]}"
@@ -996,13 +983,11 @@ while True:
         except Exception as e:
             print(e)
             pass
-
-        
+            
         while (time.monotonic() - last) <= sleep_time and display.root_group is sys_info_group:
             p = touchscreen.touch_point
             _now = time.monotonic()
             if p:
-                print(f"if p: {p[0]}")
                 print(f"Loading Time: {_now - LAST_PRESS_TIME}")
                 if _now - LAST_PRESS_TIME > 5:
                     print(f"Now - Last Press: {(p[0], p[1], p[2])}")
