@@ -183,9 +183,9 @@ hello_label_page3 = make_my_label(
 hello_label_preferences = make_my_label(
     terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH / 2, 15), 1, TEXT_WHITE
 )
-hello_label_wifi_settings = make_my_label(
-    terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH / 2, 15), 1, TEXT_WHITE
-)
+hello_label_wifi_settings = make_my_label(terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH / 2, 15), 1, TEXT_WHITE)
+wifi_settings_ssid = make_my_label(terminalio.FONT, (0.0, 0.0), (100, 100), 2, TEXT_WHITE)
+wifi_settings_pw = make_my_label(terminalio.FONT, (0.0, 0.0), (100, 200), 2, TEXT_WHITE)
 hello_label_rssi = make_my_label(
     terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH / 2, 15), 1, TEXT_WHITE
 )
@@ -198,6 +198,7 @@ sys_info_data_label3 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 150+32), 1
 sys_info_data_label4 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 150+48), 1, TEXT_WHITE)
 sys_info_data_label5 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 150+64), 1, TEXT_WHITE)
 sys_info_data_label6 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 150+80), 1, TEXT_WHITE)
+sys_info_data_label7 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 150+96), 1, TEXT_WHITE)
 warning_label = make_my_label(
     arial_font, (0.5, 0.5), (DISPLAY_WIDTH / 2, DISPLAY_HEIGHT - 103), 1, TEXT_RED
 )
@@ -419,6 +420,8 @@ preferences_group.append(hello_label_preferences)
 # Wifi Settings Group
 wifi_settings_group = displayio.Group()
 wifi_settings_group.append(hello_label_wifi_settings)
+wifi_settings_group.append(wifi_settings_ssid)
+wifi_settings_group.append(wifi_settings_pw)
 
 # RSSI Scan Group
 rssi_group = displayio.Group()
@@ -433,6 +436,7 @@ sys_info_group.append(sys_info_data_label3)
 sys_info_group.append(sys_info_data_label4)
 sys_info_group.append(sys_info_data_label5)
 sys_info_group.append(sys_info_data_label6)
+sys_info_group.append(sys_info_data_label7)
 
 # Add subgroups to main display group
 main_group.append(text_group)
@@ -501,7 +505,7 @@ def show_menu():
 def hide_menu():
     # Function to hide popup menu
     menu_popout_group.hidden = True
-    
+
 def group_switch(SHOUTY_REMOVE, SHOUTY_APPEND):
     hide_menu()
     SHOUTY_REMOVE.remove(menu_popout_group)
@@ -519,7 +523,7 @@ def group_cleanup():
     menu_button.selected = False
     prev_button.selected = False
     next_button.selected = False
-    
+
 def menu_switching(current_group, prev_target, next_target, item1_target, item2_target, item3_target, item4_target):
     if menu_button.contains(p):
         menu_button.selected = True
@@ -559,7 +563,7 @@ def menu_switching(current_group, prev_target, next_target, item1_target, item2_
     else:
         group_cleanup()
         hide_menu()
-                        
+
 hide_warning()
 hide_menu()
 
@@ -863,7 +867,7 @@ while True:
                 else:
                     # Default state always running
                     group_cleanup()
-                    
+
             last = time.monotonic()
             print("Exited Sleep Loop")
             # time.sleep(sleep_time)
@@ -898,7 +902,7 @@ while True:
             else:
                 # Default state always running
                 group_cleanup()
-                
+
     while display.root_group is preferences_group:
         hello_label_preferences.text = "Feather Weather Preferences"
         while (time.monotonic() - last) <= sleep_time and display.root_group is preferences_group:
@@ -913,23 +917,34 @@ while True:
             else:
                 # Default state always running
                 group_cleanup()
-                
+
     while display.root_group is wifi_settings_group:
         hello_label_wifi_settings.text = "Feather Weather Wifi Settings"
+        ssid_len = len(ssid)
+        ssid_dash_replace = "-"*(ssid_len-2)
+        ssid_ast = ssid.replace(ssid[2:ssid_len], ssid_dash_replace)
+        wifi_settings_ssid.text = f"SSID: \n{ssid_ast}"
+        
+        appw_len = len(appw)
+        appw_dash_replace = "-"*(appw_len-2)
+        appw_ast = appw.replace(appw[2:appw_len], appw_dash_replace)
+        wifi_settings_pw.text = f"Password: \n{appw_ast}"
+        
+        
         while (time.monotonic() - last) <= sleep_time and display.root_group is wifi_settings_group:
             p = touchscreen.touch_point
             _now = time.monotonic()
             if p:
                 print(f"if p: {p[0]}")
                 print(f"Loading Time: {_now - LAST_PRESS_TIME}")
-                if _now - LAST_PRESS_TIME > 1:
+                if _now - LAST_PRESS_TIME > 5:
                     print(f"Now - Last Press: {(p[0], p[1], p[2])}")
                     menu_switching(wifi_settings_group, main_group, main_group, preferences_group, wifi_settings_group, rssi_group, sys_info_group)
                 LAST_PRESS_TIME = _now
             else:
                 # Default state always running
                 group_cleanup()
-                
+
     while display.root_group is rssi_group:
         # Displays available networks sorted by RSSI
         for i, network in enumerate(sorted(wifi.radio.start_scanning_networks(), key=lambda x: x.rssi, reverse=True)):
@@ -945,14 +960,14 @@ while True:
             _now = time.monotonic()
             if p:
                 print(f"Loading Time: {_now - LAST_PRESS_TIME}")
-                if _now - LAST_PRESS_TIME > 5:
+                if _now - LAST_PRESS_TIME > 6:
                     print(f"Now - Last Press: {(p[0], p[1], p[2])}")
                     menu_switching(rssi_group, main_group, main_group, preferences_group, wifi_settings_group, rssi_group, sys_info_group)
                 LAST_PRESS_TIME = _now
             else:
                 # Default state always running
                 group_cleanup()
-                
+
     while display.root_group is sys_info_group:
         hello_label_sys_info.text = "System Information"
         # System Stats
@@ -963,10 +978,14 @@ while True:
         fs_stat = os.statvfs('/')
         NORdisk_size = fs_stat[0] * fs_stat[2] / 1024 / 1024
         NORfree_space = fs_stat[0] * fs_stat[3] / 1024 / 1024
-        print(f"Disk Size MB: {NORdisk_size:.2f}")
         sys_info_data_label4.text = f"Flash Chip Size: {NORdisk_size:.2f} MB"
-        sys_info_data_label5.text = f"Flash Chip Free: {NORfree_space:.2f} MB"
-        
+        NORdisk_used = NORdisk_size - NORfree_space
+        if (NORdisk_used) >= 1.0:
+            sys_info_data_label5.text = f"Flash Chip Used: {NORdisk_used:.2f} MB"
+        if (NORdisk_used) <= 1.0:
+            sys_info_data_label5.text = f"Flash Chip Used: {NORdisk_used*1024:.2f} KB"
+        sys_info_data_label6.text = f"Flash Chip Free: {NORfree_space:.2f} MB"
+
         # Volume Information Stats
         try:
             vfs = storage.VfsFat(sdcard)
@@ -975,15 +994,15 @@ while True:
             SD_Card_Size = os.statvfs(virtual_root)
             SD_Card_FREE_TOTAL = SD_Card_Size[0] * SD_Card_Size[3] / 1024 / 1024 / 1024
             if (SD_Card_FREE_TOTAL) >= 1.0:
-                sys_info_data_label6.text = f"SD Card Free Space: {SD_Card_FREE_TOTAL:.2f} GB"
+                sys_info_data_label7.text = f"SD Card Free: {SD_Card_FREE_TOTAL:.2f} GB"
             if (SD_Card_FREE_TOTAL) <= 1.0:
                 SD_Card_FREE_TOTAL_MB = SD_Card_Size[0] * SD_Card_Size[3] / 1024 / 1024
-                sys_info_data_label6.text = f"SD Card Free Space: {SD_Card_FREE_TOTAL_MB:.2f} MB"
+                sys_info_data_label7.text = f"SD Card Free: {SD_Card_FREE_TOTAL_MB:.2f} MB"
             storage.umount(vfs)
         except Exception as e:
             print(e)
             pass
-            
+
         while (time.monotonic() - last) <= sleep_time and display.root_group is sys_info_group:
             p = touchscreen.touch_point
             _now = time.monotonic()
