@@ -930,13 +930,17 @@ while True:
 
     while display.root_group is rssi_group:
         # Displays available networks sorted by RSSI
-        for i, network in enumerate(sorted(wifi.radio.start_scanning_networks(), key=lambda x: x.rssi, reverse=True)):
-            rssi_data_label = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50 + i * 20), 1, TEXT_WHITE)
-            rssi_data_label.text = f"{network.ssid:<20}\t{network.rssi:<10}\t{network.channel}"
-            rssi_group.append(rssi_data_label)
-        wifi.radio.stop_scanning_networks()
-        hello_label_rssi.text = "Feather Weather RSSI Scan"
-        rssi_group.append(hello_label_rssi)
+        try:
+            for i, network in enumerate(sorted(wifi.radio.start_scanning_networks(), key=lambda x: x.rssi, reverse=True)):
+                rssi_data_label = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50 + i * 20), 1, TEXT_WHITE)
+                rssi_data_label.text = f"{network.ssid:<20}\t{network.rssi:<10}\t{network.channel}"
+                rssi_group.append(rssi_data_label)
+            wifi.radio.stop_scanning_networks()
+            hello_label_rssi.text = "Feather Weather RSSI Scan"
+            rssi_group.append(hello_label_rssi)
+        except Exception as e:
+            print(f"Exception: {e}")
+            pass
 
         while (time.monotonic() - last) <= sleep_time and display.root_group is rssi_group:
             p = touchscreen.touch_point
