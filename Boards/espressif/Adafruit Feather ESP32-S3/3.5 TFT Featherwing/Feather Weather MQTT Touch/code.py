@@ -526,40 +526,47 @@ def group_cleanup():
 
 def menu_switching(current_group, prev_target, next_target, item1_target, item2_target, item3_target, item4_target):
     if menu_button.contains(p):
-        menu_button.selected = True
-        time.sleep(0.25)
-        print("Menu Pressed")
-        show_menu()
+        if not menu_button.selected:
+            menu_button.selected = True
+            time.sleep(0.25)
+            print("Menu Pressed")
+            show_menu()
     elif prev_button.contains(p):
-        prev_button.selected = True
-        time.sleep(0.1)
-        print("Previous Pressed")
-        group_switch(current_group, prev_target)
+        if not prev_button.selected:
+            prev_button.selected = True
+            time.sleep(0.1)
+            print("Previous Pressed")
+            group_switch(current_group, prev_target)
     elif next_button.contains(p):
-        next_button.selected = True
-        time.sleep(0.5)
-        print("Next Pressed")
-        group_switch(current_group, next_target)
+        if not next_button.selected:
+            next_button.selected = True
+            time.sleep(0.5)
+            print("Next Pressed")
+            group_switch(current_group, next_target)
     elif item1_button.contains(p):
-        item1_button.selected = True
-        time.sleep(0.25)
-        print("Item 1 Pressed")
-        group_switch(current_group, item1_target)
+        if not item1_button.selected:
+            item1_button.selected = True
+            time.sleep(0.25)
+            print("Item 1 Pressed")
+            group_switch(current_group, item1_target)
     elif item2_button.contains(p):
-        item2_button.selected = True
-        time.sleep(0.25)
-        print("Item 2 Pressed")
-        group_switch(current_group, item2_target)
+        if not item2_button.selected:
+            item2_button.selected = True
+            time.sleep(0.25)
+            print("Item 2 Pressed")
+            group_switch(current_group, item2_target)
     elif item3_button.contains(p):
-        item3_button.selected = True
-        time.sleep(0.25)
-        print("Item 3 Pressed")
-        group_switch(current_group, item3_target)
+        if not item3_button.selected:
+            item3_button.selected = True
+            time.sleep(0.25)
+            print("Item 3 Pressed")
+            group_switch(current_group, item3_target)
     elif item4_button.contains(p):
-        item4_button.selected = True
-        time.sleep(0.25)
-        print("Item 4 Pressed")
-        group_switch(current_group, item4_target)
+        if not item4_button.selected:
+            item4_button.selected = True
+            time.sleep(0.25)
+            print("Item 4 Pressed")
+            group_switch(current_group, item4_target)
     else:
         group_cleanup()
         hide_menu()
@@ -857,17 +864,11 @@ while True:
             print("Entering Touch Loop")
             while (time.monotonic() - last) <= sleep_time and display.root_group is main_group:
                 p = touchscreen.touch_point
-                _now = time.monotonic()
                 if p:
-                    print(f"Loading Time: {_now - LAST_PRESS_TIME}")
-                    if _now - LAST_PRESS_TIME > 15:
-                        print(f"Now - Last Press: {(p[0], p[1], p[2])}")
-                        menu_switching(main_group, main_group3, main_group2, preferences_group, wifi_settings_group, rssi_group, sys_info_group)
-                    LAST_PRESS_TIME = _now
+                    menu_switching(main_group, main_group3, main_group2, preferences_group, wifi_settings_group, rssi_group, sys_info_group)
                 else:
                     # Default state always running
                     group_cleanup()
-
             last = time.monotonic()
             print("Exited Sleep Loop")
             # time.sleep(sleep_time)
@@ -876,13 +877,8 @@ while True:
         hello_label_page2.text = "Feather Weather Page 2"
         while (time.monotonic() - last) <= sleep_time and display.root_group is main_group2:
             p = touchscreen.touch_point
-            _now = time.monotonic()
             if p:
-                print(f"Loading Time: {_now - LAST_PRESS_TIME}")
-                if _now - LAST_PRESS_TIME > 1:
-                    print(f"Now - Last Press: {(p[0], p[1], p[2])}")
-                    menu_switching(main_group2, main_group, main_group3, preferences_group, wifi_settings_group, rssi_group, sys_info_group)
-                LAST_PRESS_TIME = _now
+                menu_switching(main_group2, main_group, main_group3, preferences_group, wifi_settings_group, rssi_group, sys_info_group)
             else:
                 # Default state always running
                 group_cleanup()
@@ -892,31 +888,23 @@ while True:
         hello_label_page3.text = "Feather Weather Page 3"
         while (time.monotonic() - last) <= sleep_time and display.root_group is main_group3:
             p = touchscreen.touch_point
-            _now = time.monotonic()
             if p:
-                print(f"Loading Time: {_now - LAST_PRESS_TIME}")
-                if _now - LAST_PRESS_TIME > 1:
-                    print(f"Now - Last Press: {(p[0], p[1], p[2])}")
-                    menu_switching(main_group3, main_group2, main_group, preferences_group, wifi_settings_group, rssi_group, sys_info_group)
-                LAST_PRESS_TIME = _now
+                menu_switching(main_group3, main_group2, main_group, preferences_group, wifi_settings_group, rssi_group, sys_info_group)
             else:
                 # Default state always running
                 group_cleanup()
+        last = time.monotonic()
 
     while display.root_group is preferences_group:
         hello_label_preferences.text = "Feather Weather Preferences"
         while (time.monotonic() - last) <= sleep_time and display.root_group is preferences_group:
             p = touchscreen.touch_point
-            _now = time.monotonic()
             if p:
-                print(f"Loading Time: {_now - LAST_PRESS_TIME}")
-                if _now - LAST_PRESS_TIME > 1:
-                    print(f"Now - Last Press: {(p[0], p[1], p[2])}")
-                    menu_switching(preferences_group, main_group, main_group, preferences_group, wifi_settings_group, rssi_group, sys_info_group)
-                LAST_PRESS_TIME = _now
+                menu_switching(preferences_group, main_group, main_group, preferences_group, wifi_settings_group, rssi_group, sys_info_group)
             else:
                 # Default state always running
                 group_cleanup()
+        last = time.monotonic()
 
     while display.root_group is wifi_settings_group:
         hello_label_wifi_settings.text = "Feather Weather Wifi Settings"
@@ -933,17 +921,12 @@ while True:
         
         while (time.monotonic() - last) <= sleep_time and display.root_group is wifi_settings_group:
             p = touchscreen.touch_point
-            _now = time.monotonic()
             if p:
-                print(f"if p: {p[0]}")
-                print(f"Loading Time: {_now - LAST_PRESS_TIME}")
-                if _now - LAST_PRESS_TIME > 5:
-                    print(f"Now - Last Press: {(p[0], p[1], p[2])}")
-                    menu_switching(wifi_settings_group, main_group, main_group, preferences_group, wifi_settings_group, rssi_group, sys_info_group)
-                LAST_PRESS_TIME = _now
+                menu_switching(wifi_settings_group, main_group, main_group, preferences_group, wifi_settings_group, rssi_group, sys_info_group)
             else:
                 # Default state always running
                 group_cleanup()
+        last = time.monotonic()
 
     while display.root_group is rssi_group:
         # Displays available networks sorted by RSSI
@@ -957,17 +940,13 @@ while True:
 
         while (time.monotonic() - last) <= sleep_time and display.root_group is rssi_group:
             p = touchscreen.touch_point
-            _now = time.monotonic()
             if p:
-                print(f"Loading Time: {_now - LAST_PRESS_TIME}")
-                if _now - LAST_PRESS_TIME > 6:
-                    print(f"Now - Last Press: {(p[0], p[1], p[2])}")
-                    menu_switching(rssi_group, main_group, main_group, preferences_group, wifi_settings_group, rssi_group, sys_info_group)
-                LAST_PRESS_TIME = _now
+                menu_switching(rssi_group, main_group, main_group, preferences_group, wifi_settings_group, rssi_group, sys_info_group)
             else:
                 # Default state always running
                 group_cleanup()
-
+        last = time.monotonic()
+        
     while display.root_group is sys_info_group:
         hello_label_sys_info.text = "System Information"
         # System Stats
@@ -1005,13 +984,8 @@ while True:
 
         while (time.monotonic() - last) <= sleep_time and display.root_group is sys_info_group:
             p = touchscreen.touch_point
-            _now = time.monotonic()
             if p:
-                print(f"Loading Time: {_now - LAST_PRESS_TIME}")
-                if _now - LAST_PRESS_TIME > 5:
-                    print(f"Now - Last Press: {(p[0], p[1], p[2])}")
-                    menu_switching(sys_info_group, main_group, main_group, preferences_group, wifi_settings_group, rssi_group, sys_info_group)
-                LAST_PRESS_TIME = _now
+                menu_switching(sys_info_group, main_group, main_group, preferences_group, wifi_settings_group, rssi_group, sys_info_group)
             else:
                 # Default state always running
                 group_cleanup()
