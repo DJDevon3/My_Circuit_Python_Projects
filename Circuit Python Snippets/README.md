@@ -30,17 +30,73 @@ Hello World!
 ```
 
 ## Display RSSI Scan on a TFT
-- I couldn't find an example of displaying an RSSI scan on a TFT for Circuit Python... so I made it... with the help of ChatGPT.
+- Couldn't find an example of showing an Wifi Network scan on a TFT display for Circuit Python... so I made one.
 ```py
+# Shorten Labels to 1 liners
+def make_my_label(font, anchor_point, anchored_position, scale, color):
+    func_label = label.Label(font)
+    func_label.anchor_point = anchor_point
+    func_label.anchored_position = anchored_position
+    func_label.scale = scale
+    func_label.color = color
+    return func_label
+
+# Create Labels
+rssi_data_label0 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50), 1, TEXT_WHITE)
+rssi_data_label1 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50 + 20), 1, TEXT_WHITE)
+rssi_data_label2 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50 + 40), 1, TEXT_WHITE)
+rssi_data_label3 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50 + 60), 1, TEXT_WHITE)
+rssi_data_label4 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50 + 80), 1, TEXT_WHITE)
+rssi_data_label5 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50 + 100), 1, TEXT_WHITE)
+rssi_data_label6 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50 + 120), 1, TEXT_WHITE)
+rssi_data_label7 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50 + 140), 1, TEXT_WHITE)
+rssi_data_label8 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50 + 160), 1, TEXT_WHITE)
+rssi_data_label9 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50 + 180), 1, TEXT_WHITE)
+
+# Append Labels to Group
 main_group = displayio.Group()
+main_group.append(rssi_data_label0)
+main_group.append(rssi_data_label1)
+main_group.append(rssi_data_label2)
+main_group.append(rssi_data_label3)
+main_group.append(rssi_data_label4)
+main_group.append(rssi_data_label5)
+main_group.append(rssi_data_label6)
+main_group.append(rssi_data_label7)
+main_group.append(rssi_data_label8)
+main_group.append(rssi_data_label9)
 display.root_group = main_group
-print("Available WiFi networks:")
-        for i, network in enumerate(sorted(wifi.radio.start_scanning_networks(), key=lambda x: x.rssi, reverse=True)):
-            rssi_data_label = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50 + i * 20), 1, TEXT_WHITE)
-            rssi_data_label.text = f"{network.ssid:<20}\t{network.rssi:<10}\t{network.channel}"
-            main_group.append(rssi_data_label)
+
+while display.root_group is main_group:
+        # Displays available networks sorted by RSSI
+        networks = []
+        NetworkList =[]
+        for network in wifi.radio.start_scanning_networks():
+            networks.append(network)
         wifi.radio.stop_scanning_networks()
+        networks = sorted(networks, key=lambda net: net.rssi, reverse=True)
+        for network in networks:
+            sorted_networks = {'ssid':network.ssid, 'rssi':network.rssi, 'channel':network.channel}
+            NetworkList.append([sorted_networks])
+            #print("ssid:",network.ssid, "rssi:",network.rssi, "channel:",network.channel)
+        jsonNetworkList = json.dumps(NetworkList)
+        json_list = json.loads(jsonNetworkList)
+        try:
+            rssi_data_label0.text = f"{json_list[0][0]['ssid']:<20}\t{json_list[0][0]['rssi']:<20}\t{json_list[0][0]['channel']:<20}\n"
+            rssi_data_label1.text = f"{json_list[1][0]['ssid']:<20}\t{json_list[1][0]['rssi']:<20}\t{json_list[1][0]['channel']:<20}\n"
+            rssi_data_label2.text = f"{json_list[2][0]['ssid']:<20}\t{json_list[2][0]['rssi']:<20}\t{json_list[2][0]['channel']:<20}\n"
+            rssi_data_label3.text = f"{json_list[3][0]['ssid']:<20}\t{json_list[3][0]['rssi']:<20}\t{json_list[3][0]['channel']:<20}\n"
+            rssi_data_label4.text = f"{json_list[4][0]['ssid']:<20}\t{json_list[4][0]['rssi']:<20}\t{json_list[4][0]['channel']:<20}\n"
+            rssi_data_label5.text = f"{json_list[5][0]['ssid']:<20}\t{json_list[5][0]['rssi']:<20}\t{json_list[5][0]['channel']:<20}\n"
+            rssi_data_label6.text = f"{json_list[6][0]['ssid']:<20}\t{json_list[6][0]['rssi']:<20}\t{json_list[6][0]['channel']:<20}\n"
+            rssi_data_label7.text = f"{json_list[7][0]['ssid']:<20}\t{json_list[7][0]['rssi']:<20}\t{json_list[7][0]['channel']:<20}\n"
+            rssi_data_label8.text = f"{json_list[8][0]['ssid']:<20}\t{json_list[8][0]['rssi']:<20}\t{json_list[8][0]['channel']:<20}\n"
+            rssi_data_label9.text = f"{json_list[9][0]['ssid']:<20}\t{json_list[9][0]['rssi']:<20}\t{json_list[9][0]['channel']:<20}\n"
+        except Exception as e:
+            print(f"RSSI Label Refresh (index error is ok, ignore it): {e}")
+            pass
 ```
+Output: Shows SSID RSSI Channel on Display. It will properly update labels each page refresh.
 
 ## Unix to Struct Time Formatting (with timezone offset)
 ```py
