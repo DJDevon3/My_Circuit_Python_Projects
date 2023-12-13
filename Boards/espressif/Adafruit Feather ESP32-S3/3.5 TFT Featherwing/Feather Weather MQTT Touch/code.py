@@ -186,8 +186,9 @@ hello_label_preferences = make_my_label(
     terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH / 2, 15), 1, TEXT_WHITE
 )
 hello_label_wifi_settings = make_my_label(terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH / 2, 15), 1, TEXT_WHITE)
-wifi_settings_ssid = make_my_label(terminalio.FONT, (0.0, 0.0), (100, 100), 2, TEXT_WHITE)
-wifi_settings_pw = make_my_label(terminalio.FONT, (0.0, 0.0), (100, 200), 2, TEXT_WHITE)
+wifi_settings_ssid = make_my_label(terminalio.FONT, (0.0, 0.0), (DISPLAY_WIDTH / 3, 50), 2, TEXT_WHITE)
+wifi_settings_pw = make_my_label(terminalio.FONT, (0.0, 0.0), (DISPLAY_WIDTH / 3, 150), 2, TEXT_WHITE)
+wifi_settings_instructions = make_my_label(terminalio.FONT, (0.0, 0.0), (DISPLAY_WIDTH / 4, 250), 1, TEXT_WHITE)
 hello_label_rssi = make_my_label(
     terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH / 2, 15), 1, TEXT_WHITE
 )
@@ -201,16 +202,17 @@ sys_info_data_label4 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 150+48), 1
 sys_info_data_label5 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 150+64), 1, TEXT_WHITE)
 sys_info_data_label6 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 150+80), 1, TEXT_WHITE)
 sys_info_data_label7 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 150+96), 1, TEXT_WHITE)
-rssi_data_label0 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50), 1, TEXT_WHITE)
-rssi_data_label1 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50 + 20), 1, TEXT_WHITE)
-rssi_data_label2 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50 + 40), 1, TEXT_WHITE)
-rssi_data_label3 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50 + 60), 1, TEXT_WHITE)
-rssi_data_label4 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50 + 80), 1, TEXT_WHITE)
-rssi_data_label5 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50 + 100), 1, TEXT_WHITE)
-rssi_data_label6 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50 + 120), 1, TEXT_WHITE)
-rssi_data_label7 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50 + 140), 1, TEXT_WHITE)
-rssi_data_label8 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50 + 160), 1, TEXT_WHITE)
-rssi_data_label9 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50 + 180), 1, TEXT_WHITE)
+rssi_data_label = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 60), 1, TEXT_MAGENTA)
+rssi_data_label0 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 60 + 20), 1, TEXT_WHITE)
+rssi_data_label1 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 60 + 40), 1, TEXT_WHITE)
+rssi_data_label2 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 60 + 60), 1, TEXT_WHITE)
+rssi_data_label3 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 60 + 80), 1, TEXT_WHITE)
+rssi_data_label4 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 60 + 100), 1, TEXT_WHITE)
+rssi_data_label5 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 60 + 120), 1, TEXT_WHITE)
+rssi_data_label6 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 60 + 140), 1, TEXT_WHITE)
+rssi_data_label7 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 60 + 160), 1, TEXT_WHITE)
+rssi_data_label8 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 60 + 180), 1, TEXT_WHITE)
+rssi_data_label9 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 60 + 200), 1, TEXT_WHITE)
 warning_label = make_my_label(
     arial_font, (0.5, 0.5), (DISPLAY_WIDTH / 2, DISPLAY_HEIGHT - 103), 1, TEXT_RED
 )
@@ -434,9 +436,11 @@ wifi_settings_group = displayio.Group()
 wifi_settings_group.append(hello_label_wifi_settings)
 wifi_settings_group.append(wifi_settings_ssid)
 wifi_settings_group.append(wifi_settings_pw)
+wifi_settings_group.append(wifi_settings_instructions)
 
 # RSSI Scan Group
 rssi_group = displayio.Group()
+rssi_group.append(rssi_data_label)
 rssi_group.append(rssi_data_label0)
 rssi_group.append(rssi_data_label1)
 rssi_group.append(rssi_data_label2)
@@ -932,14 +936,15 @@ while True:
     while display.root_group is wifi_settings_group:
         hello_label_wifi_settings.text = "Feather Weather Wifi Settings"
         ssid_len = len(ssid)
-        ssid_dash_replace = "-"*(ssid_len-2)
+        ssid_dash_replace = "*"*(ssid_len-2)
         ssid_ast = ssid.replace(ssid[2:ssid_len], ssid_dash_replace)
         wifi_settings_ssid.text = f"SSID: \n{ssid_ast}"
 
         appw_len = len(appw)
-        appw_dash_replace = "-"*(appw_len-2)
+        appw_dash_replace = "*"*(appw_len-2)
         appw_ast = appw.replace(appw[2:appw_len], appw_dash_replace)
         wifi_settings_pw.text = f"Password: \n{appw_ast}"
+        wifi_settings_instructions.text = "To change SSID & PW connect USB cable to PC\nOpen CIRCUITPY USB drive\nEdit settings.toml file"
 
 
         while (time.monotonic() - last) <= sleep_time and display.root_group is wifi_settings_group:
@@ -966,16 +971,17 @@ while True:
         jsonNetworkList = json.dumps(NetworkList)
         json_list = json.loads(jsonNetworkList)
         try:
-            rssi_data_label0.text = f"{json_list[0][0]['ssid']:<20}\t{json_list[0][0]['rssi']:<20}\t{json_list[0][0]['channel']:<20}\n"
-            rssi_data_label1.text = f"{json_list[1][0]['ssid']:<20}\t{json_list[1][0]['rssi']:<20}\t{json_list[1][0]['channel']:<20}\n"
-            rssi_data_label2.text = f"{json_list[2][0]['ssid']:<20}\t{json_list[2][0]['rssi']:<20}\t{json_list[2][0]['channel']:<20}\n"
-            rssi_data_label3.text = f"{json_list[3][0]['ssid']:<20}\t{json_list[3][0]['rssi']:<20}\t{json_list[3][0]['channel']:<20}\n"
-            rssi_data_label4.text = f"{json_list[4][0]['ssid']:<20}\t{json_list[4][0]['rssi']:<20}\t{json_list[4][0]['channel']:<20}\n"
-            rssi_data_label5.text = f"{json_list[5][0]['ssid']:<20}\t{json_list[5][0]['rssi']:<20}\t{json_list[5][0]['channel']:<20}\n"
-            rssi_data_label6.text = f"{json_list[6][0]['ssid']:<20}\t{json_list[6][0]['rssi']:<20}\t{json_list[6][0]['channel']:<20}\n"
-            rssi_data_label7.text = f"{json_list[7][0]['ssid']:<20}\t{json_list[7][0]['rssi']:<20}\t{json_list[7][0]['channel']:<20}\n"
-            rssi_data_label8.text = f"{json_list[8][0]['ssid']:<20}\t{json_list[8][0]['rssi']:<20}\t{json_list[8][0]['channel']:<20}\n"
-            rssi_data_label9.text = f"{json_list[9][0]['ssid']:<20}\t{json_list[9][0]['rssi']:<20}\t{json_list[9][0]['channel']:<20}\n"
+            rssi_data_label.text = "SSID\t\t\t\t\t\t\t  RSSI\t\t\t\t    CHANNEL\n"
+            rssi_data_label0.text = f"{json_list[0][0]['ssid']:<30}\t{json_list[0][0]['rssi']:<20}\t{json_list[0][0]['channel']:<20}\n"
+            rssi_data_label1.text = f"{json_list[1][0]['ssid']:<30}\t{json_list[1][0]['rssi']:<20}\t{json_list[1][0]['channel']:<20}\n"
+            rssi_data_label2.text = f"{json_list[2][0]['ssid']:<30}\t{json_list[2][0]['rssi']:<20}\t{json_list[2][0]['channel']:<20}\n"
+            rssi_data_label3.text = f"{json_list[3][0]['ssid']:<30}\t{json_list[3][0]['rssi']:<20}\t{json_list[3][0]['channel']:<20}\n"
+            rssi_data_label4.text = f"{json_list[4][0]['ssid']:<30}\t{json_list[4][0]['rssi']:<20}\t{json_list[4][0]['channel']:<20}\n"
+            rssi_data_label5.text = f"{json_list[5][0]['ssid']:<30}\t{json_list[5][0]['rssi']:<20}\t{json_list[5][0]['channel']:<20}\n"
+            rssi_data_label6.text = f"{json_list[6][0]['ssid']:<30}\t{json_list[6][0]['rssi']:<20}\t{json_list[6][0]['channel']:<20}\n"
+            rssi_data_label7.text = f"{json_list[7][0]['ssid']:<30}\t{json_list[7][0]['rssi']:<20}\t{json_list[7][0]['channel']:<20}\n"
+            rssi_data_label8.text = f"{json_list[8][0]['ssid']:<30}\t{json_list[8][0]['rssi']:<20}\t{json_list[8][0]['channel']:<20}\n"
+            rssi_data_label9.text = f"{json_list[9][0]['ssid']:<30}\t{json_list[9][0]['rssi']:<20}\t{json_list[9][0]['channel']:<20}\n"
         except Exception as e:
             print(f"RSSI Label Refresh (index error is ok, ignore it): {e}")
             pass
