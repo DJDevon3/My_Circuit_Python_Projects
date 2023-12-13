@@ -3,6 +3,7 @@
 # ESP32-S3 Feather Weather MQTT Touchscreen
 # Coded for Circuit Python 8.2.x
 
+import traceback
 import os
 import supervisor
 import time
@@ -17,6 +18,7 @@ import ssl
 import wifi
 import socketpool
 import adafruit_requests
+import json
 import ulab.numpy as np
 import adafruit_minimqtt.adafruit_minimqtt as MQTT
 from adafruit_minimqtt.adafruit_minimqtt import MMQTTException
@@ -199,6 +201,16 @@ sys_info_data_label4 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 150+48), 1
 sys_info_data_label5 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 150+64), 1, TEXT_WHITE)
 sys_info_data_label6 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 150+80), 1, TEXT_WHITE)
 sys_info_data_label7 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 150+96), 1, TEXT_WHITE)
+rssi_data_label0 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50), 1, TEXT_WHITE)
+rssi_data_label1 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50 + 20), 1, TEXT_WHITE)
+rssi_data_label2 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50 + 40), 1, TEXT_WHITE)
+rssi_data_label3 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50 + 60), 1, TEXT_WHITE)
+rssi_data_label4 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50 + 80), 1, TEXT_WHITE)
+rssi_data_label5 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50 + 100), 1, TEXT_WHITE)
+rssi_data_label6 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50 + 120), 1, TEXT_WHITE)
+rssi_data_label7 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50 + 140), 1, TEXT_WHITE)
+rssi_data_label8 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50 + 160), 1, TEXT_WHITE)
+rssi_data_label9 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50 + 180), 1, TEXT_WHITE)
 warning_label = make_my_label(
     arial_font, (0.5, 0.5), (DISPLAY_WIDTH / 2, DISPLAY_HEIGHT - 103), 1, TEXT_RED
 )
@@ -425,6 +437,16 @@ wifi_settings_group.append(wifi_settings_pw)
 
 # RSSI Scan Group
 rssi_group = displayio.Group()
+rssi_group.append(rssi_data_label0)
+rssi_group.append(rssi_data_label1)
+rssi_group.append(rssi_data_label2)
+rssi_group.append(rssi_data_label3)
+rssi_group.append(rssi_data_label4)
+rssi_group.append(rssi_data_label5)
+rssi_group.append(rssi_data_label6)
+rssi_group.append(rssi_data_label7)
+rssi_group.append(rssi_data_label8)
+rssi_group.append(rssi_data_label9)
 rssi_text_group = displayio.Group()
 
 # RSSI Scan Group
@@ -637,8 +659,8 @@ mqtt_client.subscribe_to_throttling = throttle
 display_temperature = 0
 # Define the input range and output range
 # pressure at 1014 & 88F at 100% accurate. sea level pressure affects temp?
-input_range = [50.0, 70, 76, 80, 88.0, 120.0]
-output_range = [50.0 - 0.1, 70.0 - 1.4, 76 - 1.5, 80 - 1.0, 88.0 - 0.0, 120.0 - 2.2]
+input_range = [50.0, 69, 72, 73, 75, 76, 80, 88.0, 120.0]
+output_range = [50.0 - 0.1, 69, 72.0 - 1.1, 73.0 - 1.2, 75.0 - 1.4, 76 - 1.5, 80 - 1.0, 88.0 - 0.0, 120.0 - 2.2]
 
 # adafruit_requests.Session should always be outside the loop
 # otherwise you get Out of Socket errors.
@@ -648,6 +670,7 @@ requests = adafruit_requests.Session(pool, ssl.create_default_context())
 loading_label.text = "Loading..."
 last = time.monotonic()
 LAST_PRESS_TIME = -1
+ssid_count = 0
 while True:
     while display.root_group is main_group:
         debug_OWM = False  # Set True for Serial Print Debugging
@@ -912,13 +935,13 @@ while True:
         ssid_dash_replace = "-"*(ssid_len-2)
         ssid_ast = ssid.replace(ssid[2:ssid_len], ssid_dash_replace)
         wifi_settings_ssid.text = f"SSID: \n{ssid_ast}"
-        
+
         appw_len = len(appw)
         appw_dash_replace = "-"*(appw_len-2)
         appw_ast = appw.replace(appw[2:appw_len], appw_dash_replace)
         wifi_settings_pw.text = f"Password: \n{appw_ast}"
-        
-        
+
+
         while (time.monotonic() - last) <= sleep_time and display.root_group is wifi_settings_group:
             p = touchscreen.touch_point
             if p:
@@ -930,16 +953,31 @@ while True:
 
     while display.root_group is rssi_group:
         # Displays available networks sorted by RSSI
+        networks = []
+        NetworkList =[]
+        for network in wifi.radio.start_scanning_networks():
+            networks.append(network)
+        wifi.radio.stop_scanning_networks()
+        networks = sorted(networks, key=lambda net: net.rssi, reverse=True)
+        for network in networks:
+            sorted_networks = {'ssid':network.ssid, 'rssi':network.rssi, 'channel':network.channel}
+            NetworkList.append([sorted_networks])
+            #print("ssid:",network.ssid, "rssi:",network.rssi, "channel:",network.channel)
+        jsonNetworkList = json.dumps(NetworkList)
+        json_list = json.loads(jsonNetworkList)
         try:
-            for i, network in enumerate(sorted(wifi.radio.start_scanning_networks(), key=lambda x: x.rssi, reverse=True)):
-                rssi_data_label = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50 + i * 20), 1, TEXT_WHITE)
-                rssi_data_label.text = f"{network.ssid:<20}\t{network.rssi:<10}\t{network.channel}"
-                rssi_group.append(rssi_data_label)
-            wifi.radio.stop_scanning_networks()
-            hello_label_rssi.text = "Feather Weather RSSI Scan"
-            rssi_group.append(hello_label_rssi)
+            rssi_data_label0.text = f"{json_list[0][0]['ssid']:<20}\t{json_list[0][0]['rssi']:<20}\t{json_list[0][0]['channel']:<20}\n"
+            rssi_data_label1.text = f"{json_list[1][0]['ssid']:<20}\t{json_list[1][0]['rssi']:<20}\t{json_list[1][0]['channel']:<20}\n"
+            rssi_data_label2.text = f"{json_list[2][0]['ssid']:<20}\t{json_list[2][0]['rssi']:<20}\t{json_list[2][0]['channel']:<20}\n"
+            rssi_data_label3.text = f"{json_list[3][0]['ssid']:<20}\t{json_list[3][0]['rssi']:<20}\t{json_list[3][0]['channel']:<20}\n"
+            rssi_data_label4.text = f"{json_list[4][0]['ssid']:<20}\t{json_list[4][0]['rssi']:<20}\t{json_list[4][0]['channel']:<20}\n"
+            rssi_data_label5.text = f"{json_list[5][0]['ssid']:<20}\t{json_list[5][0]['rssi']:<20}\t{json_list[5][0]['channel']:<20}\n"
+            rssi_data_label6.text = f"{json_list[6][0]['ssid']:<20}\t{json_list[6][0]['rssi']:<20}\t{json_list[6][0]['channel']:<20}\n"
+            rssi_data_label7.text = f"{json_list[7][0]['ssid']:<20}\t{json_list[7][0]['rssi']:<20}\t{json_list[7][0]['channel']:<20}\n"
+            rssi_data_label8.text = f"{json_list[8][0]['ssid']:<20}\t{json_list[8][0]['rssi']:<20}\t{json_list[8][0]['channel']:<20}\n"
+            rssi_data_label9.text = f"{json_list[9][0]['ssid']:<20}\t{json_list[9][0]['rssi']:<20}\t{json_list[9][0]['channel']:<20}\n"
         except Exception as e:
-            print(f"Exception: {e}")
+            print(f"RSSI Label Refresh (index error is ok, ignore it): {e}")
             pass
 
         while (time.monotonic() - last) <= sleep_time and display.root_group is rssi_group:
@@ -950,7 +988,7 @@ while True:
                 # Default state always running
                 group_cleanup()
         last = time.monotonic()
-        
+
     while display.root_group is sys_info_group:
         hello_label_sys_info.text = "System Information"
         # System Stats
