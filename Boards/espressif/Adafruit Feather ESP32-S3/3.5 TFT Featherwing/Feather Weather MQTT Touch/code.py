@@ -30,6 +30,8 @@ from adafruit_bme280 import basic as adafruit_bme280
 from adafruit_hx8357 import HX8357
 import adafruit_stmpe610
 from adafruit_button.sprite_button import SpriteButton
+from adafruit_displayio_layout.layouts.grid_layout import GridLayout
+from adafruit_bitmap_font import bitmap_font
 _now = time.monotonic()
 
 # 3.5" TFT Featherwing is 480x320
@@ -141,6 +143,7 @@ def _format_time(datetime):
     )
 
 # Fonts are optional
+forkawesome_font = bitmap_font.load_font("/fonts/forkawesome-12.pcf")
 arial_font = bitmap_font.load_font("/fonts/Arial-16.bdf")
 small_font = bitmap_font.load_font("/fonts/GoodTimesRg-Regular-16.bdf")
 medium_font = bitmap_font.load_font("/fonts/GoodTimesRg-Regular-40.bdf")
@@ -213,11 +216,17 @@ rssi_data_label6 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 60 + 140), 1, 
 rssi_data_label7 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 60 + 160), 1, TEXT_WHITE)
 rssi_data_label8 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 60 + 180), 1, TEXT_WHITE)
 rssi_data_label9 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 60 + 200), 1, TEXT_WHITE)
+hello_label_change_wifi = make_my_label(
+    terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH / 2, 15), 1, TEXT_WHITE)
+input_change_wifi = make_my_label(
+    terminalio.FONT, (0.0, 0.0), (5, 50), 1, TEXT_WHITE)
+input_new_cred = make_my_label(
+    terminalio.FONT, (0.0, 0.0), (100, 50), 1, TEXT_WHITE)
 warning_label = make_my_label(
     arial_font, (0.5, 0.5), (DISPLAY_WIDTH / 2, DISPLAY_HEIGHT - 103), 1, TEXT_RED
 )
 menu_popout_label = make_my_label(
-    arial_font, (0.0, 0.0), (135, 15), 1, TEXT_CYAN
+    terminalio.FONT, (0.5, 0.5), (DISPLAY_WIDTH / 2, 25), 1, TEXT_CYAN
 )
 date_label = make_my_label(small_font, (0.0, 0.0), (5, 45), 1, TEXT_LIGHTBLUE)
 time_label = make_my_label(small_font, (0.0, 0.0), (5, 65), 2, TEXT_LIGHTBLUE)
@@ -359,7 +368,7 @@ prev_button = SpriteButton(
 
 item1_button = SpriteButton(
     x=135,
-    y=15,
+    y=50,
     width=BUTTON_WIDTH,
     height=BUTTON_HEIGHT,
     label="Preferences",
@@ -372,7 +381,7 @@ item1_button = SpriteButton(
 
 item2_button = SpriteButton(
     x=135,
-    y=70,
+    y=105,
     width=BUTTON_WIDTH,
     height=BUTTON_HEIGHT,
     label="WiFi Credentials",
@@ -385,7 +394,7 @@ item2_button = SpriteButton(
 
 item3_button = SpriteButton(
     x=135,
-    y=125,
+    y=160,
     width=BUTTON_WIDTH,
     height=BUTTON_HEIGHT,
     label="RSSI Scan",
@@ -398,7 +407,7 @@ item3_button = SpriteButton(
 
 item4_button = SpriteButton(
     x=135,
-    y=180,
+    y=215,
     width=BUTTON_WIDTH,
     height=BUTTON_HEIGHT,
     label="System Info",
@@ -408,6 +417,156 @@ item4_button = SpriteButton(
     selected_bmp_path="icons/gradient_button_1.bmp",
     transparent_index=0,
 )
+
+item5_button = SpriteButton(
+    x=135,
+    y=270,
+    width=BUTTON_WIDTH,
+    height=BUTTON_HEIGHT,
+    label="Change Credentials",
+    label_font=arial_font,
+    label_color=TEXT_WHITE,
+    bmp_path="icons/gradient_button_0.bmp",
+    selected_bmp_path="icons/gradient_button_1.bmp",
+    transparent_index=0,
+)
+
+layout = GridLayout(
+    x=2, # layout x
+    y=100, # layout y
+    width=DISPLAY_WIDTH-2,
+    height=DISPLAY_HEIGHT-100,
+    grid_size=(14, 5), # Grid Layout width,height
+    cell_padding=2,
+    divider_lines=True,  # divider lines around every cell
+    cell_anchor_point = (0.5,0.5)
+)
+
+# Grid Layout Labels. Cell invisible with no text label
+_labels = []
+keyboard_input =[]
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="`"))
+layout.add_content(_labels[0], grid_position=(0, 0), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="1"))
+layout.add_content(_labels[1], grid_position=(1, 0), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="2"))
+layout.add_content(_labels[2], grid_position=(2, 0), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="3"))
+layout.add_content(_labels[3], grid_position=(3, 0), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="4"))
+layout.add_content(_labels[4], grid_position=(4, 0), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="5"))
+layout.add_content(_labels[5], grid_position=(5, 0), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="6"))
+layout.add_content(_labels[6], grid_position=(6, 0), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="7"))
+layout.add_content(_labels[7], grid_position=(7, 0), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="8"))
+layout.add_content(_labels[8], grid_position=(8, 0), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="9"))
+layout.add_content(_labels[9], grid_position=(9, 0), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="0"))
+layout.add_content(_labels[10], grid_position=(10, 0), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="-"))
+layout.add_content(_labels[11], grid_position=(11, 0), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="="))
+layout.add_content(_labels[12], grid_position=(12, 0), cell_size=(1, 1))
+_labels.append(label.Label(forkawesome_font, scale=1, x=0, y=0, text="\uf0e2"))
+layout.add_content(_labels[13], grid_position=(13, 0), cell_size=(1, 1))
+
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="Q"))
+layout.add_content(_labels[14], grid_position=(0, 1), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="W"))
+layout.add_content(_labels[15], grid_position=(1, 1), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="E"))
+layout.add_content(_labels[16], grid_position=(2, 1), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="R"))
+layout.add_content(_labels[17], grid_position=(3, 1), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="T"))
+layout.add_content(_labels[18], grid_position=(4, 1), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="Y"))
+layout.add_content(_labels[19], grid_position=(5, 1), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="U"))
+layout.add_content(_labels[20], grid_position=(6, 1), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="I"))
+layout.add_content(_labels[21], grid_position=(7, 1), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="O"))
+layout.add_content(_labels[22], grid_position=(8, 1), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="P"))
+layout.add_content(_labels[23], grid_position=(9, 1), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="["))
+layout.add_content(_labels[24], grid_position=(10, 1), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="]"))
+layout.add_content(_labels[25], grid_position=(11, 1), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="\\"))
+layout.add_content(_labels[26], grid_position=(12, 1), cell_size=(2, 1))
+
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="A"))
+layout.add_content(_labels[27], grid_position=(0, 2), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="S"))
+layout.add_content(_labels[28], grid_position=(1, 2), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="D"))
+layout.add_content(_labels[29], grid_position=(2, 2), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="F"))
+layout.add_content(_labels[30], grid_position=(3, 2), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="G"))
+layout.add_content(_labels[31], grid_position=(4, 2), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="H"))
+layout.add_content(_labels[32], grid_position=(5, 2), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="J"))
+layout.add_content(_labels[33], grid_position=(6, 2), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="K"))
+layout.add_content(_labels[34], grid_position=(7, 2), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="L"))
+layout.add_content(_labels[35], grid_position=(8, 2), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text=";"))
+layout.add_content(_labels[36], grid_position=(9, 2), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="'"))
+layout.add_content(_labels[37], grid_position=(10, 2), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="ENTER"))
+layout.add_content(_labels[38], grid_position=(11, 2), cell_size=(3, 1))
+
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="Z"))
+layout.add_content(_labels[39], grid_position=(0, 3), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="X"))
+layout.add_content(_labels[40], grid_position=(1, 3), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="C"))
+layout.add_content(_labels[41], grid_position=(2, 3), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="V"))
+layout.add_content(_labels[42], grid_position=(3, 3), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="B"))
+layout.add_content(_labels[43], grid_position=(4, 3), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="N"))
+layout.add_content(_labels[44], grid_position=(5, 3), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="M"))
+layout.add_content(_labels[45], grid_position=(6, 3), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text=","))
+layout.add_content(_labels[46], grid_position=(7, 3), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text=","))
+layout.add_content(_labels[47], grid_position=(8, 3), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="."))
+layout.add_content(_labels[48], grid_position=(9, 3), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="/"))
+layout.add_content(_labels[49], grid_position=(10, 3), cell_size=(1, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="SHIFT"))
+layout.add_content(_labels[50], grid_position=(11, 3), cell_size=(3, 1))
+
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="CTRL"))
+layout.add_content(_labels[51], grid_position=(0, 4), cell_size=(2, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="ALT"))
+layout.add_content(_labels[52], grid_position=(2, 4), cell_size=(2, 1))
+_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="SPACE"))
+layout.add_content(_labels[53], grid_position=(4, 4), cell_size=(6, 1))
+_labels.append(label.Label(forkawesome_font, scale=1, x=0, y=0, text="\uf060"))
+layout.add_content(_labels[54], grid_position=(10, 4), cell_size=(1, 1))
+_labels.append(label.Label(forkawesome_font, scale=1, x=0, y=0, text="\uf061"))
+layout.add_content(_labels[55], grid_position=(11, 4), cell_size=(1, 1))
+_labels.append(label.Label(forkawesome_font, scale=1, x=0, y=0, text="\uf062"))
+layout.add_content(_labels[56], grid_position=(12, 4), cell_size=(1, 1))
+_labels.append(label.Label(forkawesome_font, scale=1, x=0, y=0, text="\uf063"))
+layout.add_content(_labels[57], grid_position=(13, 4), cell_size=(1, 1))
+
+
 
 # Create subgroups
 splash = displayio.Group()
@@ -464,6 +623,13 @@ sys_info_group.append(sys_info_data_label5)
 sys_info_group.append(sys_info_data_label6)
 sys_info_group.append(sys_info_data_label7)
 
+# Wifi Change Credentials Group
+wifi_change_group = displayio.Group()
+wifi_change_group.append(hello_label_change_wifi)
+wifi_change_group.append(input_change_wifi)
+wifi_change_group.append(input_new_cred)
+wifi_change_group.append(layout)
+
 # Add subgroups to main display group
 main_group.append(text_group)
 main_group.append(warning_group)
@@ -508,6 +674,7 @@ menu_popout_group.append(item1_button)
 menu_popout_group.append(item2_button)
 menu_popout_group.append(item3_button)
 menu_popout_group.append(item4_button)
+menu_popout_group.append(item5_button)
 splash.append(menu_button)
 splash.append(next_button)
 splash.append(prev_button)
@@ -526,6 +693,7 @@ def hide_warning():
 
 def show_menu():
     # Function to display popup menu
+    menu_popout_label.text = "Menu Popout"
     menu_popout_group.hidden = False
 
 def hide_menu():
@@ -546,11 +714,12 @@ def group_cleanup():
     item2_button.selected = False
     item3_button.selected = False
     item4_button.selected = False
+    item5_button.selected = False
     menu_button.selected = False
     prev_button.selected = False
     next_button.selected = False
 
-def menu_switching(current_group, prev_target, next_target, item1_target, item2_target, item3_target, item4_target):
+def menu_switching(current_group, prev_target, next_target, item1_target, item2_target, item3_target, item4_target, item5_target):
     if menu_button.contains(p):
         if not menu_button.selected:
             menu_button.selected = True
@@ -593,6 +762,12 @@ def menu_switching(current_group, prev_target, next_target, item1_target, item2_
             time.sleep(0.25)
             print("Item 4 Pressed")
             group_switch(current_group, item4_target)
+    elif item5_button.contains(p):
+        if not item5_button.selected:
+            item5_button.selected = True
+            time.sleep(0.25)
+            print("Item 5 Pressed")
+            group_switch(current_group, item5_target)
     else:
         group_cleanup()
         hide_menu()
@@ -892,7 +1067,7 @@ while True:
             while (time.monotonic() - last) <= sleep_time and display.root_group is main_group:
                 p = touchscreen.touch_point
                 if p:
-                    menu_switching(main_group, main_group3, main_group2, preferences_group, wifi_settings_group, rssi_group, sys_info_group)
+                    menu_switching(main_group, main_group3, main_group2, preferences_group, wifi_settings_group, rssi_group, sys_info_group, wifi_change_group)
                 else:
                     # Default state always running
                     group_cleanup()
@@ -905,7 +1080,7 @@ while True:
         while (time.monotonic() - last) <= sleep_time and display.root_group is main_group2:
             p = touchscreen.touch_point
             if p:
-                menu_switching(main_group2, main_group, main_group3, preferences_group, wifi_settings_group, rssi_group, sys_info_group)
+                menu_switching(main_group2, main_group, main_group3, preferences_group, wifi_settings_group, rssi_group, sys_info_group, wifi_change_group)
             else:
                 # Default state always running
                 group_cleanup()
@@ -916,7 +1091,7 @@ while True:
         while (time.monotonic() - last) <= sleep_time and display.root_group is main_group3:
             p = touchscreen.touch_point
             if p:
-                menu_switching(main_group3, main_group2, main_group, preferences_group, wifi_settings_group, rssi_group, sys_info_group)
+                menu_switching(main_group3, main_group2, main_group, preferences_group, wifi_settings_group, rssi_group, sys_info_group, wifi_change_group)
             else:
                 # Default state always running
                 group_cleanup()
@@ -927,7 +1102,7 @@ while True:
         while (time.monotonic() - last) <= sleep_time and display.root_group is preferences_group:
             p = touchscreen.touch_point
             if p:
-                menu_switching(preferences_group, main_group, main_group, preferences_group, wifi_settings_group, rssi_group, sys_info_group)
+                menu_switching(preferences_group, main_group, main_group, preferences_group, wifi_settings_group, rssi_group, sys_info_group, wifi_change_group)
             else:
                 # Default state always running
                 group_cleanup()
@@ -950,7 +1125,7 @@ while True:
         while (time.monotonic() - last) <= sleep_time and display.root_group is wifi_settings_group:
             p = touchscreen.touch_point
             if p:
-                menu_switching(wifi_settings_group, main_group, main_group, preferences_group, wifi_settings_group, rssi_group, sys_info_group)
+                menu_switching(wifi_settings_group, main_group, main_group, preferences_group, wifi_settings_group, rssi_group, sys_info_group, wifi_change_group)
             else:
                 # Default state always running
                 group_cleanup()
@@ -989,7 +1164,7 @@ while True:
         while (time.monotonic() - last) <= sleep_time and display.root_group is rssi_group:
             p = touchscreen.touch_point
             if p:
-                menu_switching(rssi_group, main_group, main_group, preferences_group, wifi_settings_group, rssi_group, sys_info_group)
+                menu_switching(rssi_group, main_group, main_group, preferences_group, wifi_settings_group, rssi_group, sys_info_group, wifi_change_group)
             else:
                 # Default state always running
                 group_cleanup()
@@ -1033,7 +1208,41 @@ while True:
         while (time.monotonic() - last) <= sleep_time and display.root_group is sys_info_group:
             p = touchscreen.touch_point
             if p:
-                menu_switching(sys_info_group, main_group, main_group, preferences_group, wifi_settings_group, rssi_group, sys_info_group)
+                menu_switching(sys_info_group, main_group, main_group, preferences_group, wifi_settings_group, rssi_group, sys_info_group, wifi_change_group)
+            else:
+                # Default state always running
+                group_cleanup()
+        last = time.monotonic()
+        
+    while display.root_group is wifi_change_group:
+        label_list1 = []
+        New_Label_list =[]
+        hello_label_change_wifi.text = "Wifi Change Credentials"
+        input_change_wifi.text = "New Password: "
+        for label in _labels:
+            label_list1.append(label)
+        for label in label_list1:
+            sorted_labels = {'text':label.text}
+            New_Label_list.append([sorted_labels])
+        jsonLabelList = json.dumps(New_Label_list)
+        jsonlabel_list = json.loads(jsonLabelList)
+        while (time.monotonic() - last) <= sleep_time and display.root_group is wifi_change_group:
+            p = touchscreen.touch_point
+            if p:
+                print(f"Touch Point: {p}")
+                print(f"Get Grid Cell H: {layout.get_cell((5,2)).text}")
+                print(f"Get Grid Cell E: {layout.get_cell((2,1)).text}")
+                print(f"Get Grid Cell L: {layout.get_cell((8,2)).text}")
+                print(f"Get Grid Cell L: {layout.get_cell((8,2)).text}")
+                print(f"Get Grid Cell O: {layout.get_cell((8,1)).text}")
+                print("Key Pressed")
+                label_list = json.dumps(_labels)
+                #print(f"Label List: {label_list}")
+                #print(f"jsonList: {jsonlabel_list}")
+                print(f"Labels: {jsonlabel_list[0]}")
+                print(f"Object Type: {type(_labels)}")
+                input_new_cred.text = f"{jsonlabel_list[0][0]['text']}"
+                menu_switching(wifi_change_group, main_group2, main_group, preferences_group, wifi_settings_group, rssi_group, sys_info_group, wifi_change_group)
             else:
                 # Default state always running
                 group_cleanup()
