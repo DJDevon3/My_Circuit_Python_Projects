@@ -11,6 +11,8 @@ import board
 import displayio
 import digitalio
 import terminalio
+import pwmio
+import analogio
 import adafruit_imageload
 import adafruit_sdcard
 import storage
@@ -32,6 +34,7 @@ import adafruit_stmpe610
 from adafruit_button.sprite_button import SpriteButton
 from adafruit_displayio_layout.layouts.grid_layout import GridLayout
 from adafruit_bitmap_font import bitmap_font
+from slider import Slider
 _now = time.monotonic()
 
 # 3.5" TFT Featherwing is 480x320
@@ -86,6 +89,13 @@ touchscreen = adafruit_stmpe610.Adafruit_STMPE610_SPI(
     disp_rotation=display.rotation,
     touch_flip=_touch_flip,
 )
+
+# TFT Featherwing LITE Bodge Mod
+# Use board.D8 for NRF52840 Sense, board.A5 for ESP32-S3
+# Controls TFT backlight brightness via PWM signal
+display_duty_cycle = 65535  # Values from 0 to 65535
+TFT_brightness = pwmio.PWMOut(board.A5,frequency=500,duty_cycle=display_duty_cycle)
+TFT_brightness.duty_cycle = 65535
 
 # Initialize BME280 Sensor
 i2c = board.STEMMA_I2C()  # uses board.SCL and board.SDA
@@ -188,6 +198,12 @@ hello_label_page3 = make_my_label(
 hello_label_preferences = make_my_label(
     terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH / 2, 15), 1, TEXT_WHITE
 )
+preferences_value = make_my_label(
+    terminalio.FONT, (0.5, 0.5), (DISPLAY_WIDTH / 2, 5), 1, TEXT_WHITE
+)
+label_preferences_current_brightness = make_my_label(
+    terminalio.FONT, (1.0, 1.0), (DISPLAY_WIDTH - 10, 80), 1, TEXT_CYAN
+)
 hello_label_wifi_settings = make_my_label(terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH / 2, 15), 1, TEXT_WHITE)
 wifi_settings_ssid = make_my_label(terminalio.FONT, (0.0, 0.0), (DISPLAY_WIDTH / 3, 50), 2, TEXT_WHITE)
 wifi_settings_pw = make_my_label(terminalio.FONT, (0.0, 0.0), (DISPLAY_WIDTH / 3, 150), 2, TEXT_WHITE)
@@ -222,6 +238,9 @@ input_change_wifi = make_my_label(
     terminalio.FONT, (0.0, 0.0), (5, 50), 1, TEXT_WHITE)
 input_new_cred = make_my_label(
     terminalio.FONT, (0.0, 0.0), (100, 50), 1, TEXT_WHITE)
+input_lbl = label.Label(terminalio.FONT, scale=2, text="", color=0xffffff, background_color=0x00000)
+input_lbl.x = 100
+input_lbl.y = 50
 warning_label = make_my_label(
     arial_font, (0.5, 0.5), (DISPLAY_WIDTH / 2, DISPLAY_HEIGHT - 103), 1, TEXT_RED
 )
@@ -442,6 +461,15 @@ layout = GridLayout(
     cell_anchor_point = (0.5,0.5)
 )
 
+my_slider = Slider(x=5, y=50, width=300, value=40000)
+
+ASCII_CHARS = (
+    "`", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=",
+    "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "",
+    "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", ",", ".", "/", "\\", "'",
+    "[", "]", ";"
+)
+
 # Grid Layout Labels. Cell invisible with no text label
 _labels = []
 keyboard_input =[]
@@ -566,8 +594,6 @@ layout.add_content(_labels[56], grid_position=(12, 4), cell_size=(1, 1))
 _labels.append(label.Label(forkawesome_font, scale=1, x=0, y=0, text="\uf063"))
 layout.add_content(_labels[57], grid_position=(13, 4), cell_size=(1, 1))
 
-
-
 # Create subgroups
 splash = displayio.Group()
 text_group = displayio.Group()
@@ -576,6 +602,7 @@ temp_group = displayio.Group()
 warning_group = displayio.Group()
 loading_group = displayio.Group()
 menu_popout_group = displayio.Group()
+menu_popout_group_items = displayio.Group()
 main_group = displayio.Group()
 
 # Page 2 Groups
@@ -589,6 +616,8 @@ main_group3.append(hello_label_page3)
 # Preferences Group
 preferences_group = displayio.Group()
 preferences_group.append(hello_label_preferences)
+preferences_group.append(label_preferences_current_brightness)
+preferences_group.append(my_slider)
 
 # Wifi Settings Group
 wifi_settings_group = displayio.Group()
@@ -612,7 +641,7 @@ rssi_group.append(rssi_data_label8)
 rssi_group.append(rssi_data_label9)
 rssi_text_group = displayio.Group()
 
-# RSSI Scan Group
+# System Info Group
 sys_info_group = displayio.Group()
 sys_info_group.append(hello_label_sys_info)
 sys_info_group.append(sys_info_data_label1)
@@ -629,6 +658,7 @@ wifi_change_group.append(hello_label_change_wifi)
 wifi_change_group.append(input_change_wifi)
 wifi_change_group.append(input_new_cred)
 wifi_change_group.append(layout)
+wifi_change_group.append(input_lbl)
 
 # Add subgroups to main display group
 main_group.append(text_group)
@@ -637,6 +667,7 @@ main_group.append(loading_group)
 main_group.append(temp_group)
 main_group.append(sprite_group)
 main_group.append(menu_popout_group)
+main_group.append(menu_popout_group_items)
 main_group.append(splash)
 
 # Add warning popup group
@@ -670,11 +701,11 @@ text_group.append(redbmp_label)
 # Add Menu popup group
 menu_popout_group.append(menu_roundrect)
 menu_popout_group.append(menu_popout_label)
-menu_popout_group.append(item1_button)
-menu_popout_group.append(item2_button)
-menu_popout_group.append(item3_button)
-menu_popout_group.append(item4_button)
-menu_popout_group.append(item5_button)
+menu_popout_group_items.append(item1_button)
+menu_popout_group_items.append(item2_button)
+menu_popout_group_items.append(item3_button)
+menu_popout_group_items.append(item4_button)
+menu_popout_group_items.append(item5_button)
 splash.append(menu_button)
 splash.append(next_button)
 splash.append(prev_button)
@@ -695,16 +726,22 @@ def show_menu():
     # Function to display popup menu
     menu_popout_label.text = "Menu Popout"
     menu_popout_group.hidden = False
+    menu_popout_group_items.hidden = False
 
 def hide_menu():
     # Function to hide popup menu
     menu_popout_group.hidden = True
+    menu_popout_group_items.hidden = True
 
-def group_switch(SHOUTY_REMOVE, SHOUTY_APPEND):
+
+def root_group_switch(SHOUTY_REMOVE, SHOUTY_APPEND):
+    # Necessary so menus remain on top of all layers
     hide_menu()
     SHOUTY_REMOVE.remove(menu_popout_group)
+    SHOUTY_REMOVE.remove(menu_popout_group_items)
     SHOUTY_REMOVE.remove(splash)
     SHOUTY_APPEND.append(menu_popout_group)
+    SHOUTY_APPEND.append(menu_popout_group_items)
     SHOUTY_APPEND.append(splash)
     display.root_group = SHOUTY_APPEND
 
@@ -731,43 +768,43 @@ def menu_switching(current_group, prev_target, next_target, item1_target, item2_
             prev_button.selected = True
             time.sleep(0.1)
             print("Previous Pressed")
-            group_switch(current_group, prev_target)
+            root_group_switch(current_group, prev_target)
     elif next_button.contains(p):
         if not next_button.selected:
             next_button.selected = True
             time.sleep(0.5)
             print("Next Pressed")
-            group_switch(current_group, next_target)
+            root_group_switch(current_group, next_target)
     elif item1_button.contains(p):
         if not item1_button.selected:
             item1_button.selected = True
             time.sleep(0.25)
             print("Item 1 Pressed")
-            group_switch(current_group, item1_target)
+            root_group_switch(current_group, item1_target)
     elif item2_button.contains(p):
         if not item2_button.selected:
             item2_button.selected = True
             time.sleep(0.25)
             print("Item 2 Pressed")
-            group_switch(current_group, item2_target)
+            root_group_switch(current_group, item2_target)
     elif item3_button.contains(p):
         if not item3_button.selected:
             item3_button.selected = True
             time.sleep(0.25)
             print("Item 3 Pressed")
-            group_switch(current_group, item3_target)
+            root_group_switch(current_group, item3_target)
     elif item4_button.contains(p):
         if not item4_button.selected:
             item4_button.selected = True
             time.sleep(0.25)
             print("Item 4 Pressed")
-            group_switch(current_group, item4_target)
+            root_group_switch(current_group, item4_target)
     elif item5_button.contains(p):
         if not item5_button.selected:
             item5_button.selected = True
             time.sleep(0.25)
             print("Item 5 Pressed")
-            group_switch(current_group, item5_target)
+            root_group_switch(current_group, item5_target)
     else:
         group_cleanup()
         hide_menu()
@@ -1101,7 +1138,19 @@ while True:
         hello_label_preferences.text = "Feather Weather Preferences"
         while (time.monotonic() - last) <= sleep_time and display.root_group is preferences_group:
             p = touchscreen.touch_point
-            if p:
+            if p:  # Check each slider if the touch point is within the slider touch area
+                if my_slider.when_inside(p):
+                    try:
+                        my_slider.when_selected(p)
+                        print(f"Slider Value: {p[0]}")
+                        print(f"Slider Adjusted: {int(p[0] / 300 * 65000)}")
+                        _Slider_New_Value = int(p[0] / 300 * 65000)
+                        print(f"TFT_brightness.duty_cycle : {_Slider_New_Value}")
+                        TFT_brightness.duty_cycle = _Slider_New_Value
+                        label_preferences_current_brightness.text = f"Display Brightness"
+                    except Exception as e:
+                        print(e)
+                        continue
                 menu_switching(preferences_group, main_group, main_group, preferences_group, wifi_settings_group, rssi_group, sys_info_group, wifi_change_group)
             else:
                 # Default state always running
@@ -1213,35 +1262,34 @@ while True:
                 # Default state always running
                 group_cleanup()
         last = time.monotonic()
-        
+
     while display.root_group is wifi_change_group:
         label_list1 = []
         New_Label_list =[]
         hello_label_change_wifi.text = "Wifi Change Credentials"
         input_change_wifi.text = "New Password: "
-        for label in _labels:
-            label_list1.append(label)
-        for label in label_list1:
-            sorted_labels = {'text':label.text}
-            New_Label_list.append([sorted_labels])
-        jsonLabelList = json.dumps(New_Label_list)
-        jsonlabel_list = json.loads(jsonLabelList)
+        key_text = input_new_cred
+
+        print(f"size: {layout.width}, {layout.height}")
+        print(f"cell size: {layout.cell_size_pixels}")
         while (time.monotonic() - last) <= sleep_time and display.root_group is wifi_change_group:
             p = touchscreen.touch_point
             if p:
-                print(f"Touch Point: {p}")
-                print(f"Get Grid Cell H: {layout.get_cell((5,2)).text}")
-                print(f"Get Grid Cell E: {layout.get_cell((2,1)).text}")
-                print(f"Get Grid Cell L: {layout.get_cell((8,2)).text}")
-                print(f"Get Grid Cell L: {layout.get_cell((8,2)).text}")
-                print(f"Get Grid Cell O: {layout.get_cell((8,1)).text}")
-                print("Key Pressed")
-                label_list = json.dumps(_labels)
-                #print(f"Label List: {label_list}")
-                #print(f"jsonList: {jsonlabel_list}")
-                print(f"Labels: {jsonlabel_list[0]}")
-                print(f"Object Type: {type(_labels)}")
-                input_new_cred.text = f"{jsonlabel_list[0][0]['text']}"
+                #print(p)
+                touched_cell = layout.which_cell_contains(p)
+                if touched_cell:
+                    touched_cell_view = layout.get_cell(touched_cell)
+                    key_text = touched_cell_view.text
+                    print(f"key_text: {key_text}")
+                    if key_text in ASCII_CHARS:
+                        input_lbl.text += key_text
+                    elif key_text == "SPACE":
+                        input_lbl.text += " "
+                    touched_cell_view.background_color = 0x00ff00
+                    touched_cell_view.color = 0x000000
+                    time.sleep(0.2)
+                    touched_cell_view.color = 0xffffff
+                    layout.get_cell(touched_cell).background_color = 0x000000
                 menu_switching(wifi_change_group, main_group2, main_group, preferences_group, wifi_settings_group, rssi_group, sys_info_group, wifi_change_group)
             else:
                 # Default state always running
