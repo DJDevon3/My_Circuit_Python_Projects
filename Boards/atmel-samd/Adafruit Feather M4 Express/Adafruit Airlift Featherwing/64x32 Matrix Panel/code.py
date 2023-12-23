@@ -7,6 +7,7 @@
 Queries OpenWeatherMap.org API
 Returns weather & time using lat/lon
 """
+import traceback
 import time
 import board
 import busio
@@ -17,7 +18,7 @@ from digitalio import DigitalInOut
 import adafruit_requests as requests
 import adafruit_esp32spi.adafruit_esp32spi_socket as socket
 from adafruit_esp32spi import adafruit_esp32spi
-from adafruit_display_text import label
+from adafruit_display_text.label import Label
 from adafruit_bitmap_font import bitmap_font
 
 displayio.release_displays()
@@ -41,8 +42,7 @@ OWUNITS = secrets["openweather_units"]
 # Seconds between OpenWeatherMap polling
 # 600 = 10 mins, 900 = 15 mins, 1800 = 30 mins, 3600 = 1 hour
 sleep_time = 600
-# Scroll speed
-scroll_delay = 0.03
+scroll_delay = 0.03  # Scroll Speed
 Time_Format = "Civilian"  # Military or Civilian
 
 # AirLift Featherwing:
@@ -123,19 +123,19 @@ HUMIDITY_COLOR = 0x0000AA
 WIND_COLOR = 0xCCCCCC
 
 # Labels
-temp_text = label.Label(small_font)
+temp_text = Label(small_font)
 temp_text.anchor_point = (1.0, 0.0)
 temp_text.anchored_position = (DISPLAY_WIDTH, 0)
 temp_text.color = TEMP_COLOR
-description_text = label.Label(small_font)
+description_text = Label(small_font)
 description_text.color = DESCRIPTION_COLOR
-timestamp_text = label.Label(small_font)
+timestamp_text = Label(small_font)
 timestamp_text.color = TIMESTAMP_COLOR
-humidity_text = label.Label(small_font)
+humidity_text = Label(small_font)
 humidity_text.color = HUMIDITY_COLOR
-wind_text = label.Label(small_font)
+wind_text = Label(small_font)
 wind_text.color = WIND_COLOR
-gust_text = label.Label(small_font)
+gust_text = Label(small_font)
 gust_text.color = WIND_COLOR
 
 # Splash Loading Image
@@ -199,6 +199,7 @@ def set_icon(icon_name):
         if row is not None:
             icon_sprite[0] = (row * 2) + column
             icon_group.append(icon_sprite)
+
 
 current_label = None
 display.root_group = splash
@@ -307,15 +308,13 @@ while True:
             if current_label is not None and scrolling_group:
                 current_text = scrolling_texts[current_label]
                 text_width = current_text.bounding_box[2]
-                for x in range(text_width + 1):
+                for i in range(text_width + 1):
                     scrolling_group.x = scrolling_group.x - 1
                     time.sleep(scroll_delay)
 
             if current_label is not None:
                 current_label += 1
-            if current_label is None or current_label >= len(
-                    scrolling_texts
-            ):
+            if current_label is None or current_label >= len(scrolling_texts):
                 current_label = 0
             # Setup the scrolling group by removing any existing
             if scrolling_group:
@@ -323,17 +322,16 @@ while True:
             # Then add the current label
             current_text = scrolling_texts[current_label]
             scrolling_group.append(current_text)
+            text_width = current_text.bounding_box[2]
             scrolling_group.x = display.width
             scrolling_group.y = 23
+            # print(f"Current Text: {current_text.text}")
 
             # Loop until label is offscreen again and leave function
-            for x in range(display.width):
-                try:
-                    scrolling_group.x = scrolling_group.x - 1
-                    time.sleep(scroll_delay)
-                except TypeError as e:
-                    print(f"Type Error: {e}")
-                    pass
+            for i in range(display.width):
+                scrolling_group.x = scrolling_group.x - 1
+                time.sleep(scroll_delay)
+                
             # By blocking other code we will never leave the label half way scrolled
-        last = time.monotonic
+        last = time.monotonic()
         break
