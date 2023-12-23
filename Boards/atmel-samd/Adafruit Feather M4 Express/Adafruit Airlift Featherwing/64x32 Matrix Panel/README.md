@@ -4,6 +4,7 @@
 - Coded for Circuit Python 8.2.x
 - Updated to use OpenWeatherMap.org 2.5 onecall API
 - Condensed code into 1 code.py page
+- Uses lattitude/longitude for weather & time
 - Added exception handler for wind gust key:value. Gust is a value that might not always be available.
 
 
