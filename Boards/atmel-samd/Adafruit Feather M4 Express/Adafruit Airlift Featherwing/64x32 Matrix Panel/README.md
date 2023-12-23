@@ -1,6 +1,7 @@
 # Matrix Panel Display
 - [Matrix Panel Display Learn Guide](https://learn.adafruit.com/weather-display-matrix/overview) by John Park 2020 
 - updated DJDevon3 2023
+- Coded for Circuit Python 8.2.x
 
 I don't have an M4 Matrix Portal so I basically created one using a Feather M4 Express & Airlift Featherwing with some custom wiring to a 64x32 Matrix Panel
 
