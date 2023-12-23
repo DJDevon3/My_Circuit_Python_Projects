@@ -7,7 +7,6 @@
 Queries OpenWeatherMap.org API
 Returns weather & time using lat/lon
 """
-import gc
 import time
 import board
 import busio
@@ -44,7 +43,7 @@ OWUNITS = secrets["openweather_units"]
 sleep_time = 600
 # Scroll speed
 scroll_delay = 0.03
-Time_Format = "Civilian" # Military or Civilian
+Time_Format = "Civilian"  # Military or Civilian
 
 # AirLift Featherwing:
 esp32_cs = DigitalInOut(board.D13)
@@ -111,9 +110,7 @@ def _format_time(datetime):
     am_pm = "AM"
     if datetime.tm_hour / 12 >= 1:
         am_pm = "PM"
-    return "{:d}:{:02d} {}".format(hour, datetime.tm_min, am_pm
-    )
-
+    return "{:d}:{:02d} {}".format(hour, datetime.tm_min, am_pm)
 
 small_font = bitmap_font.load_font("/fonts/Arial-12.bdf")
 medium_font = bitmap_font.load_font("/fonts/Arial-14.bdf")
@@ -190,7 +187,6 @@ def set_icon(icon_name):
     icon_map = ("01", "02", "03", "04", "09", "10", "11", "13", "50")
     if icon_group:
         icon_group.pop()
-        gc.collect()
     if icon_name is not None:
         row = None
         for index, icon in enumerate(icon_map):
@@ -250,9 +246,9 @@ while True:
                     current_unix_time = time.localtime(get_timestamp)
                     current_struct_time = time.struct_time(current_unix_time)
                     current_date = "{}".format(_format_date(current_struct_time))
-                    if Time_Format is "Military":
+                    if Time_Format == "Military":
                         current_time = "{}".format(_format_mil_time(current_struct_time))
-                    if Time_Format is "Civilian":
+                    if Time_Format == "Civilian":
                         current_time = "{}".format(_format_time(current_struct_time))
                     
                     owm_icon = owm_response["current"]["weather"][0]["icon"]
@@ -305,14 +301,13 @@ while True:
             # Switch from splash to main_group
             display.root_group = main_group
             splash.remove(background_tile)
-            gc.collect()
             
         while (time.monotonic() - last) <= sleep_time:
             # Next Label Function
             if current_label is not None and scrolling_group:
                 current_text = scrolling_texts[current_label]
                 text_width = current_text.bounding_box[2]
-                for _ in range(text_width + 1):
+                for x in range(text_width + 1):
                     scrolling_group.x = scrolling_group.x - 1
                     time.sleep(scroll_delay)
 
@@ -325,7 +320,6 @@ while True:
             # Setup the scrolling group by removing any existing
             if scrolling_group:
                 scrolling_group.pop()
-                gc.collect()
             # Then add the current label
             current_text = scrolling_texts[current_label]
             scrolling_group.append(current_text)
@@ -333,9 +327,13 @@ while True:
             scrolling_group.y = 23
 
             # Loop until label is offscreen again and leave function
-            for _ in range(display.width):
-                scrolling_group.x = scrolling_group.x - 1
-                time.sleep(scroll_delay)
+            for x in range(display.width):
+                try:
+                    scrolling_group.x = scrolling_group.x - 1
+                    time.sleep(scroll_delay)
+                except TypeError as e:
+                    print(f"Type Error: {e}")
+                    pass
             # By blocking other code we will never leave the label half way scrolled
         last = time.monotonic
         break
