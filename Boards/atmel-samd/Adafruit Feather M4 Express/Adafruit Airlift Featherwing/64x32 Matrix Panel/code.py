@@ -7,7 +7,6 @@
 Queries OpenWeatherMap.org API
 Returns weather & time using lat/lon
 """
-import traceback
 import time
 import board
 import busio
