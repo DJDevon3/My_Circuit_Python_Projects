@@ -1,16 +1,27 @@
 # Matrix Panel Display
+I don't have a Matrix Portal M4 so I basically replicated one using a Feather M4 Express & Airlift Featherwing & custom wiring to a 64x32 Matrix Panel
 - [Matrix Panel Display Learn Guide](https://learn.adafruit.com/weather-display-matrix/overview) by John Park 2020 
-- updated DJDevon3 2023
+- updated by DJDevon3 2023
 - Coded for Circuit Python 8.2.x
+- Updated to use OpenWeatherMap.org 2.5 onecall API
+- Condensed code into 1 code.py page
+- Uses lattitude/longitude for weather & time
+- Added exception handler for wind gust key:value. Gust is a value that might not always be available.
 
-I don't have an M4 Matrix Portal so I basically created one using a Feather M4 Express & Airlift Featherwing with some custom wiring to a 64x32 Matrix Panel
+### Required:
+- [OpenWeatherMap.org](https://www.OpenWeatherMap.org) Account with API Key (Free)
 
-Uses OpenWeatherMap.org 2.5 onecall API
+### Hardware:
+- [Adafruit 64x32 Matrix Panel](https://www.adafruit.com/product/2277)
+- [5V 18A Power Supply](https://www.amazon.com/gp/product/B018TEAPRQ)
+- [On/Off Rocker Safety Switch](https://www.amazon.com/gp/product/B07RQV2NPN)
+- [Adafruit Feather M4 Express](https://www.adafruit.com/product/3857) + [Airlift Featherwing](https://www.adafruit.com/product/4264) OR [Matrix Portal M4](https://www.adafruit.com/product/4745)
+- If you would rather use a [Matrix Portal S3](https://www.adafruit.com/product/5778) I have [plenty of examples here](https://github.com/DJDevon3/My_Circuit_Python_Projects/tree/main/Boards/espressif/Adafruit%20MatrixPortal%20S3).
 
-### Requirements:
-- OpenWeatherMap Account with API Key
-- 64x32 Matrix Panel
-- Adafruit Feather M4 Express + Airlift Featherwing OR Matrix Portal M4
+### Manually Wiring Feather to Matrix Panel
+- The 1st & 5th pins on the top row of the IDC are NC (not connected to anything).
+  
+![IDC_Wiring](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/0235c8fc-88f2-4948-b604-9b2829c80b34)
 
 ![IMG_1344](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/ad0c3e98-a7ab-4ba5-961f-ef6b04b22575)
 
