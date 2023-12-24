@@ -41,7 +41,7 @@ OWUNITS = secrets["openweather_units"]
 # Seconds between OpenWeatherMap polling
 # 600 = 10 mins, 900 = 15 mins, 1800 = 30 mins, 3600 = 1 hour
 sleep_time = 600
-scroll_delay = 0.03  # Scroll Speed
+scroll_delay = 0.05  # Scroll Speed
 Time_Format = "Civilian"  # Military or Civilian
 
 # AirLift Featherwing:
@@ -58,7 +58,7 @@ requests.set_socket(socket, esp)
 
 # Custom Wired to Feather M4 Express
 matrix = rgbmatrix.RGBMatrix(
-    width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT, bit_depth=6,
+    width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT, bit_depth=4,
     rgb_pins=[board.D6, board.D5, board.D9, board.D4, board.D10, board.SCL],
     addr_pins=[board.A5, board.A4, board.A3, board.A2],
     clock_pin=board.A1,
@@ -111,6 +111,8 @@ def _format_time(datetime):
         am_pm = "PM"
     return "{:d}:{:02d} {}".format(hour, datetime.tm_min, am_pm)
 
+tiny5_font = bitmap_font.load_font("/fonts/tiny3x5.bdf")
+tiny6_font = bitmap_font.load_font("/fonts/4x6.bdf")
 small_font = bitmap_font.load_font("/fonts/Arial-12.bdf")
 medium_font = bitmap_font.load_font("/fonts/Arial-14.bdf")
 
@@ -122,19 +124,26 @@ HUMIDITY_COLOR = 0x0000AA
 WIND_COLOR = 0xCCCCCC
 
 # Labels
-temp_text = Label(small_font)
+temp_text = Label(tiny5_font)
 temp_text.anchor_point = (1.0, 0.0)
-temp_text.anchored_position = (DISPLAY_WIDTH, 0)
+temp_text.anchored_position = (DISPLAY_WIDTH, 6)
 temp_text.color = TEMP_COLOR
-description_text = Label(small_font)
+pressure_text = Label(tiny6_font)
+pressure_text.anchor_point = (1.0, 0.0)
+pressure_text.anchored_position = (DISPLAY_WIDTH-20, 6)
+pressure_text.color = TEMP_COLOR
+time_text = Label(tiny6_font)
+time_text.anchor_point = (1.0, 0.0)
+time_text.anchored_position = (DISPLAY_WIDTH, 0)
+time_text.color = TIMESTAMP_COLOR
+
+description_text = Label(tiny5_font)
 description_text.color = DESCRIPTION_COLOR
-timestamp_text = Label(small_font)
-timestamp_text.color = TIMESTAMP_COLOR
-humidity_text = Label(small_font)
+humidity_text = Label(tiny5_font)
 humidity_text.color = HUMIDITY_COLOR
-wind_text = Label(small_font)
+wind_text = Label(tiny5_font)
 wind_text.color = WIND_COLOR
-gust_text = Label(small_font)
+gust_text = Label(tiny5_font)
 gust_text.color = WIND_COLOR
 
 # Splash Loading Image
@@ -160,7 +169,6 @@ icon_sprite = displayio.TileGrid(
 # scrolling_texts is a list not a group
 # Appends labels to scrolling list
 scrolling_texts = []
-scrolling_texts.append(timestamp_text)
 scrolling_texts.append(description_text)
 scrolling_texts.append(humidity_text)
 scrolling_texts.append(wind_text)
@@ -178,6 +186,8 @@ scrolling_group = displayio.Group()
 
 # Append labels to Groups
 text_group.append(temp_text)
+text_group.append(pressure_text)
+text_group.append(time_text)
 main_group.append(icon_group)
 main_group.append(text_group)
 main_group.append(scrolling_group)
@@ -272,12 +282,13 @@ while True:
                     # Static Labels on Matrix Display
                     set_icon(owm_icon)
                     temp_text.text = f"{owm_temp:.0f}°F"
+                    time_text.text = f"{current_time}"
+                    pressure_text.text = f"{owm_pressure}"
                     
                     # Scrolling Labels on Matrix Display
-                    timestamp_text.text = f"UPDATED {current_time}"
                     description_text.text = f"{owm_describe}"
                     humidity_text.text = f"HUMIDITY {owm_humidity}%"
-                    wind_text.text = f"WIND SPEED {owm_windspeed} MPH"
+                    wind_text.text = f"WIND {owm_windspeed} MPH"
                     
                     # Special since there might be no key:value returned
                     try:
