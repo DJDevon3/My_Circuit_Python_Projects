@@ -8,8 +8,10 @@ I don't have a Matrix Portal M4 so I basically replicated one using a Feather M4
 - Uses lattitude/longitude for weather & time
 - Added exception handler for wind gust key:value. Gust is a value that might not always be available.
 
-### Requirements:
+### Required:
 - [OpenWeatherMap.org](https://www.OpenWeatherMap.org) Account with API Key (Free)
+
+### Hardware:
 - [Adafruit 64x32 Matrix Panel](https://www.adafruit.com/product/2277)
 - [5V 18A Power Supply](https://www.amazon.com/gp/product/B018TEAPRQ)
 - [On/Off Rocker Safety Switch](https://www.amazon.com/gp/product/B07RQV2NPN)
