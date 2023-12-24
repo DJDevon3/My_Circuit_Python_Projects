@@ -11,6 +11,8 @@ I don't have a Matrix Portal M4 so I basically replicated one using a Feather M4
 ### Requirements:
 - [OpenWeatherMap.org](https://www.OpenWeatherMap.org) Account with API Key (Free)
 - [Adafruit 64x32 Matrix Panel](https://www.adafruit.com/product/2277)
+- [5V 18A Power Supply](https://www.amazon.com/gp/product/B018TEAPRQ)
+- [On/Off Rocker Safety Switch](https://www.amazon.com/gp/product/B07RQV2NPN)
 - [Adafruit Feather M4 Express](https://www.adafruit.com/product/3857) + [Airlift Featherwing](https://www.adafruit.com/product/4264) OR [Matrix Portal M4](https://www.adafruit.com/product/4745)
 - If you would rather use a [Matrix Portal S3](https://www.adafruit.com/product/5778) I have [plenty of examples here](https://github.com/DJDevon3/My_Circuit_Python_Projects/tree/main/Boards/espressif/Adafruit%20MatrixPortal%20S3).
 
