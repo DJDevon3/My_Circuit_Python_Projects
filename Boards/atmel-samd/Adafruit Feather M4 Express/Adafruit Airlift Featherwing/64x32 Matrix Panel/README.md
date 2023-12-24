@@ -1,4 +1,5 @@
 # Matrix Panel Display
+I don't have a Matrix Portal M4 so I basically replicated one using a Feather M4 Express & Airlift Featherwing & custom wiring to a 64x32 Matrix Panel
 - [Matrix Panel Display Learn Guide](https://learn.adafruit.com/weather-display-matrix/overview) by John Park 2020 
 - updated by DJDevon3 2023
 - Coded for Circuit Python 8.2.x
@@ -6,10 +7,6 @@
 - Condensed code into 1 code.py page
 - Uses lattitude/longitude for weather & time
 - Added exception handler for wind gust key:value. Gust is a value that might not always be available.
-
-
-I don't have a Matrix Portal M4 so I basically created one using a Feather M4 Express & Airlift Featherwing with some custom wiring to a 64x32 Matrix Panel
-
 
 ### Requirements:
 - [OpenWeatherMap.org](https://www.OpenWeatherMap.org) Account with API Key (Free)
