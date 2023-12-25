@@ -5,8 +5,8 @@ I don't have a Matrix Portal M4 so I basically replicated one using a Feather M4
 - Coded for Circuit Python 8.2.x
 - Updated to use OpenWeatherMap.org 2.5 onecall API
 - Condensed code into 1 code.py page
-- Uses lattitude/longitude for weather & time
-- Added exception handler for wind gust key:value. Gust is a value that might not always be available.
+- Uses latitude/longitude for weather & time
+- Added exception handler for wind gust key:value. Gust is a JSON key that might not always be available.
 
 ### Required:
 - [OpenWeatherMap.org](https://www.OpenWeatherMap.org) Account with API Key (Free)
