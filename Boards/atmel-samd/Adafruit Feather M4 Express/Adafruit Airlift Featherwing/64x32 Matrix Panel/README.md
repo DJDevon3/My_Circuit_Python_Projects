@@ -21,7 +21,7 @@ I don't have a Matrix Portal M4 so I basically replicated one using a Feather M4
 ### Manually Wiring Feather to Matrix Panel
 - The 1st & 5th pins on the top row of the IDC are NC (not connected to anything).
   
-![IDC_Wiring](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/0235c8fc-88f2-4948-b604-9b2829c80b34)
+![IDC_Wiring](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/ec4f888d-5c31-4563-a524-2a304d3d9f2a)
 
 ![IMG_1344](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/ad0c3e98-a7ab-4ba5-961f-ef6b04b22575)
 
