@@ -27,7 +27,9 @@ The above wiring corresponds with the Matrix setup in code.py
 ```py
 matrix = rgbmatrix.RGBMatrix(
     width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT, bit_depth=4,
+    # R1, B1, G1, R2, B2, G2
     rgb_pins=[board.D6, board.D5, board.D9, board.D4, board.D10, board.SCL],
+    # A, B, C, D
     addr_pins=[board.A5, board.A4, board.A3, board.A2],
     clock_pin=board.A1,
     latch_pin=board.RX,
