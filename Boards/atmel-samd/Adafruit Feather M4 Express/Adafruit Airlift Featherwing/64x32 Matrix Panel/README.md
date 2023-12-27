@@ -23,6 +23,18 @@ I don't have a Matrix Portal M4 so I basically replicated one using a Feather M4
   
 ![IDC_Wiring](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/ec4f888d-5c31-4563-a524-2a304d3d9f2a)
 
+The above wiring corresponds with the Matrix setup in code.py
+```py
+matrix = rgbmatrix.RGBMatrix(
+    width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT, bit_depth=4,
+    rgb_pins=[board.D6, board.D5, board.D9, board.D4, board.D10, board.SCL],
+    addr_pins=[board.A5, board.A4, board.A3, board.A2],
+    clock_pin=board.A1,
+    latch_pin=board.RX,
+    output_enable_pin=board.TX,
+    doublebuffer=True)
+```
+
 ![IMG_1344](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/ad0c3e98-a7ab-4ba5-961f-ef6b04b22575)
 
 ![IMG_1340](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/378eb2fc-58b0-4718-a46e-7cba7d12a6b8)
