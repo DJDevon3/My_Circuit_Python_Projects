@@ -1,0 +1,6 @@
+WIFI_SSID = "Your Wifi SSID"  # Special variable recognized by web workflow
+WIFI_PASSWORD = "Your WiFi Password"  # Special variable recognized by web workflow
+openweather_token = "Your OpenWeatherMap Token"
+openweather_lat = "40.7259" #default lat/lon is adafruit industries
+openweather_lon = "-74.0055"
+openweather_units = "imperial"  # choices are imperial or metric
