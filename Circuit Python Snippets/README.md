@@ -355,7 +355,7 @@ Actual Temp: 77.6
 ```
 
 ## Temp Sensor Bias Adjust Algorithm (BME280)
-This completely replaces the manual bias adjust example above. Less code and can be more accurate. For the most accurate readings only compare against a "NIST traceable" thermometer.
+This completely replaces the manual bias adjust example above. Less code and can be more accurate. For the most accurate readings only compare against a "NIST traceable" thermometer. The Adafruit BME280 I2C module ceases to require any adjustment below 68F.
 ```py
 import ulab.numpy as np
 # Initialize BME280 Sensor
@@ -364,17 +364,17 @@ bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c)
 display_temperature = 0
 
 # By adding more data points you can create a curve instead of a linear interpolation.
-# input_range = [50.0, 81.0, 82.0, 82.7, 83.0, 120.0]
-# output_range = [50.0 - 0.1, 81.0 - 3.2, 82.0 - 3.1, 82.7 - 2.99, 83.0 - 2.94, 120.0 - 8.0]
+# input_range = [0.0, 68.0, 81.0, 82.0, 82.7, 83.0, 120.0]
+# output_range = [0.0, 68.0 - 0.1, 81.0 - 3.2, 82.0 - 3.1, 82.7 - 2.99, 83.0 - 2.94, 120.0 - 8.0]
 
 # Example of linear interpolation (calibrate the data points as you go)
 # Start during any season. Will take you about a year to fully calibrate.
-# Being within plus/minus 2 degrees is acceptable. Being within 1% between 50F-110F is the goal.
-# Below 50F there is no bias needed as there is no board heating to compensate for.
-input_range = [50.0, 120.0]
-output_range = [50.0 - 0.1, 120.0 - 2.4]
+# Being within plus/minus 2 degrees is acceptable. Being within 1% between 60F-110F is the goal.
+# Below 60F there is no bias needed as there is no board heating to compensate for.
+input_range = [0.0, 68.0, 120.0]
+output_range = [0.0, 68.0 - 0.1, 120.0 - 2.4]
 while True:
-    # By default BME280 increases approximately 0.1 per 1 degree over 50F due to PCB heating
+    # By default BME280 increases approximately 0.1 per 1 degree over 70F due to PCB heating
     # This algorithm is a work in progress (untested over 95F)
     temperature = bme280.temperature * 1.8 + 32
     temperature = round(temperature, 1)
