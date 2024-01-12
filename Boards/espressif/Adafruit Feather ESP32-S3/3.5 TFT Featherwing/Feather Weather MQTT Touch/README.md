@@ -12,11 +12,13 @@
 - Touchscreen display (resistive or capacitive)
 
 ### Menu & Page Switching System
-- This example has 1 main menu button with 5 option pages and 3 main pages (can cycle between them).
-- Previous & Next button cycles through main 3 pages manually.
+- This example has 1 main menu button with 5 option pages and 3 main pages.
+- Previous & Next button cycles through main pages manually.
 - Menu Button currently leads to:
   - Preferences
   - WiFi Credentials (with truncated *'s to replace all but first 2 characters)
   - RSSI Scan (wifi signal strength scan)
   - System Info (Circuit Python version and other system details)
-  - Change Credentials (soft keyboard currently work in progress)
+  - Change Credentials (soft keyboard work in progress) 
+
+![Touch_Button_Pages](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/93a94244-e42a-4c84-aff6-68b8b04881d7)
