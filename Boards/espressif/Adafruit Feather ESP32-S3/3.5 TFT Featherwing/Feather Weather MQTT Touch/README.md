@@ -3,7 +3,7 @@
 - local environment data from BME280 sensor connected via STEMMA
 - displays weather data on 3.5" TFT Featherwing & serial console
 - displays battery voltage and has USB sensing to know if it's plugged into USB 5V supply (battery or plug icon)
-- publishes sensor data to AdafruitIO group feed (you must create and customize a dashboard)
+- publishes BME280 sensor data to AdafruitIO via MQTT
 
 ### Requirements:
 - ESP32-S3 (or better) with at least 8MB of Flash & 2MB PSRAM (graphic & RAM requirements too much for an M0 or M4 chip).
