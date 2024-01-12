@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2024 DJDevon3
+# SPDX-FileCopyrightText: 2023 DJDevon3
 # SPDX-License-Identifier: MIT
 # ESP32-S3 Feather Weather MQTT Touchscreen
 # Coded for Circuit Python 8.2.x
@@ -90,6 +90,17 @@ touchscreen = adafruit_stmpe610.Adafruit_STMPE610_SPI(
     touch_flip=_touch_flip,
 )
 
+# Initialize SDCard on TFT Featherwing
+try:
+    cs = digitalio.DigitalInOut(board.D5)
+    sdcard = adafruit_sdcard.SDCard(spi, cs)
+    vfs = storage.VfsFat(sdcard)
+    virtual_root = "/sd"
+    storage.mount(vfs, virtual_root)
+except Exception as e:
+    print(f"Error Loading SD Card: {e}")
+    pass
+
 # TFT Featherwing LITE Bodge Mod
 # Use board.D8 for NRF52840 Sense, board.A5 for ESP32-S3
 # Controls TFT backlight brightness via PWM signal
@@ -137,11 +148,6 @@ battery_monitor = LC709203F(board.I2C())
 # battery_monitor.pack_size = PackSize.MAH3000
 battery_monitor.thermistor_bconstant = 3950
 battery_monitor.thermistor_enable = True
-
-splash_label.text = "Initializing SD Card..."
-# Initialize TFT Featherwing SD Card
-cs = digitalio.DigitalInOut(board.D5)
-sdcard = adafruit_sdcard.SDCard(spi, cs)
 
 # Converts seconds in minutes/hours/days
 # Attribution: Written by DJDevon3 & refined by Elpekenin
@@ -965,7 +971,7 @@ while True:
         debug_OWM = False  # Set True for Serial Print Debugging
         bme280.sea_level_pressure = bme280.pressure
         wallpaper[0] = 0
-        hello_label.text = "ESP32-S3 MQTT Feather Weather"
+        hello_label.text = "Feather Weather ESP32-S3 MQTT Touch"
         print("===============================")
 
         # USB Power Sensing
@@ -1261,7 +1267,7 @@ while True:
 
     while display.root_group is wifi_settings_group:
         wallpaper[0] = 3
-        hello_label.text = "Feather Weather Wifi Settings"
+        hello_label.text = "Wifi Settings"
         ssid_len = len(ssid)
         ssid_dash_replace = "*"*(ssid_len-2)
         ssid_ast = ssid.replace(ssid[2:ssid_len], ssid_dash_replace)
@@ -1284,6 +1290,7 @@ while True:
         last = time.monotonic()
 
     while display.root_group is rssi_group:
+        hello_label.text = "WiFi Signal Strength"
         # Displays available networks sorted by RSSI
         networks = []
         NetworkList =[]
@@ -1342,9 +1349,6 @@ while True:
 
         # Volume Information Stats
         try:
-            vfs = storage.VfsFat(sdcard)
-            virtual_root = "/sd"
-            storage.mount(vfs, virtual_root)
             SD_Card_Size = os.statvfs(virtual_root)
             SD_Card_FREE_TOTAL = SD_Card_Size[0] * SD_Card_Size[3] / 1024 / 1024 / 1024
             if (SD_Card_FREE_TOTAL) >= 1.0:
@@ -1352,7 +1356,7 @@ while True:
             if (SD_Card_FREE_TOTAL) <= 1.0:
                 SD_Card_FREE_TOTAL_MB = SD_Card_Size[0] * SD_Card_Size[3] / 1024 / 1024
                 sys_info_data_label7.text = f"SD Card Free: {SD_Card_FREE_TOTAL_MB:.2f} MB"
-            storage.umount(vfs)
+            # storage.umount(vfs)
         except Exception as e:
             print(e)
             pass
@@ -1369,7 +1373,7 @@ while True:
     while display.root_group is wifi_change_group:
         label_list1 = []
         New_Label_list =[]
-        hello_label.text = "Wifi Change Credentials"
+        hello_label.text = "Wifi Edit Credentials"
         input_change_wifi.text = "New Password: "
         key_text = input_new_cred
 
