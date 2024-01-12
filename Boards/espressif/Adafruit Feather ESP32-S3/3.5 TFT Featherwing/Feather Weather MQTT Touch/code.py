@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2023 DJDevon3
+# SPDX-FileCopyrightText: 2024 DJDevon3
 # SPDX-License-Identifier: MIT
 # ESP32-S3 Feather Weather MQTT Touchscreen
 # Coded for Circuit Python 8.2.x
@@ -95,7 +95,30 @@ touchscreen = adafruit_stmpe610.Adafruit_STMPE610_SPI(
 # Controls TFT backlight brightness via PWM signal
 display_duty_cycle = 65535  # Values from 0 to 65535
 TFT_brightness = pwmio.PWMOut(board.A5,frequency=500,duty_cycle=display_duty_cycle)
-TFT_brightness.duty_cycle = 65535
+TFT_brightness.duty_cycle = 40000
+
+# ---- FEATHER WEATHER SPLASH SCREEN -----
+feather_weather = displayio.OnDiskBitmap("/images/feather_weather.bmp")
+feather_weather_bg = displayio.TileGrid(
+    feather_weather,
+    pixel_shader=feather_weather.pixel_shader,
+    width=1,
+    height=1,
+    tile_width=DISPLAY_WIDTH,
+    tile_height=DISPLAY_HEIGHT,
+)
+
+# ---- SPLASH GROUP -----
+splash_label = label.Label(terminalio.FONT)
+splash_label.anchor_point = (0.5, 0.5)
+splash_label.anchored_position = (DISPLAY_WIDTH/2, DISPLAY_HEIGHT-20)
+splash_label.scale = (1)
+splash_label.color = 0xFFFFFF
+loading_splash = displayio.Group()
+loading_splash.append(feather_weather_bg)
+loading_splash.append(splash_label)
+display.root_group = loading_splash
+splash_label.text = "Initializing BME280 Sensor..."
 
 # Initialize BME280 Sensor
 i2c = board.STEMMA_I2C()  # uses board.SCL and board.SDA
@@ -105,6 +128,7 @@ bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c)
 # print("Sea Level Pressure: ", bme280.sea_level_pressure)
 # print("Altitude = %0.2f meters" % bme280.altitude)
 
+splash_label.text = "Initializing Battery Voltage Monitor..."
 i2c = board.I2C()
 battery_monitor = LC709203F(board.I2C())
 # LC709203F github repo library
@@ -114,6 +138,7 @@ battery_monitor = LC709203F(board.I2C())
 battery_monitor.thermistor_bconstant = 3950
 battery_monitor.thermistor_enable = True
 
+splash_label.text = "Initializing SD Card..."
 # Initialize TFT Featherwing SD Card
 cs = digitalio.DigitalInOut(board.D5)
 sdcard = adafruit_sdcard.SDCard(spi, cs)
@@ -152,6 +177,7 @@ def _format_time(datetime):
         # datetime.tm_sec,
     )
 
+splash_label.text = "Loading Fonts..."
 # Fonts are optional
 forkawesome_font = bitmap_font.load_font("/fonts/forkawesome-12.pcf")
 arial_font = bitmap_font.load_font("/fonts/Arial-16.bdf")
@@ -159,6 +185,7 @@ small_font = bitmap_font.load_font("/fonts/GoodTimesRg-Regular-16.bdf")
 medium_font = bitmap_font.load_font("/fonts/GoodTimesRg-Regular-40.bdf")
 huge_font = bitmap_font.load_font("/fonts/GoodTimesRg-Regular-121.bdf")
 
+splash_label.text = "Loading Font Colors..."
 # Quick Colors for Labels
 TEXT_BLACK = 0x000000
 TEXT_BLUE = 0x0000FF
@@ -175,6 +202,7 @@ TEXT_YELLOW = 0xFFFF00
 
 # Function for minimizing labels to 1 liners
 # Attribution: Anecdata (thanks!)
+splash_label.text = "Loading Labels..."
 def make_my_label(font, anchor_point, anchored_position, scale, color):
     func_label = label.Label(font)
     func_label.anchor_point = anchor_point
@@ -189,31 +217,16 @@ loading_label = make_my_label(terminalio.FONT, (0.5, 0.5), (DISPLAY_WIDTH / 2, D
 hello_label = make_my_label(
     terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH / 2, 15), 1, TEXT_WHITE
 )
-hello_label_page2 = make_my_label(
-    terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH / 2, 15), 1, TEXT_WHITE
-)
-hello_label_page3 = make_my_label(
-    terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH / 2, 15), 1, TEXT_WHITE
-)
-hello_label_preferences = make_my_label(
-    terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH / 2, 15), 1, TEXT_WHITE
-)
 preferences_value = make_my_label(
     terminalio.FONT, (0.5, 0.5), (DISPLAY_WIDTH / 2, 5), 1, TEXT_WHITE
 )
 label_preferences_current_brightness = make_my_label(
     terminalio.FONT, (1.0, 1.0), (DISPLAY_WIDTH - 10, 80), 1, TEXT_CYAN
 )
-hello_label_wifi_settings = make_my_label(terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH / 2, 15), 1, TEXT_WHITE)
 wifi_settings_ssid = make_my_label(terminalio.FONT, (0.0, 0.0), (DISPLAY_WIDTH / 3, 50), 2, TEXT_WHITE)
 wifi_settings_pw = make_my_label(terminalio.FONT, (0.0, 0.0), (DISPLAY_WIDTH / 3, 150), 2, TEXT_WHITE)
 wifi_settings_instructions = make_my_label(terminalio.FONT, (0.0, 0.0), (DISPLAY_WIDTH / 4, 250), 1, TEXT_WHITE)
-hello_label_rssi = make_my_label(
-    terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH / 2, 15), 1, TEXT_WHITE
-)
-hello_label_sys_info = make_my_label(
-    terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH / 2, 15), 1, TEXT_WHITE
-)
+
 sys_info_data_label1 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50), 2, TEXT_WHITE)
 sys_info_data_label2 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 150), 1, TEXT_WHITE)
 sys_info_data_label3 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 150+32), 1, TEXT_WHITE)
@@ -232,8 +245,7 @@ rssi_data_label6 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 60 + 140), 1, 
 rssi_data_label7 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 60 + 160), 1, TEXT_WHITE)
 rssi_data_label8 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 60 + 180), 1, TEXT_WHITE)
 rssi_data_label9 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 60 + 200), 1, TEXT_WHITE)
-hello_label_change_wifi = make_my_label(
-    terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH / 2, 15), 1, TEXT_WHITE)
+
 input_change_wifi = make_my_label(
     terminalio.FONT, (0.0, 0.0), (5, 50), 1, TEXT_WHITE)
 input_new_cred = make_my_label(
@@ -291,18 +303,17 @@ yellowbmp_label = make_my_label(terminalio.FONT, (1.0, 1.0), None, 1, None)
 orangebmp_label = make_my_label(terminalio.FONT, (1.0, 1.0), None, 1, None)
 redbmp_label = make_my_label(terminalio.FONT, (1.0, 1.0), None, 1, None)
 
-
+splash_label.text = "Loading Background Images..."
 # Load Bitmap to tile grid first (Background layer)
-DiskBMP = displayio.OnDiskBitmap("/images/Astral_Fruit_8bit.bmp")
-tile_grid = displayio.TileGrid(
+DiskBMP = displayio.OnDiskBitmap("/images/Wallpaper_Spritesheet_8bit.bmp")
+wallpaper = displayio.TileGrid(
     DiskBMP,
     pixel_shader=DiskBMP.pixel_shader,
-    width=1,
-    height=1,
-    tile_width=DISPLAY_WIDTH,
-    tile_height=DISPLAY_HEIGHT,
+    tile_width=480,
+    tile_height=320,
 )
 
+splash_label.text = "Loading Icons..."
 # Load battery voltage icons (from 1 sprite sheet image)
 sprite_sheet, palette = adafruit_imageload.load(
     "/icons/vbat_spritesheet.bmp", bitmap=displayio.Bitmap, palette=displayio.Palette
@@ -339,6 +350,7 @@ menu_roundrect = RoundRect(
     stroke=0,
 )
 
+splash_label.text = "Loading Touch Buttons..."
 # Button width & height must be multiple of 3
 # otherwise you'll get a tilegrid_inflator error
 BUTTON_WIDTH = 12 * 16
@@ -449,7 +461,7 @@ item5_button = SpriteButton(
     selected_bmp_path="icons/gradient_button_1.bmp",
     transparent_index=0,
 )
-
+splash_label.text = "Loading Touch Keyboard..."
 layout = GridLayout(
     x=2, # layout x
     y=100, # layout y
@@ -594,88 +606,59 @@ layout.add_content(_labels[56], grid_position=(12, 4), cell_size=(1, 1))
 _labels.append(label.Label(forkawesome_font, scale=1, x=0, y=0, text="\uf063"))
 layout.add_content(_labels[57], grid_position=(13, 4), cell_size=(1, 1))
 
+splash_label.text = "Loading Display Groups..."
 # Create subgroups
+wallpaper_group = displayio.Group()
+wallpaper_group.append(wallpaper)
 splash = displayio.Group()
 text_group = displayio.Group()
-text_group.append(tile_grid)
 temp_group = displayio.Group()
 warning_group = displayio.Group()
 loading_group = displayio.Group()
+menu_button_group = displayio.Group()
 menu_popout_group = displayio.Group()
 menu_popout_group_items = displayio.Group()
 main_group = displayio.Group()
 
 # Page 2 Groups
 main_group2 = displayio.Group()
-main_group2.append(hello_label_page2)
 
 # Page 3 Groups
 main_group3 = displayio.Group()
-main_group3.append(hello_label_page3)
 
 # Preferences Group
 preferences_group = displayio.Group()
-preferences_group.append(hello_label_preferences)
-preferences_group.append(label_preferences_current_brightness)
-preferences_group.append(my_slider)
 
 # Wifi Settings Group
 wifi_settings_group = displayio.Group()
-wifi_settings_group.append(hello_label_wifi_settings)
-wifi_settings_group.append(wifi_settings_ssid)
-wifi_settings_group.append(wifi_settings_pw)
-wifi_settings_group.append(wifi_settings_instructions)
 
 # RSSI Scan Group
 rssi_group = displayio.Group()
-rssi_group.append(rssi_data_label)
-rssi_group.append(rssi_data_label0)
-rssi_group.append(rssi_data_label1)
-rssi_group.append(rssi_data_label2)
-rssi_group.append(rssi_data_label3)
-rssi_group.append(rssi_data_label4)
-rssi_group.append(rssi_data_label5)
-rssi_group.append(rssi_data_label6)
-rssi_group.append(rssi_data_label7)
-rssi_group.append(rssi_data_label8)
-rssi_group.append(rssi_data_label9)
-rssi_text_group = displayio.Group()
 
 # System Info Group
 sys_info_group = displayio.Group()
-sys_info_group.append(hello_label_sys_info)
-sys_info_group.append(sys_info_data_label1)
-sys_info_group.append(sys_info_data_label2)
-sys_info_group.append(sys_info_data_label3)
-sys_info_group.append(sys_info_data_label4)
-sys_info_group.append(sys_info_data_label5)
-sys_info_group.append(sys_info_data_label6)
-sys_info_group.append(sys_info_data_label7)
 
 # Wifi Change Credentials Group
 wifi_change_group = displayio.Group()
-wifi_change_group.append(hello_label_change_wifi)
-wifi_change_group.append(input_change_wifi)
-wifi_change_group.append(input_new_cred)
-wifi_change_group.append(layout)
-wifi_change_group.append(input_lbl)
 
 # Add subgroups to main display group
+main_group.append(splash)
+main_group.append(wallpaper_group)
+main_group.append(hello_label)
 main_group.append(text_group)
 main_group.append(warning_group)
 main_group.append(loading_group)
 main_group.append(temp_group)
 main_group.append(sprite_group)
+main_group.append(menu_button_group)
 main_group.append(menu_popout_group)
 main_group.append(menu_popout_group_items)
-main_group.append(splash)
 
 # Add warning popup group
 warning_group.append(roundrect)
 warning_group.append(warning_label)
 
 # Label Display Group (foreground layer)
-text_group.append(hello_label)
 text_group.append(date_label)
 text_group.append(time_label)
 temp_group.append(temp_label)
@@ -706,12 +689,12 @@ menu_popout_group_items.append(item2_button)
 menu_popout_group_items.append(item3_button)
 menu_popout_group_items.append(item4_button)
 menu_popout_group_items.append(item5_button)
-splash.append(menu_button)
-splash.append(next_button)
-splash.append(prev_button)
+menu_button_group.append(menu_button)
+menu_button_group.append(next_button)
+menu_button_group.append(prev_button)
+#display.root_group = main_group
 
-display.root_group = main_group
-
+splash_label.text = "Loading Menu Functions..."
 def show_warning(text):
     # Function to display weather popup warning
     warning_label.text = text
@@ -733,16 +716,99 @@ def hide_menu():
     menu_popout_group.hidden = True
     menu_popout_group_items.hidden = True
 
-
+# Page Switching Function (FROM, TO)
 def root_group_switch(SHOUTY_REMOVE, SHOUTY_APPEND):
-    # Necessary so menus remain on top of all layers
+    # Removal order is less important than append order
     hide_menu()
+    SHOUTY_REMOVE.remove(wallpaper_group)
+    SHOUTY_REMOVE.remove(hello_label)
+    SHOUTY_REMOVE.remove(menu_button_group)
     SHOUTY_REMOVE.remove(menu_popout_group)
     SHOUTY_REMOVE.remove(menu_popout_group_items)
-    SHOUTY_REMOVE.remove(splash)
+    if SHOUTY_REMOVE == main_group:
+        SHOUTY_REMOVE.remove(text_group)
+        SHOUTY_REMOVE.remove(warning_group)
+        SHOUTY_REMOVE.remove(loading_group)
+        SHOUTY_REMOVE.remove(temp_group)
+        SHOUTY_REMOVE.remove(sprite_group)
+    if SHOUTY_REMOVE == preferences_group:
+        SHOUTY_REMOVE.remove(label_preferences_current_brightness)
+        SHOUTY_REMOVE.remove(my_slider)
+    if SHOUTY_REMOVE == wifi_settings_group:
+        SHOUTY_REMOVE.remove(wifi_settings_ssid)
+        SHOUTY_REMOVE.remove(wifi_settings_pw)
+        SHOUTY_REMOVE.remove(wifi_settings_instructions)
+    if SHOUTY_REMOVE == rssi_group:
+        SHOUTY_REMOVE.remove(rssi_data_label)
+        SHOUTY_REMOVE.remove(rssi_data_label0)
+        SHOUTY_REMOVE.remove(rssi_data_label1)
+        SHOUTY_REMOVE.remove(rssi_data_label2)
+        SHOUTY_REMOVE.remove(rssi_data_label3)
+        SHOUTY_REMOVE.remove(rssi_data_label4)
+        SHOUTY_REMOVE.remove(rssi_data_label5)
+        SHOUTY_REMOVE.remove(rssi_data_label6)
+        SHOUTY_REMOVE.remove(rssi_data_label7)
+        SHOUTY_REMOVE.remove(rssi_data_label8)
+        SHOUTY_REMOVE.remove(rssi_data_label9)
+    if SHOUTY_REMOVE == sys_info_group:
+        SHOUTY_REMOVE.remove(sys_info_data_label1)
+        SHOUTY_REMOVE.remove(sys_info_data_label2)
+        SHOUTY_REMOVE.remove(sys_info_data_label3)
+        SHOUTY_REMOVE.remove(sys_info_data_label4)
+        SHOUTY_REMOVE.remove(sys_info_data_label5)
+        SHOUTY_REMOVE.remove(sys_info_data_label6)
+        SHOUTY_REMOVE.remove(sys_info_data_label7)
+    if SHOUTY_REMOVE == wifi_change_group:
+        SHOUTY_REMOVE.remove(input_change_wifi)
+        SHOUTY_REMOVE.remove(input_new_cred)
+        SHOUTY_REMOVE.remove(layout)
+        SHOUTY_REMOVE.remove(input_lbl)
+    
+    # Append order is layer order top to bottom for each page.
+    SHOUTY_APPEND.append(wallpaper_group)  # load wallpaper 1st regardless of page
+    if SHOUTY_APPEND == main_group:
+        SHOUTY_APPEND.append(text_group)
+        SHOUTY_APPEND.append(warning_group)
+        SHOUTY_APPEND.append(loading_group)
+        SHOUTY_APPEND.append(temp_group)
+        SHOUTY_APPEND.append(sprite_group)
+    if SHOUTY_APPEND == preferences_group:
+        SHOUTY_APPEND.append(label_preferences_current_brightness)
+        SHOUTY_APPEND.append(my_slider)
+    if SHOUTY_APPEND == wifi_settings_group:
+        SHOUTY_APPEND.append(wifi_settings_ssid)
+        SHOUTY_APPEND.append(wifi_settings_pw)
+        SHOUTY_APPEND.append(wifi_settings_instructions)
+    if SHOUTY_APPEND == rssi_group:
+        SHOUTY_APPEND.append(rssi_data_label)
+        SHOUTY_APPEND.append(rssi_data_label0)
+        SHOUTY_APPEND.append(rssi_data_label1)
+        SHOUTY_APPEND.append(rssi_data_label2)
+        SHOUTY_APPEND.append(rssi_data_label3)
+        SHOUTY_APPEND.append(rssi_data_label4)
+        SHOUTY_APPEND.append(rssi_data_label5)
+        SHOUTY_APPEND.append(rssi_data_label6)
+        SHOUTY_APPEND.append(rssi_data_label7)
+        SHOUTY_APPEND.append(rssi_data_label8)
+        SHOUTY_APPEND.append(rssi_data_label9)
+    if SHOUTY_APPEND == sys_info_group:
+        SHOUTY_APPEND.append(sys_info_data_label1)
+        SHOUTY_APPEND.append(sys_info_data_label2)
+        SHOUTY_APPEND.append(sys_info_data_label3)
+        SHOUTY_APPEND.append(sys_info_data_label4)
+        SHOUTY_APPEND.append(sys_info_data_label5)
+        SHOUTY_APPEND.append(sys_info_data_label6)
+        SHOUTY_APPEND.append(sys_info_data_label7)
+    if SHOUTY_APPEND == wifi_change_group:
+        SHOUTY_APPEND.append(input_change_wifi)
+        SHOUTY_APPEND.append(input_new_cred)
+        SHOUTY_APPEND.append(layout)
+        SHOUTY_APPEND.append(input_lbl)
+        
+    SHOUTY_APPEND.append(hello_label)
+    SHOUTY_APPEND.append(menu_button_group)
     SHOUTY_APPEND.append(menu_popout_group)
     SHOUTY_APPEND.append(menu_popout_group_items)
-    SHOUTY_APPEND.append(splash)
     display.root_group = SHOUTY_APPEND
 
 def group_cleanup():
@@ -775,36 +841,37 @@ def menu_switching(current_group, prev_target, next_target, item1_target, item2_
             time.sleep(0.5)
             print("Next Pressed")
             root_group_switch(current_group, next_target)
-    elif item1_button.contains(p):
-        if not item1_button.selected:
-            item1_button.selected = True
-            time.sleep(0.25)
-            print("Item 1 Pressed")
-            root_group_switch(current_group, item1_target)
-    elif item2_button.contains(p):
-        if not item2_button.selected:
-            item2_button.selected = True
-            time.sleep(0.25)
-            print("Item 2 Pressed")
-            root_group_switch(current_group, item2_target)
-    elif item3_button.contains(p):
-        if not item3_button.selected:
-            item3_button.selected = True
-            time.sleep(0.25)
-            print("Item 3 Pressed")
-            root_group_switch(current_group, item3_target)
-    elif item4_button.contains(p):
-        if not item4_button.selected:
-            item4_button.selected = True
-            time.sleep(0.25)
-            print("Item 4 Pressed")
-            root_group_switch(current_group, item4_target)
-    elif item5_button.contains(p):
-        if not item5_button.selected:
-            item5_button.selected = True
-            time.sleep(0.25)
-            print("Item 5 Pressed")
-            root_group_switch(current_group, item5_target)
+    elif not menu_popout_group.hidden:
+        if item1_button.contains(p):
+            if not item1_button.selected:
+                item1_button.selected = True
+                time.sleep(0.25)
+                print("Item 1 Pressed")
+                root_group_switch(current_group, item1_target)
+        elif item2_button.contains(p):
+            if not item2_button.selected:
+                item2_button.selected = True
+                time.sleep(0.25)
+                print("Item 2 Pressed")
+                root_group_switch(current_group, item2_target)
+        elif item3_button.contains(p):
+            if not item3_button.selected:
+                item3_button.selected = True
+                time.sleep(0.25)
+                print("Item 3 Pressed")
+                root_group_switch(current_group, item3_target)
+        elif item4_button.contains(p):
+            if not item4_button.selected:
+                item4_button.selected = True
+                time.sleep(0.25)
+                print("Item 4 Pressed")
+                root_group_switch(current_group, item4_target)
+        elif item5_button.contains(p):
+            if not item5_button.selected:
+                item5_button.selected = True
+                time.sleep(0.25)
+                print("Item 5 Pressed")
+                root_group_switch(current_group, item5_target)
     else:
         group_cleanup()
         hide_menu()
@@ -812,6 +879,7 @@ def menu_switching(current_group, prev_target, next_target, item1_target, item2_
 hide_warning()
 hide_menu()
 
+splash_label.text = "Loading AdafruitIO Functions..."
 # Define callback methods when events occur
 def connect(mqtt_client, userdata, flags, rc):
     # Method when mqtt_client connected to the broker.
@@ -872,6 +940,7 @@ mqtt_client.on_message = message
 mqtt_client.subscribe_to_errors = ioerrors
 mqtt_client.subscribe_to_throttling = throttle
 
+splash_label.text = "Loading Temperature Adjustments..."
 display_temperature = 0
 # Define the input range and output range
 # pressure at 1014 & 88F at 100% accurate. sea level pressure affects temp?
@@ -882,16 +951,20 @@ output_range = [50.0 - 0.1, 69, 72.0 - 1.1, 73.0 - 1.2, 75.0 - 1.4, 76 - 1.5, 80
 # otherwise you get Out of Socket errors.
 requests = adafruit_requests.Session(pool, ssl.create_default_context())
 
-# Loading Label
-loading_label.text = "Loading..."
 last = time.monotonic()
 LAST_PRESS_TIME = -1
 ssid_count = 0
+First_Run = True
+newline = "\n"
+splash_label.text = "Loading GUI..."
 while True:
-    while display.root_group is main_group:
+    while display.root_group is main_group or loading_splash:
+        if not First_Run and display.root_group is main_group:
+            loading_group.append(loading_label)
+            loading_label.text = "Loading..."
         debug_OWM = False  # Set True for Serial Print Debugging
         bme280.sea_level_pressure = bme280.pressure
-        loading_group.append(loading_label)
+        wallpaper[0] = 0
         hello_label.text = "ESP32-S3 MQTT Feather Weather"
         print("===============================")
 
@@ -900,6 +973,7 @@ while True:
             vbat_label.text = f"{battery_monitor.cell_voltage:.2f}v"
         except (ValueError, RuntimeError, OSError) as e:
             print("LC709203F Error: \n", e)
+
         # Set USB plug icon and voltage label to white
         usb_sense = supervisor.runtime.usb_connected
         if debug_OWM:
@@ -978,10 +1052,12 @@ while True:
             hide_warning()  # Normal pressures: 1110-1018 (no message)
 
         print("| Connecting to WiFi...")
-        loading_label.text = "Checking Wifi..."
-        First_Run = True
+        if First_Run and display.root_group is loading_splash:
+            splash_label.text = "Initializing WiFi 4..."
+        if not First_Run and display.root_group is main_group:
+            loading_label.text = "Checking Wifi..."
 
-        while not wifi.radio.ipv4_address and display.root_group is main_group:
+        while not wifi.radio.ipv4_address:
             try:
                 wifi.radio.connect(ssid, appw)
             except ConnectionError as e:
@@ -990,7 +1066,7 @@ while True:
                 time.sleep(10)
         print("| ✅ WiFi!")
 
-        while wifi.radio.ipv4_address and display.root_group is main_group:
+        while wifi.radio.ipv4_address:
             try:
                 print("| | Attempting to GET Weather!")
                 if debug_OWM:
@@ -1008,7 +1084,10 @@ while True:
                             print(f"| | ❌ OpenWeatherMap Error:  {owm_response['message']}")
                             owm_request.close()
                     except (KeyError) as e:
-                        loading_label.text = "Getting Weather..."
+                        if First_Run and display.root_group is loading_splash:
+                            splash_label.text = "Getting Weather..."
+                        if not First_Run and display.root_group is main_group:
+                            loading_label.text = "Getting Weather..."
                         owm_response = owm_request.json()
                         print("| | Account within Request Limit", e)
                         print("| | ✅ Connected to OpenWeatherMap")
@@ -1039,6 +1118,13 @@ while True:
                         owm_humidity = owm_response["current"]["humidity"]  # 7
                         weather_type = owm_response["current"]["weather"][0]["main"]  # 8
                         owm_windspeed = float(owm_response["current"]["wind_speed"])  # 9
+
+                        if "wind_gust" in owm_response["current"]:
+                            owm_windgust = float(owm_response["current"]["wind_gust"])
+                            print(f"| | | Gust: {owm_windgust}")
+                        else:
+                            print("| | | Gust: No Data")
+
 
                         print("| | | Sunrise:", sunrise_time)
                         print("| | | Sunset:", sunset_time)
@@ -1072,7 +1158,10 @@ while True:
             # Connect to Adafruit IO
             try:
                 mqtt_client.connect()
-                loading_label.text = "Publishing..."
+                if First_Run and display.root_group is loading_splash:
+                    splash_label.text = "Publishing to AdafruitIO..."
+                if not First_Run and display.root_group is main_group:
+                    loading_label.text = "Publishing..."
                 mqtt_client.publish(feed_01, temp_round)
                 # slight delay required between publishes!
                 # otherwise only the 1st publish will succeed
@@ -1093,12 +1182,21 @@ while True:
                 continue
             mqtt_client.disconnect()
 
-            if First_Run:
-                loading_group.remove(loading_label)
             print("| ✂️ Disconnected from Wifi")
             print(f"Loading Time: {time.monotonic() - _now}")
             print("Next Update: ", time_calc(sleep_time))
-            First_Run = False
+
+            if not First_Run and display.root_group is main_group:
+                loading_label.text = f"Next Update{newline}{time_calc(sleep_time)}"
+                time.sleep(5)
+                loading_group.remove(loading_label)
+
+            if First_Run:
+                First_Run = False
+                display.root_group = main_group
+                # Switch from splash to main_group
+                loading_splash.remove(splash_label)
+                loading_splash.remove(feather_weather_bg)
 
             print("Entering Touch Loop")
             while (time.monotonic() - last) <= sleep_time and display.root_group is main_group:
@@ -1110,10 +1208,12 @@ while True:
                     group_cleanup()
             last = time.monotonic()
             print("Exited Sleep Loop")
+            break
             # time.sleep(sleep_time)
 
     while display.root_group is main_group2:
-        hello_label_page2.text = "Feather Weather Page 2"
+        wallpaper[0] = 1
+        hello_label.text = "Feather Weather Page 2"
         while (time.monotonic() - last) <= sleep_time and display.root_group is main_group2:
             p = touchscreen.touch_point
             if p:
@@ -1124,7 +1224,8 @@ while True:
         last = time.monotonic()
 
     while display.root_group is main_group3:
-        hello_label_page3.text = "Feather Weather Page 3"
+        wallpaper[0] = 2
+        hello_label.text = "Feather Weather Page 3"
         while (time.monotonic() - last) <= sleep_time and display.root_group is main_group3:
             p = touchscreen.touch_point
             if p:
@@ -1135,7 +1236,8 @@ while True:
         last = time.monotonic()
 
     while display.root_group is preferences_group:
-        hello_label_preferences.text = "Feather Weather Preferences"
+        wallpaper[0] = 2
+        hello_label.text = "Feather Weather Preferences"
         while (time.monotonic() - last) <= sleep_time and display.root_group is preferences_group:
             p = touchscreen.touch_point
             if p:  # Check each slider if the touch point is within the slider touch area
@@ -1158,7 +1260,8 @@ while True:
         last = time.monotonic()
 
     while display.root_group is wifi_settings_group:
-        hello_label_wifi_settings.text = "Feather Weather Wifi Settings"
+        wallpaper[0] = 3
+        hello_label.text = "Feather Weather Wifi Settings"
         ssid_len = len(ssid)
         ssid_dash_replace = "*"*(ssid_len-2)
         ssid_ast = ssid.replace(ssid[2:ssid_len], ssid_dash_replace)
@@ -1220,7 +1323,7 @@ while True:
         last = time.monotonic()
 
     while display.root_group is sys_info_group:
-        hello_label_sys_info.text = "System Information"
+        hello_label.text = "System Information"
         # System Stats
         u_name = os.uname()
         sys_info_data_label1.text = f"Circuit Python Version:\n{u_name[3]}"
@@ -1266,7 +1369,7 @@ while True:
     while display.root_group is wifi_change_group:
         label_list1 = []
         New_Label_list =[]
-        hello_label_change_wifi.text = "Wifi Change Credentials"
+        hello_label.text = "Wifi Change Credentials"
         input_change_wifi.text = "New Password: "
         key_text = input_new_cred
 
