@@ -964,19 +964,17 @@ output_range = [50.0 - 0.1, 69, 72.0 - 1.1, 73.0 - 1.2, 75.0 - 1.4, 76 - 1.5, 80
 requests = adafruit_requests.Session(pool, ssl.create_default_context())
 
 last = time.monotonic()
-LAST_PRESS_TIME = -1
-ssid_count = 0
 First_Run = True
 newline = "\n"
 splash_label.text = "Loading GUI..."
 while True:
     while display.root_group is main_group or loading_splash:
+        wallpaper[0] = 0
         if not First_Run and display.root_group is main_group:
             loading_group.append(loading_label)
             loading_label.text = "Loading..."
         debug_OWM = False  # Set True for Serial Print Debugging
         bme280.sea_level_pressure = bme280.pressure
-        wallpaper[0] = 0
         hello_label.text = "Feather Weather ESP32-S3 MQTT Touch"
         print("===============================")
 
@@ -1058,9 +1056,9 @@ while True:
         elif 990 <= BME280_pressure <= 1001:
             show_warning("WARNING: Tropical Storm")
         elif 1002 <= BME280_pressure <= 1009:  # sudden gusty downpours
-            show_warning("CAUTION: Low Pressure System")
+            show_warning("Low Pressure System")
         elif 1019 <= BME280_pressure <= 1025:  # sudden light cold rain
-            show_warning("CAUTION: High Pressure System")
+            show_warning("High Pressure System")
         elif BME280_pressure >= 1026:
             show_warning("WARNING: Hail & Tornados?")
         else:
@@ -1251,7 +1249,7 @@ while True:
         last = time.monotonic()
 
     while display.root_group is preferences_group:
-        wallpaper[0] = 2
+        wallpaper[0] = 3
         hello_label.text = "Feather Weather Preferences"
         while (time.monotonic() - last) <= sleep_time and display.root_group is preferences_group:
             p = touchscreen.touch_point
@@ -1299,6 +1297,7 @@ while True:
         last = time.monotonic()
 
     while display.root_group is rssi_group:
+        wallpaper[0] = 3
         hello_label.text = "WiFi Signal Strength"
         # Displays available networks sorted by RSSI
         networks = []
@@ -1339,6 +1338,7 @@ while True:
         last = time.monotonic()
 
     while display.root_group is sys_info_group:
+        wallpaper[0] = 3
         hello_label.text = "System Information"
         # System Stats
         u_name = os.uname()
@@ -1380,8 +1380,7 @@ while True:
         last = time.monotonic()
 
     while display.root_group is wifi_change_group:
-        label_list1 = []
-        New_Label_list =[]
+        wallpaper[0] = 3
         hello_label.text = "Wifi Edit Credentials"
         input_change_wifi.text = "New Password: "
         key_text = input_new_cred
