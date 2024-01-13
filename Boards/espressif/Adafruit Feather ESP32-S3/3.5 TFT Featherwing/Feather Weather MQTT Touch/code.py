@@ -878,6 +878,9 @@ def menu_switching(current_group, prev_target, next_target, item1_target, item2_
                 time.sleep(0.25)
                 print("Item 5 Pressed")
                 root_group_switch(current_group, item5_target)
+        else:
+            group_cleanup()
+            hide_menu()
     else:
         group_cleanup()
         hide_menu()
@@ -946,10 +949,13 @@ mqtt_client.on_message = message
 mqtt_client.subscribe_to_errors = ioerrors
 mqtt_client.subscribe_to_throttling = throttle
 
-splash_label.text = "Loading Temperature Adjustments..."
+splash_label.text = "Loading Sensor Algorithms..."
 display_temperature = 0
-# Define the input range and output range
-# pressure at 1014 & 88F at 100% accurate. sea level pressure affects temp?
+# Temperature Interpolation Algorithm
+# pressure and humidity can affect temperature
+# especially in sub-tropical climate!
+humid_input_range = [0.0, 100] # interpolated increase
+humid_output_range = [0.0, 2.0]  # with humidity
 input_range = [50.0, 69, 72, 73, 75, 76, 80, 88.0, 120.0]
 output_range = [50.0 - 0.1, 69, 72.0 - 1.1, 73.0 - 1.2, 75.0 - 1.4, 76 - 1.5, 80 - 1.0, 88.0 - 0.0, 120.0 - 2.2]
 
@@ -1018,18 +1024,21 @@ while True:
         print("Board Uptime: ", time_calc(time.monotonic()))
 
         # Account for PCB heating bias, gets slightly hotter as ambient increases
+        BME280_humidity = round(bme280.relative_humidity, 1)
+        relative_humidity = np.interp(BME280_humidity, humid_input_range, humid_output_range)
+        humidity_adjust = round(relative_humidity[0], 2)
+        print(f"Humidity Adjust: {humidity_adjust}")
         temperature = bme280.temperature * 1.8 + 32
         temp_round = round(temperature, 2)
         print("Temp: ", temperature)  # biased reading
         display_temperature = np.interp(temperature, input_range, output_range)
-        BME280_temperature = round(display_temperature[0], 2)
+        BME280_temperature = round(display_temperature[0]+humidity_adjust, 2)
         print(f"Actual Temp: {BME280_temperature:.1f}")
         if debug_OWM:
             BME280_pressure = 1005  # Manually set debug warning message
             print(f"BME280 Pressure: {BME280_pressure}")
         else:
             BME280_pressure = round(bme280.pressure, 1)
-        BME280_humidity = round(bme280.relative_humidity, 1)
         BME280_altitude = round(bme280.altitude, 2)
 
         temp_data_shadow.text = f"{BME280_temperature:.1f}"
