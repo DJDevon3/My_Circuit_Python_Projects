@@ -3,7 +3,6 @@
 # ESP32-S3 Feather Weather MQTT Touchscreen
 # Coded for Circuit Python 8.2.x
 
-import traceback
 import os
 import supervisor
 import time
@@ -12,7 +11,6 @@ import displayio
 import digitalio
 import terminalio
 import pwmio
-import analogio
 import adafruit_imageload
 import adafruit_sdcard
 import storage
@@ -33,7 +31,6 @@ from adafruit_hx8357 import HX8357
 import adafruit_stmpe610
 from adafruit_button.sprite_button import SpriteButton
 from adafruit_displayio_layout.layouts.grid_layout import GridLayout
-from adafruit_bitmap_font import bitmap_font
 from slider import Slider
 _now = time.monotonic()
 
@@ -105,7 +102,7 @@ except Exception as e:
 # Use board.D8 for NRF52840 Sense, board.A5 for ESP32-S3
 # Controls TFT backlight brightness via PWM signal
 display_duty_cycle = 65535  # Values from 0 to 65535
-TFT_brightness = pwmio.PWMOut(board.A5,frequency=500,duty_cycle=display_duty_cycle)
+TFT_brightness = pwmio.PWMOut(board.A5, frequency=500, duty_cycle=display_duty_cycle)
 TFT_brightness.duty_cycle = 40000
 
 # ---- FEATHER WEATHER SPLASH SCREEN -----
@@ -469,14 +466,14 @@ item5_button = SpriteButton(
 )
 splash_label.text = "Loading Touch Keyboard..."
 layout = GridLayout(
-    x=2, # layout x
-    y=100, # layout y
+    x=2,  # layout x
+    y=100,  # layout y
     width=DISPLAY_WIDTH-2,
     height=DISPLAY_HEIGHT-100,
-    grid_size=(14, 5), # Grid Layout width,height
+    grid_size=(14, 5),  # Grid Layout width,height
     cell_padding=2,
     divider_lines=True,  # divider lines around every cell
-    cell_anchor_point = (0.5,0.5)
+    cell_anchor_point=(0.5, 0.5)
 )
 
 my_slider = Slider(x=5, y=50, width=300, value=40000)
@@ -490,7 +487,7 @@ ASCII_CHARS = (
 
 # Grid Layout Labels. Cell invisible with no text label
 _labels = []
-keyboard_input =[]
+keyboard_input = []
 _labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="`"))
 layout.add_content(_labels[0], grid_position=(0, 0), cell_size=(1, 1))
 _labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="1"))
@@ -698,7 +695,7 @@ menu_popout_group_items.append(item5_button)
 menu_button_group.append(menu_button)
 menu_button_group.append(next_button)
 menu_button_group.append(prev_button)
-#display.root_group = main_group
+# display.root_group = main_group
 
 splash_label.text = "Loading Menu Functions..."
 def show_warning(text):
@@ -954,7 +951,7 @@ display_temperature = 0
 # Temperature Interpolation Algorithm
 # pressure and humidity can affect temperature
 # especially in sub-tropical climate!
-humid_input_range = [0.0, 100] # interpolated increase
+humid_input_range = [0.0, 100]  # interpolated increase
 humid_output_range = [0.0, 2.0]  # with humidity
 input_range = [50.0, 69, 72, 73, 75, 76, 80, 88.0, 120.0]
 output_range = [50.0 - 0.1, 69, 72.0 - 1.1, 73.0 - 1.2, 75.0 - 1.4, 76 - 1.5, 80 - 1.0, 88.0 - 0.0, 120.0 - 2.2]
@@ -1262,7 +1259,7 @@ while True:
                         _Slider_New_Value = int(p[0] / 300 * 65000)
                         print(f"TFT_brightness.duty_cycle : {_Slider_New_Value}")
                         TFT_brightness.duty_cycle = _Slider_New_Value
-                        label_preferences_current_brightness.text = f"Display Brightness"
+                        label_preferences_current_brightness.text = "Display Brightness"
                     except Exception as e:
                         print(e)
                         continue
@@ -1286,7 +1283,6 @@ while True:
         wifi_settings_pw.text = f"Password: \n{appw_ast}"
         wifi_settings_instructions.text = "To change SSID & PW connect USB cable to PC\nOpen CIRCUITPY USB drive\nEdit settings.toml file"
 
-
         while (time.monotonic() - last) <= sleep_time and display.root_group is wifi_settings_group:
             p = touchscreen.touch_point
             if p:
@@ -1301,15 +1297,15 @@ while True:
         hello_label.text = "WiFi Signal Strength"
         # Displays available networks sorted by RSSI
         networks = []
-        NetworkList =[]
+        NetworkList = []
         for network in wifi.radio.start_scanning_networks():
             networks.append(network)
         wifi.radio.stop_scanning_networks()
         networks = sorted(networks, key=lambda net: net.rssi, reverse=True)
         for network in networks:
-            sorted_networks = {'ssid':network.ssid, 'rssi':network.rssi, 'channel':network.channel}
+            sorted_networks = {'ssid': network.ssid, 'rssi': network.rssi, 'channel': network.channel}
             NetworkList.append([sorted_networks])
-            #print("ssid:",network.ssid, "rssi:",network.rssi, "channel:",network.channel)
+            # print("ssid:",network.ssid, "rssi:",network.rssi, "channel:",network.channel)
         jsonNetworkList = json.dumps(NetworkList)
         json_list = json.loads(jsonNetworkList)
         try:
@@ -1390,16 +1386,18 @@ while True:
         while (time.monotonic() - last) <= sleep_time and display.root_group is wifi_change_group:
             p = touchscreen.touch_point
             if p:
-                #print(p)
+                # print(p)
                 touched_cell = layout.which_cell_contains(p)
                 if touched_cell:
                     touched_cell_view = layout.get_cell(touched_cell)
                     key_text = touched_cell_view.text
-                    print(f"key_text: {key_text}")
+                    print(f"key_text: {key_text} {touched_cell}")
                     if key_text in ASCII_CHARS:
                         input_lbl.text += key_text
                     elif key_text == "SPACE":
                         input_lbl.text += " "
+                    elif key_text == "\uf0e2":  # 0x2a backspace key
+                        input_lbl.text = input_lbl.text[:-1]
                     touched_cell_view.background_color = 0x00ff00
                     touched_cell_view.color = 0x000000
                     time.sleep(0.2)
