@@ -30,7 +30,7 @@ from adafruit_bme280 import basic as adafruit_bme280
 from adafruit_hx8357 import HX8357
 import adafruit_stmpe610
 from adafruit_button.sprite_button import SpriteButton
-from adafruit_displayio_layout.layouts.grid_layout import GridLayout
+from soft_keyboard.soft_keyboard import SoftKeyboard, PRINTABLE_CHARACTERS
 from slider import Slider
 _now = time.monotonic()
 
@@ -464,150 +464,12 @@ item5_button = SpriteButton(
     selected_bmp_path="icons/gradient_button_1.bmp",
     transparent_index=0,
 )
-splash_label.text = "Loading Touch Keyboard..."
-layout = GridLayout(
-    x=2,  # layout x
-    y=100,  # layout y
-    width=DISPLAY_WIDTH-2,
-    height=DISPLAY_HEIGHT-100,
-    grid_size=(14, 5),  # Grid Layout width,height
-    cell_padding=2,
-    divider_lines=True,  # divider lines around every cell
-    cell_anchor_point=(0.5, 0.5)
-)
 
 my_slider = Slider(x=5, y=50, width=300, value=40000)
 
-ASCII_CHARS = (
-    "`", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=",
-    "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "",
-    "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", ",", ".", "/", "\\", "'",
-    "[", "]", ";"
-)
-
-# Grid Layout Labels. Cell invisible with no text label
-_labels = []
-keyboard_input = []
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="`"))
-layout.add_content(_labels[0], grid_position=(0, 0), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="1"))
-layout.add_content(_labels[1], grid_position=(1, 0), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="2"))
-layout.add_content(_labels[2], grid_position=(2, 0), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="3"))
-layout.add_content(_labels[3], grid_position=(3, 0), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="4"))
-layout.add_content(_labels[4], grid_position=(4, 0), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="5"))
-layout.add_content(_labels[5], grid_position=(5, 0), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="6"))
-layout.add_content(_labels[6], grid_position=(6, 0), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="7"))
-layout.add_content(_labels[7], grid_position=(7, 0), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="8"))
-layout.add_content(_labels[8], grid_position=(8, 0), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="9"))
-layout.add_content(_labels[9], grid_position=(9, 0), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="0"))
-layout.add_content(_labels[10], grid_position=(10, 0), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="-"))
-layout.add_content(_labels[11], grid_position=(11, 0), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="="))
-layout.add_content(_labels[12], grid_position=(12, 0), cell_size=(1, 1))
-_labels.append(label.Label(forkawesome_font, scale=1, x=0, y=0, text="\uf0e2"))
-layout.add_content(_labels[13], grid_position=(13, 0), cell_size=(1, 1))
-
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="Q"))
-layout.add_content(_labels[14], grid_position=(0, 1), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="W"))
-layout.add_content(_labels[15], grid_position=(1, 1), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="E"))
-layout.add_content(_labels[16], grid_position=(2, 1), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="R"))
-layout.add_content(_labels[17], grid_position=(3, 1), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="T"))
-layout.add_content(_labels[18], grid_position=(4, 1), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="Y"))
-layout.add_content(_labels[19], grid_position=(5, 1), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="U"))
-layout.add_content(_labels[20], grid_position=(6, 1), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="I"))
-layout.add_content(_labels[21], grid_position=(7, 1), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="O"))
-layout.add_content(_labels[22], grid_position=(8, 1), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="P"))
-layout.add_content(_labels[23], grid_position=(9, 1), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="["))
-layout.add_content(_labels[24], grid_position=(10, 1), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="]"))
-layout.add_content(_labels[25], grid_position=(11, 1), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="\\"))
-layout.add_content(_labels[26], grid_position=(12, 1), cell_size=(2, 1))
-
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="A"))
-layout.add_content(_labels[27], grid_position=(0, 2), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="S"))
-layout.add_content(_labels[28], grid_position=(1, 2), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="D"))
-layout.add_content(_labels[29], grid_position=(2, 2), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="F"))
-layout.add_content(_labels[30], grid_position=(3, 2), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="G"))
-layout.add_content(_labels[31], grid_position=(4, 2), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="H"))
-layout.add_content(_labels[32], grid_position=(5, 2), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="J"))
-layout.add_content(_labels[33], grid_position=(6, 2), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="K"))
-layout.add_content(_labels[34], grid_position=(7, 2), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="L"))
-layout.add_content(_labels[35], grid_position=(8, 2), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text=";"))
-layout.add_content(_labels[36], grid_position=(9, 2), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="'"))
-layout.add_content(_labels[37], grid_position=(10, 2), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="ENTER"))
-layout.add_content(_labels[38], grid_position=(11, 2), cell_size=(3, 1))
-
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="Z"))
-layout.add_content(_labels[39], grid_position=(0, 3), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="X"))
-layout.add_content(_labels[40], grid_position=(1, 3), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="C"))
-layout.add_content(_labels[41], grid_position=(2, 3), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="V"))
-layout.add_content(_labels[42], grid_position=(3, 3), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="B"))
-layout.add_content(_labels[43], grid_position=(4, 3), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="N"))
-layout.add_content(_labels[44], grid_position=(5, 3), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="M"))
-layout.add_content(_labels[45], grid_position=(6, 3), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text=","))
-layout.add_content(_labels[46], grid_position=(7, 3), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text=","))
-layout.add_content(_labels[47], grid_position=(8, 3), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="."))
-layout.add_content(_labels[48], grid_position=(9, 3), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="/"))
-layout.add_content(_labels[49], grid_position=(10, 3), cell_size=(1, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="SHIFT"))
-layout.add_content(_labels[50], grid_position=(11, 3), cell_size=(3, 1))
-
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="CTRL"))
-layout.add_content(_labels[51], grid_position=(0, 4), cell_size=(2, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="ALT"))
-layout.add_content(_labels[52], grid_position=(2, 4), cell_size=(2, 1))
-_labels.append(label.Label(terminalio.FONT, scale=2, x=0, y=0, text="SPACE"))
-layout.add_content(_labels[53], grid_position=(4, 4), cell_size=(6, 1))
-_labels.append(label.Label(forkawesome_font, scale=1, x=0, y=0, text="\uf060"))
-layout.add_content(_labels[54], grid_position=(10, 4), cell_size=(1, 1))
-_labels.append(label.Label(forkawesome_font, scale=1, x=0, y=0, text="\uf061"))
-layout.add_content(_labels[55], grid_position=(11, 4), cell_size=(1, 1))
-_labels.append(label.Label(forkawesome_font, scale=1, x=0, y=0, text="\uf062"))
-layout.add_content(_labels[56], grid_position=(12, 4), cell_size=(1, 1))
-_labels.append(label.Label(forkawesome_font, scale=1, x=0, y=0, text="\uf063"))
-layout.add_content(_labels[57], grid_position=(13, 4), cell_size=(1, 1))
+splash_label.text = "Loading Soft Keyboard..."
+soft_kbd = SoftKeyboard(2, 100, DISPLAY_WIDTH-2, DISPLAY_HEIGHT-100, terminalio.FONT, forkawesome_font, layout_config="mobile_layout.json")
+#soft_kbd2 = SoftKeyboard(2, 100, DISPLAY_WIDTH-2, DISPLAY_HEIGHT-100, terminalio.FONT, forkawesome_font, layout_config="mobile_layout_special.json")
 
 splash_label.text = "Loading Display Groups..."
 # Create subgroups
@@ -764,7 +626,7 @@ def root_group_switch(SHOUTY_REMOVE, SHOUTY_APPEND):
     if SHOUTY_REMOVE == wifi_change_group:
         SHOUTY_REMOVE.remove(input_change_wifi)
         SHOUTY_REMOVE.remove(input_new_cred)
-        SHOUTY_REMOVE.remove(layout)
+        SHOUTY_REMOVE.remove(soft_kbd)
         SHOUTY_REMOVE.remove(input_lbl)
     
     # Append order is layer order top to bottom for each page.
@@ -805,7 +667,7 @@ def root_group_switch(SHOUTY_REMOVE, SHOUTY_APPEND):
     if SHOUTY_APPEND == wifi_change_group:
         SHOUTY_APPEND.append(input_change_wifi)
         SHOUTY_APPEND.append(input_new_cred)
-        SHOUTY_APPEND.append(layout)
+        SHOUTY_APPEND.append(soft_kbd)
         SHOUTY_APPEND.append(input_lbl)
         
     SHOUTY_APPEND.append(hello_label)
@@ -1308,20 +1170,14 @@ while True:
             # print("ssid:",network.ssid, "rssi:",network.rssi, "channel:",network.channel)
         jsonNetworkList = json.dumps(NetworkList)
         json_list = json.loads(jsonNetworkList)
+        # print(f"Items in RSSI List: {len(json_list)}")
+        rssi_data_label.text = "SSID\t\t\t\t\t\t\t  RSSI\t\t\t\t    CHANNEL\n"
         try:
-            rssi_data_label.text = "SSID\t\t\t\t\t\t\t  RSSI\t\t\t\t    CHANNEL\n"
-            rssi_data_label0.text = f"{json_list[0][0]['ssid']:<30}\t{json_list[0][0]['rssi']:<20}\t{json_list[0][0]['channel']:<20}\n"
-            rssi_data_label1.text = f"{json_list[1][0]['ssid']:<30}\t{json_list[1][0]['rssi']:<20}\t{json_list[1][0]['channel']:<20}\n"
-            rssi_data_label2.text = f"{json_list[2][0]['ssid']:<30}\t{json_list[2][0]['rssi']:<20}\t{json_list[2][0]['channel']:<20}\n"
-            rssi_data_label3.text = f"{json_list[3][0]['ssid']:<30}\t{json_list[3][0]['rssi']:<20}\t{json_list[3][0]['channel']:<20}\n"
-            rssi_data_label4.text = f"{json_list[4][0]['ssid']:<30}\t{json_list[4][0]['rssi']:<20}\t{json_list[4][0]['channel']:<20}\n"
-            rssi_data_label5.text = f"{json_list[5][0]['ssid']:<30}\t{json_list[5][0]['rssi']:<20}\t{json_list[5][0]['channel']:<20}\n"
-            rssi_data_label6.text = f"{json_list[6][0]['ssid']:<30}\t{json_list[6][0]['rssi']:<20}\t{json_list[6][0]['channel']:<20}\n"
-            rssi_data_label7.text = f"{json_list[7][0]['ssid']:<30}\t{json_list[7][0]['rssi']:<20}\t{json_list[7][0]['channel']:<20}\n"
-            rssi_data_label8.text = f"{json_list[8][0]['ssid']:<30}\t{json_list[8][0]['rssi']:<20}\t{json_list[8][0]['channel']:<20}\n"
-            rssi_data_label9.text = f"{json_list[9][0]['ssid']:<30}\t{json_list[9][0]['rssi']:<20}\t{json_list[9][0]['channel']:<20}\n"
+            for i in range(min(10, len(json_list))):
+                label_text = f"{json_list[i][0]['ssid']:<30}\t{json_list[i][0]['rssi']:<20}\t{json_list[i][0]['channel']:<20}\n"
+                globals()[f'rssi_data_label{i}'].text = label_text
         except Exception as e:
-            print(f"RSSI Label Refresh (index error is ok, ignore it): {e}")
+            print(f"RSSI List Error: {e}")
             pass
 
         while (time.monotonic() - last) <= sleep_time and display.root_group is rssi_group:
@@ -1379,30 +1235,17 @@ while True:
         wallpaper[0] = 3
         hello_label.text = "Wifi Edit Credentials"
         input_change_wifi.text = "New Password: "
-        key_text = input_new_cred
-
-        print(f"size: {layout.width}, {layout.height}")
-        print(f"cell size: {layout.cell_size_pixels}")
+        
         while (time.monotonic() - last) <= sleep_time and display.root_group is wifi_change_group:
             p = touchscreen.touch_point
+            key_value = soft_kbd.check_touches(p)
             if p:
-                # print(p)
-                touched_cell = layout.which_cell_contains(p)
-                if touched_cell:
-                    touched_cell_view = layout.get_cell(touched_cell)
-                    key_text = touched_cell_view.text
-                    print(f"key_text: {key_text} {touched_cell}")
-                    if key_text in ASCII_CHARS:
-                        input_lbl.text += key_text
-                    elif key_text == "SPACE":
-                        input_lbl.text += " "
-                    elif key_text == "\uf0e2":  # 0x2a backspace key
-                        input_lbl.text = input_lbl.text[:-1]
-                    touched_cell_view.background_color = 0x00ff00
-                    touched_cell_view.color = 0x000000
-                    time.sleep(0.2)
-                    touched_cell_view.color = 0xffffff
-                    layout.get_cell(touched_cell).background_color = 0x000000
+                if key_value in PRINTABLE_CHARACTERS:
+                    input_lbl.text += key_value
+                elif key_value == 42:  # 0x2a backspace key
+                    input_lbl.text = input_lbl.text[:-1]
+                elif key_value == 224:  # special character switch key
+                    input_lbl.text = input_lbl.text[:-1]
                 menu_switching(wifi_change_group, main_group2, main_group, preferences_group, wifi_settings_group, rssi_group, sys_info_group, wifi_change_group)
             else:
                 # Default state always running
