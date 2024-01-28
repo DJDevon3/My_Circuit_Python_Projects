@@ -102,16 +102,16 @@ Output: Shows SSID RSSI Channel on Display. It will properly update labels each 
 ```py
 import time
 def _format_datetime(datetime):
-    return "{:02}/{:02}/{} {:02}:{:02}:{:02}".format(
+    return "{:02}-{:02}-{:02}_{:02}-{:02}-{:02}".format(
+        datetime.tm_year,
         datetime.tm_mon,
         datetime.tm_mday,
-        datetime.tm_year,
         datetime.tm_hour,
         datetime.tm_min,
         datetime.tm_sec,
     )
 # Plug in your unix time here
-unix_time = 1660764970 # Wed Aug 17 2022 19:36:10 GMT+0000
+unix_time = 1706466904 # Sunday Jan 28 2024 GMT+0000
 tz_offset_seconds = -14400  # NY Timezone
 print(f"Unix Time: {unix_time}")
 
@@ -122,12 +122,12 @@ print(f"Struct Time Format: {current_struct_time}")
 final_timestamp = "{}".format(_format_datetime(current_struct_time))
 print(f"Timestamp: {final_timestamp}")
 ```
-code.py output:
+code.py output: (refined so timestamp can also be used as a filename)
 ```py
-Unix Time: 1660764970 
-Your Local Unix Time: 1660750570 
-Struct Time Format: struct_time(tm_year=2022, tm_mon=8, tm_mday=17, tm_hour=15, tm_min=36, tm_sec=10, tm_wday=2, tm_yday=229, tm_isdst=-1)
-Timestamp: 08/17/2022 15:36:10
+Unix Time: 1706466904
+Your Local Unix Time: 1706452504
+Struct Time Format: struct_time(tm_year=2024, tm_mon=1, tm_mday=28, tm_hour=14, tm_min=35, tm_sec=4, tm_wday=6, tm_yday=28, tm_isdst=-1)
+Timestamp: 2024-01-28_14-35-04
 ```
 
 ## Seconds to Minutes/Hours/Days function (good for sleep or update functions)
