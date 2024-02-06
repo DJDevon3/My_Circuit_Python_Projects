@@ -3,7 +3,7 @@
 ![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Font%20Styles/screenshot.bmp)
 
 - Shadow & Outline in this example are at scale=2. Scaling up simply doubles the pixels making them look blocky.
-- Huge is a custom 120px font at scale=1. It has very clean edges because it's not upscaled.
+- Huge is a custom 121px font at scale=1. It has very clean edges because it's not upscaled.
 
 ![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Font%20Styles/screenshot2.bmp)
 
