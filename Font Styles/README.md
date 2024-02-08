@@ -2,7 +2,12 @@
 
 ![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Font%20Styles/screenshot.bmp)
 
+- Shadow & Outline in this example are at scale=2. Scaling up simply doubles the pixels making them look blocky.
+- Huge is a custom 121px font at scale=1. It has very clean edges because it's not upscaled.
+
 ![](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Font%20Styles/screenshot2.bmp)
+
+- The USA example shows how 5 labels are positioned to create the illusion of an outline. I simply colored each label different instead of all black so you can see how it's constructed.
 
 # GUI Design for TFT's
 I've figured out how to create drop shadow and outline font styles from scratch using
