@@ -62,24 +62,28 @@ intro8 = "For though it has many omissions and contains much that is apocryphal,
 intro9 = "First, it is slightly cheaper; and secondly it has the words DON'T PANIC inscribed in large friendly letters on its cover."
 intro10 = "Hitchhikers Guide to the Galaxy \n ~ Douglas Adams"
 
+def dontpanic(panic):
+    hello_label.text = "\n".join(wrap_text_to_pixels(panic, DISPLAY_WIDTH-2, Arial16_font))
+
 while True:
-    hello_label.text = "\n".join(wrap_text_to_pixels(intro1, DISPLAY_WIDTH-5, Arial16_font))
+    dontpanic(intro1)
     time.sleep(10)
-    hello_label.text = "\n".join(wrap_text_to_pixels(intro2, DISPLAY_WIDTH-5, Arial16_font))
+    dontpanic(intro2)
     time.sleep(10)
-    hello_label.text = "\n".join(wrap_text_to_pixels(intro3, DISPLAY_WIDTH-5, Arial16_font))
+    dontpanic(intro3)
     time.sleep(10)
-    hello_label.text = "\n".join(wrap_text_to_pixels(intro4, DISPLAY_WIDTH-5, Arial16_font))
+    dontpanic(intro4)
     time.sleep(10)
-    hello_label.text = "\n".join(wrap_text_to_pixels(intro5, DISPLAY_WIDTH-5, Arial16_font))
+    dontpanic(intro5)
     time.sleep(10)
-    hello_label.text = "\n".join(wrap_text_to_pixels(intro6, DISPLAY_WIDTH-5, Arial16_font))
+    dontpanic(intro6)
     time.sleep(10)
-    hello_label.text = "\n".join(wrap_text_to_pixels(intro7, DISPLAY_WIDTH-5, Arial16_font))
+    dontpanic(intro7)
     time.sleep(10)
-    hello_label.text = "\n".join(wrap_text_to_pixels(intro8, DISPLAY_WIDTH-5, Arial16_font))
+    dontpanic(intro8)
     time.sleep(10)
-    hello_label.text = "\n".join(wrap_text_to_pixels(intro9, DISPLAY_WIDTH-5, Arial16_font))
+    dontpanic(intro9)
     time.sleep(10)
-    hello_label.text = "\n".join(wrap_text_to_pixels(intro10, DISPLAY_WIDTH-5, Arial16_font))
+    dontpanic(intro10)
     time.sleep(10)
+
