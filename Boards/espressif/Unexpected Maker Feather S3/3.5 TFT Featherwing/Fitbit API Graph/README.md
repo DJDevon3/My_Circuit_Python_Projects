@@ -1,8 +1,12 @@
-### Circuit Python Fitbit API Graphing Example
+## Circuit Python Fitbit API Graph Example
 
-![TFT Featherwing Screenshot](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/espressif/Unexpected%20Maker%20Feather%20S3/3.5%20TFT%20Featherwing/Fitbit%20API%20Graph/screenshot.jpg)
+![Cartesian Graph Screenshot](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/espressif/Unexpected%20Maker%20Feather%20S3/3.5%20TFT%20Featherwing/Fitbit%20API%20Graph/screenshots/screenshot.bmp)
+- Past 15 minutes of heart rate data plotted in cartesian graph. Fitbit must be running in the background on a mobile device to relay data to Fitbits server.
 
-Fitbit API walkthrough for getting API Token & Initial Refresh Token
+![Midnight Screenshot](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/espressif/Unexpected%20Maker%20Feather%20S3/3.5%20TFT%20Featherwing/Fitbit%20API%20Graph/screenshots/midnight.bmp)
+- Values reset daily at midnight. From midnight to 00:15 there aren't enough values to plot so a wallpaper is used instead. Defaults to wallpaper if the Fitbit app is not running in the background on the mobile device (not updating values). Shows Fitbit logo, notice of not enough values to create a graph, and watch battery charge percentage. The wallpaper is a picture of my mom at a physical rehabilitation facility. The image is an 8-bit indexed bmp (256 colors), please personalize the wallpaper image how you prefer. I'm leaving her wallpaper here so you can see why this project has personal meaning to me.
+
+# Fitbit API Token & Initial Refresh Token walkthrough:
 - Step 1: Create a personal app here: https://dev.fitbit.com
 - Step 2: Use https://www.fitbit.com as the callback url
 - Step 3: Use their Tutorial to get the Token and first Refresh Token
@@ -14,10 +18,10 @@ Fitbit API walkthrough for getting API Token & Initial Refresh Token
 
 - Because I'm using their example salt (PKCE Verifier) & I've already generated a new token after this guide... plus I'm generating a new refresh token every 15 minutes. I'm not the least bit worried about showing these tokens. 
 
-# Serial Output Differences:
+## Serial Output Differences:
 - Script is smart enough to know if it's an initial run, manual file save, or automated poll update.
 
-### Initial Run Serial Output:
+## Initial Run Serial Output:
 - If copy/paste API token and first refresh token detected
 ```py
 code.py output:
