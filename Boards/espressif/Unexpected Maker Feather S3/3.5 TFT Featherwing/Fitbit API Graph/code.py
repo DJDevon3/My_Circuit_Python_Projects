@@ -1,20 +1,21 @@
-# SPDX-FileCopyrightText: 2023 DJDevon3
+# SPDX-FileCopyrightText: 2024 DJDevon3
 # SPDX-License-Identifier: MIT
-# Coded for Circuit Python 8.2.x
+# Coded with Circuit Python 8.2.10
 
 import os
 import board
 import time
 import displayio
-import digitalio
 import terminalio
 import microcontroller
 import ssl
 import wifi
 import socketpool
+import digitalio
+import storage
 import adafruit_sdcard
 from adafruit_bitmapsaver import save_pixels
-import storage
+import adafruit_imageload
 from adafruit_hx8357 import HX8357
 from adafruit_display_text import label
 from adafruit_displayio_layout.widgets.cartesian import Cartesian
@@ -38,6 +39,10 @@ display.auto_refresh = False
 
 # STREAMER WARNING: private data will be viewable while debug True
 debug = False  # Set True for full debug view
+
+# No graph from midnight to 00:15 due to lack of 15 values.
+# Debug midnight to display something else in this time frame.
+midnight_debug = False
 
 # Can use to confirm first instance of NVM is correct refresh token
 top_nvm = microcontroller.nvm[0:64].decode()
@@ -99,28 +104,10 @@ TEXT_RED = 0xFF0000
 TEXT_WHITE = 0xFFFFFF
 TEXT_YELLOW = 0xFFFF00
 
-def bar_color(heart_rate):
-    if heart_rate < 60:
-        heart_rate_color = TEXT_PURPLE
-    elif 60 <= heart_rate < 75:
-        heart_rate_color = TEXT_BLUE
-    elif 75 <= heart_rate < 85:
-        heart_rate_color = TEXT_LIGHTBLUE
-    elif 85 <= heart_rate < 100:
-        heart_rate_color = TEXT_GREEN
-    elif 100 <= heart_rate < 110:
-        heart_rate_color = TEXT_YELLOW
-    elif 110 <= heart_rate < 120:
-        heart_rate_color = TEXT_ORANGE
-    else:
-        heart_rate_color = TEXT_RED
-    return heart_rate_color
-
-hello_label = label.Label(terminalio.FONT)
-hello_label.anchor_point = (0.5, 0.0)
-hello_label.anchored_position = (DISPLAY_WIDTH/2, 5)
-hello_label.scale = (1)
-hello_label.color = TEXT_WHITE
+activity_status = label.Label(terminalio.FONT)
+activity_status.anchor_point = (0.5, 0.0)
+activity_status.anchored_position = (DISPLAY_WIDTH/2, 30)
+activity_status.scale = (2)
 
 error_label = label.Label(terminalio.FONT)
 error_label.anchor_point = (0.5, 0.5)
@@ -141,9 +128,9 @@ time_label.scale = (2)
 time_label.color = TEXT_WHITE
 
 midnight_label = label.Label(terminalio.FONT)
-midnight_label.anchor_point = (0.5, 0.0)
-midnight_label.anchored_position = (DISPLAY_WIDTH/2, DISPLAY_HEIGHT/2-50)
-midnight_label.scale = (2)
+midnight_label.anchor_point = (0.0, 0.0)
+midnight_label.anchored_position = (5, 40)
+midnight_label.scale = (1)
 midnight_label.color = TEXT_WHITE
 
 watch_bat_label = label.Label(terminalio.FONT)
@@ -158,10 +145,72 @@ pulse_label.anchored_position = (344, 200)
 pulse_label.scale = (2)
 pulse_label.color = TEXT_PINK
 
+def bar_color(heart_rate):
+    if heart_rate < 60:
+        heart_rate_color = TEXT_PURPLE
+        activity_status.color = TEXT_PURPLE
+        activity_status.text = "Dangerously Low"
+    elif 60 <= heart_rate < 75:
+        heart_rate_color = TEXT_BLUE
+        activity_status.color = TEXT_BLUE
+        activity_status.text = "Very Low"
+    elif 75 <= heart_rate < 85:
+        heart_rate_color = TEXT_LIGHTBLUE
+        activity_status.color = TEXT_LIGHTBLUE
+        activity_status.text = "Sleeping"
+    elif 85 <= heart_rate < 95:
+        heart_rate_color = TEXT_GREEN
+        activity_status.color = TEXT_GREEN
+        activity_status.text = "Relaxing"
+    elif 95 <= heart_rate < 105:
+        heart_rate_color = TEXT_YELLOW
+        activity_status.color = TEXT_YELLOW
+        activity_status.text = "Awake"
+    elif 105 <= heart_rate < 120:
+        heart_rate_color = TEXT_ORANGE
+        activity_status.color = TEXT_ORANGE
+        activity_status.text = "Active"
+    elif 120 <= heart_rate < 135:
+        heart_rate_color = TEXT_PINK
+        activity_status.color = TEXT_PINK
+        activity_status.text = "Very Active"
+    else:
+        heart_rate_color = TEXT_RED
+        activity_status.color = TEXT_RED
+        activity_status.text = "Exertion"
+    return heart_rate_color
+    
+# Load Fitbit Icon
+sprite_sheet, palette = adafruit_imageload.load(
+    "icons/Fitbit_Logo.bmp",
+    bitmap=displayio.Bitmap,
+    palette=displayio.Palette,
+)
+palette.make_transparent(0)
+fitbit_icon = displayio.TileGrid(
+    sprite_sheet,
+    pixel_shader=palette,
+    width=1,
+    height=1,
+    tile_width=112,
+    tile_height=32,
+    default_tile=0,
+)
+
+# Load Picture
+DiskBMP = displayio.OnDiskBitmap("/images/Grandma.bmp")
+grandma = displayio.TileGrid(
+    DiskBMP,
+    pixel_shader=DiskBMP.pixel_shader,
+    x = 27,
+    tile_width=427,
+    tile_height=320,
+)
+
 # Create subgroups (layers)
 text_group = displayio.Group()
-midnight_group = displayio.Group()
 plot_group = displayio.Group()
+midnight_group = displayio.Group()
 main_group = displayio.Group()
 
 # Add subgroups to main group
@@ -170,12 +219,15 @@ main_group.append(text_group)
 main_group.append(midnight_group)
 
 # Append labels to subgroups (sublayers)
-text_group.append(hello_label)
 text_group.append(date_label)
 text_group.append(time_label)
-text_group.append(watch_bat_label)
 text_group.append(pulse_label)
 text_group.append(error_label)
+midnight_group.append(grandma)
+midnight_group.append(fitbit_icon)
+midnight_group.append(watch_bat_label)
+midnight_group.append(midnight_label)
+midnight_group.append(activity_status)
 
 # Combine and Show
 display.show(main_group)
@@ -183,19 +235,7 @@ display.show(main_group)
 # Authenticates Client ID & SHA-256 Token to POST
 fitbit_oauth_header = {"Content-Type": "application/x-www-form-urlencoded"}
 fitbit_oauth_token = "https://api.fitbit.com/oauth2/token"
-
-# Connect to Wi-Fi
-print("\n===============================")
-print("Connecting to WiFi...")
 requests = adafruit_requests.Session(pool, ssl.create_default_context())
-while not wifi.radio.ipv4_address:
-    try:
-        wifi.radio.connect(wifi_ssid, wifi_pw)
-    except ConnectionError as e:
-        print("Connection Error:", e)
-        print("Retrying in 10 seconds")
-    time.sleep(10)
-print("Connected!\n")
 
 # First run uses settings.toml token
 Refresh_Token = Fitbit_First_Refresh_Token
@@ -206,7 +246,18 @@ if debug:
 
 new_line = '\n'
 while True:
-    # hello_label.text = "Circuit Python 8.2.2 Fitbit API"
+    # Connect to Wi-Fi
+    print("\n===============================")
+    print("Connecting to WiFi...")
+    while not wifi.radio.ipv4_address:
+        try:
+            wifi.radio.connect(wifi_ssid, wifi_pw)
+        except ConnectionError as e:
+            print("Connection Error:", e)
+            print("Retrying in 10 seconds")
+            continue
+        time.sleep(10)
+    print("Connected!\n")
 
     if top_nvm is not Refresh_Token and First_Run is False:
         First_Run = False
@@ -362,14 +413,20 @@ while True:
             # Fitbit's sync to mobile device & server every 15 minutes in chunks.
             # Pointless to poll their API faster than 15 minute intervals.
             activities_heart_value = fitbit_json["activities-heart-intraday"]["dataset"]
-            response_length = len(activities_heart_value)
+            if midnight_debug:
+                response_length = 0
+            else: 
+                response_length = len(activities_heart_value)
             if response_length >= 15:
                 midnight_label.text = ("")
                 activities_timestamp = fitbit_json["activities-heart"][0]["dateTime"]
                 print(f"Fitbit Date: {activities_timestamp}")
-                activities_latest_heart_time = fitbit_json["activities-heart-intraday"][
-                    "dataset"
-                ][response_length - 1]["time"]
+                if midnight_debug:
+                    activities_latest_heart_time = str("00:05:00")
+                else:
+                    activities_latest_heart_time = fitbit_json["activities-heart-intraday"][
+                        "dataset"
+                    ][response_length - 1]["time"]
                 print(f"Fitbit Time: {activities_latest_heart_time[0:-3]}")
                 print(f"Today's Logged Pulses: {response_length}")
 
@@ -457,11 +514,12 @@ while True:
                 # For autoscaling graph
                 lowest_y = sorted(list((list_data)))  # Get lowest sorted value
                 highest_y = sorted(list_data, reverse=True)  # Get highest sorted value
-
-                # Display Labels
+                
+                # Date/Time Display Labels
                 date_label.text = f"{activities_timestamp}"
                 time_label.text = f"{activities_latest_heart_time[0:-3]}"
-
+                
+                # Cartesian Graph Setup
                 my_plane = Cartesian(
                     x=30,  # x position for the plane
                     y=60,  # y plane position
@@ -475,8 +533,12 @@ while True:
                     major_tick_stroke=2,
                     subticks=True,
                 )
+                # Clear prior graph otherwise infinite appends happen
                 my_plane.clear_plot_lines()
+                # Display new graph
                 plot_group.append(my_plane)
+                fitbit_icon.hidden = True
+                grandma.hidden = True
                 data = [
                     (0, activities_latest_heart_value14),
                     (1, activities_latest_heart_value13),
@@ -502,9 +564,10 @@ while True:
                     print("Index Error:", e)
                     continue
             else :
+                grandma.hidden = False
+                fitbit_icon.hidden = False
                 midnight_label.text = (
-                    f"Not enough values for today.{new_line}"
-                    + "No display from midnight to 00:15"
+                    f"No values for today yet."
                 )
                 print("Waiting for latest sync...")
                 print("Not enough values for today to display yet.")
@@ -532,6 +595,7 @@ while True:
             print(f"JSON Full Response: {fitbit_device_json}")
 
         Device_Response = fitbit_device_json[0]["batteryLevel"]
+        error_label.text = ""
         print(f"Watch Battery %: {Device_Response}")
         watch_bat_label.text = f"Battery: {Device_Response}%"
         print("Board Uptime:", time_calc(time.monotonic()))  # Board Up-Time seconds
