@@ -117,7 +117,7 @@ Next Update in: 30 seconds
 - Automated request attempt. Set sleep_time to 30 seconds for development testing purposes only.
 - If you post/request too many attempts you will get temporarily banned. 
 - Please set it back to 900 seconds after testing.
-- Indefinite run is the end goal to have it work 24/7 without interruption.
+- Indefinite run is the end goal to have it work 24/7 without interruption polling every 15 minutes (900 seconds).
 ```py
 ===============================
 ------ INDEFINITE RUN -------
