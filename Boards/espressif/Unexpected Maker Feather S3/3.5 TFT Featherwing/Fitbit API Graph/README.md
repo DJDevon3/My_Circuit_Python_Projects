@@ -1,9 +1,9 @@
 ## Circuit Python Fitbit API Graph Example
 
-![Cartesian Graph Screenshot](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/espressif/Unexpected%20Maker%20Feather%20S3/3.5%20TFT%20Featherwing/Fitbit%20API%20Graph/screenshots/screenshot.bmp)
+![Cartesian Graph Screenshot](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/espressif/Unexpected%20Maker%20Feather%20S3/3.5%20TFT%20Featherwing/Fitbit%20API%20Graph/screenshots/Relaxing.bmp)
 - Past 15 minutes of heart rate data plotted in cartesian graph. Fitbit must be running in the background on a mobile device to relay data to Fitbits server.
 
-![Midnight Screenshot](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/espressif/Unexpected%20Maker%20Feather%20S3/3.5%20TFT%20Featherwing/Fitbit%20API%20Graph/screenshots/midnight.bmp)
+![Grandma Screenshot](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/espressif/Unexpected%20Maker%20Feather%20S3/3.5%20TFT%20Featherwing/Fitbit%20API%20Graph/screenshots/Grandma.bmp)
 - Values reset daily at midnight. From midnight to 00:15 there aren't enough values to plot so a wallpaper is used instead. Defaults to wallpaper if the Fitbit app is not running in the background on the mobile device (not updating values). Shows Fitbit logo, notice of not enough values to create a graph, and watch battery charge percentage. The wallpaper is a picture of my mom at a physical rehabilitation facility. The image is an 8-bit indexed bmp (256 colors), please personalize the wallpaper image how you prefer. I'm leaving her wallpaper here so you can see why this project has personal meaning to me.
 
 # Fitbit API Token & Initial Refresh Token walkthrough:
