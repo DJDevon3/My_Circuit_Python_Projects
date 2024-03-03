@@ -3,6 +3,44 @@
 ![Cartesian Graph Screenshot](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/espressif/Unexpected%20Maker%20Feather%20S3/3.5%20TFT%20Featherwing/Fitbit%20API%20Graph/screenshots/Relaxing.bmp)
 - Past 15 minutes of heart rate data plotted in cartesian graph. Fitbit must be running in the background on a mobile device to relay data to Fitbits server.
 
+Everyone has their own resting heart rate that should be tailored to the individual.  You can do that here:
+```py
+def bar_color(heart_rate):
+    if heart_rate < 60:
+        heart_rate_color = TEXT_PURPLE
+        activity_status.color = TEXT_PURPLE
+        activity_status.text = "Dangerously Low"
+    elif 60 <= heart_rate < 75:
+        heart_rate_color = TEXT_BLUE
+        activity_status.color = TEXT_BLUE
+        activity_status.text = "Very Low"
+    elif 75 <= heart_rate < 85:
+        heart_rate_color = TEXT_LIGHTBLUE
+        activity_status.color = TEXT_LIGHTBLUE
+        activity_status.text = "Sleeping"
+    elif 85 <= heart_rate < 95:
+        heart_rate_color = TEXT_GREEN
+        activity_status.color = TEXT_GREEN
+        activity_status.text = "Relaxing"
+    elif 95 <= heart_rate < 105:
+        heart_rate_color = TEXT_YELLOW
+        activity_status.color = TEXT_YELLOW
+        activity_status.text = "Awake"
+    elif 105 <= heart_rate < 120:
+        heart_rate_color = TEXT_ORANGE
+        activity_status.color = TEXT_ORANGE
+        activity_status.text = "Active"
+    elif 120 <= heart_rate < 135:
+        heart_rate_color = TEXT_MAGENTA
+        activity_status.color = TEXT_MAGENTA
+        activity_status.text = "Very Active"
+    else:
+        heart_rate_color = TEXT_RED
+        activity_status.color = TEXT_RED
+        activity_status.text = "Exertion"
+    return heart_rate_color
+```
+
 ![Grandma Screenshot](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/main/Boards/espressif/Unexpected%20Maker%20Feather%20S3/3.5%20TFT%20Featherwing/Fitbit%20API%20Graph/screenshots/Grandma.bmp)
 - Values reset daily at midnight. From midnight to 00:15 there aren't enough values to plot so a wallpaper is used instead. Defaults to wallpaper if the Fitbit app is not running in the background on the mobile device (not updating values). Shows Fitbit logo, notice of not enough values to create a graph, and watch battery charge percentage. The wallpaper is a picture of my mom at a physical rehabilitation facility. The image is an 8-bit indexed bmp (256 colors), please personalize the wallpaper image how you prefer. I'm leaving her wallpaper here so you can see why this project has personal meaning to me.
 
@@ -21,8 +59,9 @@
 ## Serial Output Differences:
 - Script is smart enough to know if it's an initial run, manual file save, or automated poll update.
 
-## Initial Run Serial Output:
-- If copy/paste API token and first refresh token detected
+## Initial Run: Serial Output
+- The first time you ever run the script.
+- The script will detect if it's a first ever provided token.
 ```py
 code.py output:
 
@@ -47,8 +86,9 @@ Next Update in: 30 seconds
 ===============================
 ```
 
-### Manual Save (Ctrl+S) Serial Output:
-- Uses API token in settings.toml and automated next refresh token during manual save so you don't have to copy/paste refresh tokens every time into settings.toml
+### Manual Save (Ctrl+S): Serial Output
+- During development on file save it will detect the manual intervention and adjust accordingly so you can have faster iterations.
+- This avoids the slow progress of having to generate & input a new token into settings.toml every time you want to iterate during development.
 ```py
 Auto-reload is on. Simply save files over USB to run them or enter REPL to disable.
 code.py output:
@@ -73,8 +113,11 @@ Finished!
 Next Update in: 30 seconds
 ===============================
 ```
-### Automated Run Serial Output:
-- Automated request attempt. Set sleep_time to 30 seconds for testing but not for many attempts as you could get temp banned. Return to 900 seconds after testing.
+### Indefinite Run: Serial Output
+- Automated request attempt. Set sleep_time to 30 seconds for development testing purposes only.
+- If you post/request too many attempts you will get temporarily banned. 
+- Please set it back to 900 seconds after testing.
+- Indefinite run is the end goal to have it work 24/7 without interruption.
 ```py
 ===============================
 ------ INDEFINITE RUN -------
