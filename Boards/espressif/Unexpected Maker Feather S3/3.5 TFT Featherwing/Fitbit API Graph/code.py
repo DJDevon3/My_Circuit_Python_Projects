@@ -159,8 +159,8 @@ pulse_label.color = TEXT_PINK
 
 def bar_color(heart_rate):
     if heart_rate < 60:
-        heart_rate_color = TEXT_PURPLE
-        activity_status.color = TEXT_PURPLE
+        heart_rate_color = TEXT_RED
+        activity_status.color = TEXT_RED
         activity_status.text = "Dangerously Low"
     elif 60 <= heart_rate < 75:
         heart_rate_color = TEXT_BLUE
@@ -171,24 +171,24 @@ def bar_color(heart_rate):
         activity_status.color = TEXT_LIGHTBLUE
         activity_status.text = "Sleeping"
     elif 85 <= heart_rate < 95:
-        heart_rate_color = TEXT_GREEN
-        activity_status.color = TEXT_GREEN
+        heart_rate_color = TEXT_CYAN
+        activity_status.color = TEXT_CYAN
         activity_status.text = "Relaxing"
     elif 95 <= heart_rate < 105:
-        heart_rate_color = TEXT_YELLOW
-        activity_status.color = TEXT_YELLOW
+        heart_rate_color = TEXT_GREEN
+        activity_status.color = TEXT_GREEN
         activity_status.text = "Awake"
     elif 105 <= heart_rate < 120:
-        heart_rate_color = TEXT_ORANGE
-        activity_status.color = TEXT_ORANGE
+        heart_rate_color = TEXT_YELLOW
+        activity_status.color = TEXT_YELLOW
         activity_status.text = "Active"
     elif 120 <= heart_rate < 135:
-        heart_rate_color = TEXT_MAGENTA
-        activity_status.color = TEXT_MAGENTA
+        heart_rate_color = TEXT_ORANGE
+        activity_status.color = TEXT_ORANGE
         activity_status.text = "Very Active"
     else:
-        heart_rate_color = TEXT_RED
-        activity_status.color = TEXT_RED
+        heart_rate_color = TEXT_MAGENTA
+        activity_status.color = TEXT_MAGENTA
         activity_status.text = "Exertion"
     return heart_rate_color
 
@@ -333,11 +333,15 @@ while True:
             )
             print(f"Current Refresh Token: {Refresh_Token}")
         # TOKEN REFRESH POST
-        fitbit_oauth_refresh_POST = requests.post(
-            url=fitbit_oauth_token,
-            data=fitbit_oauth_refresh_token,
-            headers=fitbit_oauth_header,
-        )
+        try:
+            fitbit_oauth_refresh_POST = requests.post(
+                url=fitbit_oauth_token,
+                data=fitbit_oauth_refresh_token,
+                headers=fitbit_oauth_header,
+            )
+        except adafruit_requests.OutOfRetries as ex:
+            print(f"OutOfRetries: {ex}")
+            break
         try:
             fitbit_refresh_oauth_json = fitbit_oauth_refresh_POST.json()
 
@@ -581,7 +585,7 @@ while True:
             else:
                 grandma.hidden = False
                 fitbit_icon.hidden = False
-                midnight_label.text = "No values for today yet."
+                midnight_label.text = f"No values for today yet."
                 print("Waiting for latest sync...")
                 print("Not enough values for today to display yet.")
         except (KeyError) as keyerror:
