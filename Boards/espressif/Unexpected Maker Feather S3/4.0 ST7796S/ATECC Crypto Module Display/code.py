@@ -4,12 +4,14 @@
 # ATECC Crypto Module display example
 # https://www.adafruit.com/product/4314
 
+import time
 import board
 import busio
 import displayio
+import terminalio
 from adafruit_atecc.adafruit_atecc import ATECC
 from adafruit_bitmap_font import bitmap_font
-from adafruit_display_text import label
+from adafruit_display_text import label, wrap_text_to_pixels
 from circuitpython_st7796s import ST7796S
 
 spi = board.SPI()
@@ -61,15 +63,20 @@ display.root_group = text_group
 atecc_serialnum = atecc.serial_number
 atecc_random_value = atecc.random(rnd_max=1024)
 atecc_counter = atecc.counter(1, increment_counter=True)
+atecc_counter_ascii = [hex(x) for x in atecc_counter]
+atecc_counter_int_big = int.from_bytes(atecc_counter, "big")
+atecc_counter_int_little = int.from_bytes(atecc_counter, "little")
 
 print("ATECC Serial: ", atecc.serial_number)
 # Generate a random number with a maximum value of 1024
 print("Random Value: ", atecc.random(rnd_max=1024))
 # Print out the value from one of the ATECC's counters
 # You should see this counter increase on every time the code.py runs.
-print("ATECC Counter #1 Value: ", atecc.counter(1, increment_counter=True))
-
+print(f"ATECC Counter: {atecc_counter}")
+print(f"ATECC Counter ASCII: {atecc_counter_ascii}")
+print(f"ATECC Counter Big Int: {atecc_counter_int_big}")
+print(f"ATECC Counter Little Int: {atecc_counter_int_little}")
 while True:
-    hello_label.text = f"SN: {atecc_serialnum}\nRand: {atecc_random_value}\nCount: {atecc_counter}"
+    hello_label.text = f"SN: {atecc_serialnum}\nRand: {atecc_random_value}\nCount: {atecc_counter_int_little}"
 
 
