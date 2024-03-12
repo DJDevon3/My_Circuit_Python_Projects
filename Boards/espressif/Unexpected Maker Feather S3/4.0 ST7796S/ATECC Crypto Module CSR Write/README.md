@@ -10,6 +10,8 @@ Displayed on TFT:
 - Organization
 - Department (section)
 
+**This demo is currently broken and in no way should be used for production. This is the code I have so far in investigating why the library is currently not functioning correctly.**
+
 ### Example Serial Console Output
 ```py
 code.py output:
