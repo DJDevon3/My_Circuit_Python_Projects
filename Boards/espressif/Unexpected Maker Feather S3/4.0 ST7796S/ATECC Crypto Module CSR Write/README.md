@@ -1,4 +1,4 @@
-# Adafruit ATECC Crypto Module on TFT Display
+### Adafruit ATECC Crypto Module Certificate Signing Request (CSR) Test on TFT Display
 Displayed on TFT:
 - Serial Number
 - Random Value
