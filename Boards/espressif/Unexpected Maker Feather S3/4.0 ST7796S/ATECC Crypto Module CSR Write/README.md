@@ -10,7 +10,7 @@ Displayed on TFT:
 - Organization
 - Department (section)
 
-### Example Output
+### Example Serial Console Output
 ```py
 code.py output:
 WE MADE IT OUT OF THE LIBRARY LOOP!
