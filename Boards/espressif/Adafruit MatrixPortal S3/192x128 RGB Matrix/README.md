@@ -16,10 +16,14 @@
 ![12_Panels](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/bb3ea441-6083-4da1-8876-994200ea287f)
 
 This is a view of the back of the panels flipped downward. When displayed the controller will be in the top right position.
+
 ![Brackets_Serpentine](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/eec78007-a293-42a4-8191-aef792ff34d9)
 
 Front view of the panel arrangement.  When displayed the controller will be in the top right position.
+
 ![12-Panel_Arrangement](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/1daa959e-2b40-4c0f-a766-a66f73924987)
+
+Power supply and wire routing. I use 2x 5V 20A meanwell power supplies.
 
 ![IMG_1163](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/c276226f-f087-406f-b61a-a1f137811b7a)
 
