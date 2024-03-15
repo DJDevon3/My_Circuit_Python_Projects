@@ -233,6 +233,7 @@ text_group.append(rocket_icon)
 display.root_group = text_group
 
 # Publicly available data no header required
+# The number at the end is the amount of launches (max 5 free api)
 ROCKETLAUNCH_SOURCE = "https://fdo.rocketlaunch.live/json/launches/next/1"
 
 # Initalize Wifi, Socket Pool, Request Session
