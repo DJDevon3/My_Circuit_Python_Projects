@@ -1,4 +1,8 @@
-# Adafruit CircuitPython 8.2.1
+# SPDX-FileCopyrightText: 2023 Smitka
+# SPDX-License-Identifier: MIT
+# Coded for Circuit Python 8.x 
+# Fast mBMP Example
+
 import board
 import struct
 import time
