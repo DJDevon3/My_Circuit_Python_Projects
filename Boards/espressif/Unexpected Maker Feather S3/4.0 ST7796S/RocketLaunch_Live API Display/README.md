@@ -1,5 +1,5 @@
 ### RocketLaunch.live API Example on TFT Display
-- Publicly free API but only for next 5 scheduled launches
+- Publicly free API but only for next 5 scheduled launches (this example only pulls the next 1 launch)
 - If you want more data than the next 5 you can register an account.
 
 ### Serial Console Output:
