@@ -6,12 +6,10 @@
 import board
 import terminalio
 import displayio
-import gc
 import os
-import ssl
 import time
-import socketpool
 import wifi
+import adafruit_connection_manager
 import adafruit_requests
 import adafruit_imageload
 from adafruit_bitmap_font import bitmap_font
@@ -26,13 +24,11 @@ tft_rst = board.D17
 # 4.0" ST7796S Display
 DISPLAY_WIDTH = 480
 DISPLAY_HEIGHT = 320
+DW2 = DISPLAY_WIDTH-2
 
 displayio.release_displays()
 display_bus = displayio.FourWire(spi, command=tft_dc, chip_select=tft_cs, reset=tft_rst)
 display = ST7796S(display_bus, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT, rotation=180)
-
-# Initialize WiFi Pool (There can be only 1 pool & top of script)
-pool = socketpool.SocketPool(wifi.radio)
 
 # Time between API refreshes
 # 900 = 15 mins, 1800 = 30 mins, 3600 = 1 hour
@@ -41,7 +37,6 @@ sleep_time = 43200
 # Get WiFi details, ensure these are setup in settings.toml
 ssid = os.getenv("WIFI_SSID")
 password = os.getenv("WIFI_PASSWORD")
-
 
 # Converts seconds in minutes/hours/days
 def time_calc(input_time):
@@ -237,40 +232,41 @@ text_group.append(MWT)
 text_group.append(rocket_icon)
 display.root_group = text_group
 
-loading_label.text = "Connecting to Wifi"
-
 # Publicly available data no header required
 ROCKETLAUNCH_SOURCE = "https://fdo.rocketlaunch.live/json/launches/next/1"
 
-# Connect to Wi-Fi
-print("\n===============================")
-print("Connecting to WiFi...")
-requests = adafruit_requests.Session(pool, ssl.create_default_context())
-while not wifi.radio.ipv4_address:
-    try:
-        wifi.radio.connect(ssid, password)
-    except ConnectionError as e:
-        print("Connection Error:", e)
-        print("Retrying in 10 seconds")
-    time.sleep(10)
-    gc.collect()
-print("Connected!\n")
+# Initalize Wifi, Socket Pool, Request Session
+pool = adafruit_connection_manager.get_radio_socketpool(wifi.radio)
+ssl_context = adafruit_connection_manager.get_radio_ssl_context(wifi.radio)
+requests = adafruit_requests.Session(pool, ssl_context)
 
 while True:
+    # Connect to Wi-Fi
+    print("\n===============================")
+    print("Connecting to WiFi...")
+    loading_label.text = "Connecting to Wifi"
+    while not wifi.radio.ipv4_address:
+        try:
+            wifi.radio.connect(ssid, password)
+        except ConnectionError as e:
+            print("❌ Connection Error:", e)
+            print("Retrying in 10 seconds")
+    print("✅ Wifi!")
     try:
         # Print Request to Serial
-        print("\nAttempting to GET RocketLaunch.Live JSON!")
+        print(" | Attempting to GET RocketLaunch.Live JSON!")
         loading_label.text = "Getting Next Rocket Launch"
         time.sleep(2)
         debug_rocketlaunch_full_response = False
-        print("===============================")
-
-        rocketlaunch_response = requests.get(url=ROCKETLAUNCH_SOURCE)
+        
         try:
+            rocketlaunch_response = requests.get(url=ROCKETLAUNCH_SOURCE)
             rocketlaunch_json = rocketlaunch_response.json()
         except ConnectionError as e:
             print("Connection Error:", e)
             print("Retrying in 10 seconds")
+        print(" | ✅ RocketLaunch.Live JSON!")
+        
         if debug_rocketlaunch_full_response:
             print("Full API GET URL: ", ROCKETLAUNCH_SOURCE)
             print(rocketlaunch_json)
@@ -291,56 +287,53 @@ while True:
         # Print to serial & display label if endpoint not "None"
         loading_label.text = ""
         if RLDATE != "None":
-            print(f"Date: {RLDATE}")
+            print(f" |  | Date: {RLDATE}")
             date_label.text = "Date: "
             date_data.text = f"{RLDATE}\n"
         if RLFN != "None":
-            print(f"Flight: {RLFN}")
+            print(f" |  | Flight: {RLFN}")
             flightname_label.text = "Flight: "
             flightname_data.text = f"{RLFN}\n"
         if RLP != "None":
-            print(f"Provider: {RLP}")
+            print(f" |  | Provider: {RLP}")
             provider_label.text = "Provider: "
             provider_data.text = f"{RLP}\n"
         if RLVN != "None":
-            print(f"Vehicle: {RLVN}")
+            print(f" |  | Vehicle: {RLVN}")
             vehiclename_label.text = "Vehicle: "
             vehiclename_data.text = f"{RLVN}\n"
         if RLWO != "None":
-            print(f"Window: {RLWO} to {RLWC}")
+            print(f" |  | Window: {RLWO} to {RLWC}")
             window_label.text = "Window: "
             window_data.text = f"{RLWO} to {RLWC}\n"
         elif TMINUS != "None":
-            print(f"Window: {TMINUS} to {RLWC}")
+            print(f" |  | Window: {TMINUS} to {RLWC}")
             window_label.text = "Window: "
             window_data.text = f"{TMINUS} to {RLWC}\n"
         if RLLS != "None":
-            print(f"Site: {RLLS}")
+            print(f" |  | Site: {RLLS}")
             launchsite_label.text = "Site: "
             launchsite_data.text = f"{RLLS}\n"
         if RLPN != "None":
-            print(f"Pad: {RLPN}")
+            print(f" |  | Pad: {RLPN}")
             padname_label.text = "Pad: "
             padname_data.text = f"{RLPN}\n"
         if RLLD != "None":
-            print(f"Description: {RLLD}")
+            print(f" |  | Description: {RLLD}")
             description_label.text = "Description: "
-            LDWT.text = "\n".join(wrap_text_to_pixels(RLLD, DISPLAY_WIDTH-2, terminalio.FONT))
-
-        RLM = "Launch will consist of Booster 10 and Ship 28. Goals for this flight include orbital speed and altitude insertion (but will not complete an orbit), in-orbit fuel transfer test, payload door test, and soft landings on water for both ship and booster."
-
+            LDWT.text = "\n".join(wrap_text_to_pixels(RLLD, DW2, terminalio.FONT))
         if RLM != "None":
-            print(f"Mission: {RLM}")
+            print(f" |  | Mission: {RLM}")
             mission_label.text = "Mission: "
-            MWT.text = "\n".join(wrap_text_to_pixels(RLM, DISPLAY_WIDTH-2, terminalio.FONT))
-
+            MWT.text = "\n".join(wrap_text_to_pixels(RLM, DW2, terminalio.FONT))
+            
         print("\nFinished!")
         print("Board Uptime: ", time.monotonic())
         print("Next Update in: ", time_calc(sleep_time))
         print("===============================")
-        gc.collect()
+        
     except (ValueError, RuntimeError) as e:
         print("Failed to get data, retrying\n", e)
         time.sleep(60)
-        continue
+        break
     time.sleep(sleep_time)
