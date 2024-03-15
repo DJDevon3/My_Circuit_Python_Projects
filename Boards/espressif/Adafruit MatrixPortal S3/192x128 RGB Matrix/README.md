@@ -19,7 +19,7 @@ This is a view of the back of the panels flipped downward. When displayed the co
 
 ![Brackets_Serpentine](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/eec78007-a293-42a4-8191-aef792ff34d9)
 
-Front view of the panel arrangement.  When displayed the controller will be in the top right position.
+Front view of the panel arrangement.  When displayed the controller will be in the top right position. Notice that every 2nd rows of panels must be physically mounted upside down.  This is how the RGBMatrix library expects them to be oriented.
 
 ![12-Panel_Arrangement](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/1daa959e-2b40-4c0f-a766-a66f73924987)
 
