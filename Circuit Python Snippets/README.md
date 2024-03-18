@@ -102,14 +102,14 @@ Output: Shows SSID RSSI Channel on Display. It will properly update labels each 
 ```py
 import time
 def _format_datetime(datetime):
-    return "{:02}-{:02}-{:02}_{:02}-{:02}-{:02}".format(
-        datetime.tm_year,
-        datetime.tm_mon,
-        datetime.tm_mday,
-        datetime.tm_hour,
-        datetime.tm_min,
-        datetime.tm_sec,
-    )
+    """ F-String formatted struct time conversion"""
+    return (f"{datetime.tm_mon:02}/" +
+            f"{datetime.tm_mday:02}/" +
+            f"{datetime.tm_year:02} " +
+            f"{datetime.tm_hour:02}:" +
+            f"{datetime.tm_min:02}:" +
+            f"{datetime.tm_sec:02}")
+
 # Plug in your unix time here
 unix_time = 1706466904 # Sunday Jan 28 2024 GMT+0000
 tz_offset_seconds = -14400  # NY Timezone
