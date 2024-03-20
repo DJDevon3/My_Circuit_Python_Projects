@@ -4,6 +4,8 @@
 - Prints Count (bytearray)
 - Prints SHA Digest (bytearray)
 
+This example only works prior to locking the chip!  Once the chip is locked it's permanently locked and can never be reconfigured and this script wil not work!
+
 ### Code.py Output: (results obfuscated)
 ```py
 ATECC Serial:  0123xxxxxxx
