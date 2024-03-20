@@ -1,13 +1,14 @@
 # SPDX-FileCopyrightText: 2024 DJDevon3
 # SPDX-License-Identifier: MIT
 # Coded for Circuit Python 8.2.x
-# RocketLaunch.Live API Example
+"""RocketLaunch.Live Single Launch API Example"""
+# pylint: disable=import-error
 
+import os
+import time
 import board
 import terminalio
 import displayio
-import os
-import time
 import wifi
 import adafruit_connection_manager
 import adafruit_requests
@@ -24,38 +25,33 @@ tft_rst = board.D17
 # 4.0" ST7796S Display
 DISPLAY_WIDTH = 480
 DISPLAY_HEIGHT = 320
-DW2 = DISPLAY_WIDTH-2
+DW2 = DISPLAY_WIDTH - 2
 
 displayio.release_displays()
 display_bus = displayio.FourWire(spi, command=tft_dc, chip_select=tft_cs, reset=tft_rst)
 display = ST7796S(display_bus, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT, rotation=180)
 
 # Time between API refreshes
-# 900 = 15 mins, 1800 = 30 mins, 3600 = 1 hour
-sleep_time = 43200
+# 900=15 mins, 1800=30 mins, 3600=1 hour, 43200=12 hours
+SLEEP_TIME = 43200
+
+# Set True to view Full 1 launch JSON Response
+DEBUG = False
 
 # Get WiFi details, ensure these are setup in settings.toml
-ssid = os.getenv("WIFI_SSID")
-password = os.getenv("WIFI_PASSWORD")
+ssid = os.getenv("CIRCUITPY_WIFI_SSID")
+password = os.getenv("CIRCUITPY_WIFI_PASSWORD")
 
-# Converts seconds in minutes/hours/days
+
 def time_calc(input_time):
+    """Converts seconds to minutes/hours/days"""
     if input_time < 60:
-        sleep_int = input_time
-        time_output = f"{sleep_int:.0f} seconds"
-    elif 60 <= input_time < 3600:
-        sleep_int = input_time / 60
-        time_output = f"{sleep_int:.0f} minutes"
-    elif 3600 <= input_time < 86400:
-        sleep_int = input_time / 60 / 60
-        time_output = f"{sleep_int:.0f} hours"
-    elif 86400 <= input_time < 432000:
-        sleep_int = input_time / 60 / 60 / 24
-        time_output = f"{sleep_int:.1f} days"
-    else:  # if > 5 days convert float to int & display whole days
-        sleep_int = input_time / 60 / 60 / 24
-        time_output = f"{sleep_int:.0f} days"
-    return time_output
+        return f"{input_time:.0f} seconds"
+    if input_time < 3600:
+        return f"{input_time / 60:.0f} minutes"
+    if input_time < 86400:
+        return f"{input_time / 60 / 60:.0f} hours"
+    return f"{input_time / 60 / 60 / 24:.1f} days"
 
 
 # Quick Colors for Labels
@@ -78,7 +74,7 @@ Arial16_font = bitmap_font.load_font("/fonts/Arial-16.bdf")
 # Label Customizations
 loading_label = label.Label(Arial12_font)
 loading_label.anchor_point = (0.5, 0.0)
-loading_label.anchored_position = (DISPLAY_WIDTH/2, 10)
+loading_label.anchored_position = (DISPLAY_WIDTH / 2, 10)
 loading_label.scale = 1
 loading_label.color = TEXT_ORANGE
 
@@ -199,7 +195,7 @@ palette.make_transparent(0)
 rocket_icon = displayio.TileGrid(
     sprite_sheet,
     pixel_shader=palette,
-    x=DISPLAY_WIDTH-80,
+    x=DISPLAY_WIDTH - 80,
     y=2,
     width=1,
     height=1,
@@ -257,9 +253,8 @@ while True:
         # Print Request to Serial
         print(" | Attempting to GET RocketLaunch.Live JSON!")
         loading_label.text = "Getting Next Rocket Launch"
-        time.sleep(2)
-        debug_rocketlaunch_full_response = False
-        
+        time.sleep(1)
+
         try:
             rocketlaunch_response = requests.get(url=ROCKETLAUNCH_SOURCE)
             rocketlaunch_json = rocketlaunch_response.json()
@@ -267,15 +262,15 @@ while True:
             print("Connection Error:", e)
             print("Retrying in 10 seconds")
         print(" | ✅ RocketLaunch.Live JSON!")
-        
-        if debug_rocketlaunch_full_response:
+
+        if DEBUG:
             print("Full API GET URL: ", ROCKETLAUNCH_SOURCE)
             print(rocketlaunch_json)
 
         # JSON Endpoints
         RLFN = str(rocketlaunch_json["result"][0]["name"])
         RLWO = str(rocketlaunch_json["result"][0]["win_open"])
-        TMINUS = str(rocketlaunch_json["result"][0]["t0"])
+        TZERO = str(rocketlaunch_json["result"][0]["t0"])
         RLWC = str(rocketlaunch_json["result"][0]["win_close"])
         RLP = str(rocketlaunch_json["result"][0]["provider"]["name"])
         RLVN = str(rocketlaunch_json["result"][0]["vehicle"]["name"])
@@ -303,14 +298,40 @@ while True:
             print(f" |  | Vehicle: {RLVN}")
             vehiclename_label.text = "Vehicle: "
             vehiclename_data.text = f"{RLVN}\n"
-        if RLWO != "None":
-            print(f" |  | Window: {RLWO} to {RLWC}")
+
+        # Launch time can sometimes be Window Open to Close, T-Zero, or weird combination.
+        # Should obviously be standardized but they're not input that way.
+        # Have to account for every combination of 3 conditions.
+        # T-Zero Launch Time Conditionals
+        if RLWO == "None" and TZERO != "None" and RLWC != "None":
+            print(f" |  | Window: {TZERO} | {RLWC}")
             window_label.text = "Window: "
-            window_data.text = f"{RLWO} to {RLWC}\n"
-        elif TMINUS != "None":
-            print(f" |  | Window: {TMINUS} to {RLWC}")
+            window_data.text = f"{TZERO} | {RLWC}\n"
+        elif RLWO != "None" and TZERO != "None" and RLWC == "None":
+            print(f" |  | Window: {RLWO} | {TZERO}")
             window_label.text = "Window: "
-            window_data.text = f"{TMINUS} to {RLWC}\n"
+            window_data.text = f"{RLWO} | {TZERO}\n"
+        elif RLWO != "None" and TZERO == "None" and RLWC != "None":
+            print(f" |  | Window: {RLWO} | {RLWC}")
+            window_label.text = "Window: "
+            window_data.text = f"{RLWO} | {RLWC}\n"
+        elif RLWO != "None" and TZERO != "None" and RLWC != "None":
+            print(f" |  | Window: {RLWO} | {TZERO} | {RLWC}")
+            window_label.text = "Window: "
+            window_data.text = f"{RLWO} | {TZERO} | {RLWC}\n"
+        elif RLWO == "None" and TZERO != "None" and RLWC == "None":
+            print(f" |  | Window: {TZERO}")
+            window_label.text = "Window: "
+            window_data.text = f"{TZERO}\n"
+        elif RLWO != "None" and TZERO == "None" and RLWC == "None":
+            print(f" |  | Window: {RLWO}")
+            window_label.text = "Window: "
+            window_data.text = f"{RLWO}\n"
+        elif RLWO == "None" and TZERO == "None" and RLWC != "None":
+            print(f" |  | Window: {RLWC}")
+            window_label.text = "Window: "
+            window_data.text = f"{RLWC}\n"
+
         if RLLS != "None":
             print(f" |  | Site: {RLLS}")
             launchsite_label.text = "Site: "
@@ -327,14 +348,14 @@ while True:
             print(f" |  | Mission: {RLM}")
             mission_label.text = "Mission: "
             MWT.text = "\n".join(wrap_text_to_pixels(RLM, DW2, terminalio.FONT))
-            
+
         print("\nFinished!")
         print("Board Uptime: ", time.monotonic())
-        print("Next Update in: ", time_calc(sleep_time))
+        print("Next Update in: ", time_calc(SLEEP_TIME))
         print("===============================")
-        
+
     except (ValueError, RuntimeError) as e:
         print("Failed to get data, retrying\n", e)
         time.sleep(60)
         break
-    time.sleep(sleep_time)
+    time.sleep(SLEEP_TIME)
