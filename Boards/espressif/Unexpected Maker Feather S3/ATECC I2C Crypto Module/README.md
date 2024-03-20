@@ -1,4 +1,4 @@
-# Adafruit ATECC Crypto Module on TFT Display
+# Adafruit ATECC Crypto Module Serial Output Only (non-TFT example)
 - Prints Serial Number
 - Prints Random Value
 - Prints Count (bytearray)
