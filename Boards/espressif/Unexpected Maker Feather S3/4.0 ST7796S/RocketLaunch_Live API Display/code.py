@@ -349,9 +349,12 @@ while True:
             mission_label.text = "Mission: "
             MWT.text = "\n".join(wrap_text_to_pixels(RLM, DW2, terminalio.FONT))
 
+        rocketlaunch_response.close()
+        print("✂️ Disconnected from RocketLaunch.Live API")
+
         print("\nFinished!")
-        print("Board Uptime: ", time.monotonic())
-        print("Next Update in: ", time_calc(SLEEP_TIME))
+        print(f"Board Uptime: {time_calc(time.monotonic())}")
+        print(f"Next Update: {time_calc(SLEEP_TIME)}")
         print("===============================")
 
     except (ValueError, RuntimeError) as e:
