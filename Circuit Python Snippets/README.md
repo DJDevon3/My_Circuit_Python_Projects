@@ -132,19 +132,21 @@ Timestamp: 2024-01-28_14-35-04
 
 ## Seconds to Minutes/Hours/Days function (good for sleep or update functions)
 ```py
-# Converts seconds to minutes/hours/days
 # Attribution: Written by DJDevon3 & refined by Elpekenin
 import time
-# 900 = 15 mins, 1800 = 30 mins, 3600 = 1 hour
+
+# 900=15 mins, 1800=30 mins, 3600=1 hour, 43200=12 hours
 sleep_time = 1800
+
 def time_calc(input_time):
+    """Converts seconds to minutes/hours/days"""
     if input_time < 60:
         return f"{input_time:.0f} seconds"
     if input_time < 3600:
         return f"{input_time / 60:.0f} minutes"
     if input_time < 86400:
         return f"{input_time / 60 / 60:.0f} hours"
-    return f"{input_time / 60 / 60 / 24:.1f} days"
+    return f"{input_time / 60 / 60 / 24:.1f} days""
 
 print("Calc Time: ", time_calc(900))  # time conversion testing
 print("Board Uptime: ", time_calc(time.monotonic())) # example for board uptime
