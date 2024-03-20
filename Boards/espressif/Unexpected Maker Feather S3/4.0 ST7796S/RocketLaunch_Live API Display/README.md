@@ -9,18 +9,19 @@ Connecting to WiFi...
 ✅ Wifi!
  | Attempting to GET RocketLaunch.Live JSON!
  | ✅ RocketLaunch.Live JSON!
- |  | Date: Mar 15
- |  | Flight: Starlink 6-44
- |  | Provider: SpaceX
- |  | Vehicle: Falcon 9
- |  | Window: 2024-03-15T22:39Z to 2024-03-16T03:10Z
- |  | Site: Kennedy Space Center
- |  | Pad: LC-39A
- |  | Description: A SpaceX Falcon 9 rocket will launch the Starlink 6-44 mission on Friday, March 15, 2024 at 10:39 PM (UTC).
+ |  | Date: Mar 21
+ |  | Flight: TBD (LM2-86)
+ |  | Provider: China
+ |  | Vehicle: Long March 2D
+ |  | Window: 2024-03-21T05:35Z
+ |  | Site: Jiuquan Satellite Launch Center
+ |  | Pad: TBD
+ |  | Description: A China Long March 2D rocket will launch the TBD (LM2-86) mission on Thursday, March 21, 2024 at 5:35 AM (UTC).
+✂️ Disconnected from RocketLaunch.Live API
 
 Finished!
-Board Uptime:  39907.1
-Next Update in:  12 hours
+Board Uptime: 2.0 days
+Next Update: 12 hours
 ===============================
 ```
 ### TFT Display Output:
