@@ -8,15 +8,15 @@ import supervisor
 import time
 import board
 import displayio
+import fourwire
 import digitalio
 import terminalio
 import pwmio
 import adafruit_imageload
 import adafruit_sdcard
 import storage
-import ssl
+import adafruit_connection_manager
 import wifi
-import socketpool
 import adafruit_requests
 import json
 import ulab.numpy as np
@@ -32,6 +32,7 @@ import adafruit_stmpe610
 from adafruit_button.sprite_button import SpriteButton
 from soft_keyboard.soft_keyboard import SoftKeyboard, PRINTABLE_CHARACTERS
 from slider import Slider
+
 _now = time.monotonic()
 
 # 3.5" TFT Featherwing is 480x320
@@ -39,13 +40,16 @@ displayio.release_displays()
 DISPLAY_WIDTH = 480
 DISPLAY_HEIGHT = 320
 
-# Initialize Web Sockets (This should always be near the top of a script!)
-# There can be only one pool
-pool = socketpool.SocketPool(wifi.radio)
+# Initalize Wifi, Socket Pool, Request Session
+pool = adafruit_connection_manager.get_radio_socketpool(wifi.radio)
+SSL_CONTEXT = adafruit_connection_manager.get_radio_ssl_context(wifi.radio)
+# adafruit_requests.Session keep outside the main loop
+# otherwise you get Out of Socket errors.
+requests = adafruit_requests.Session(pool, SSL_CONTEXT)
 
 # Use settings.toml for credentials
 ssid = os.getenv("WIFI_SSID")
-appw = os.getenv("WIFI_PASSWORD")
+password = os.getenv("WIFI_PASSWORD")
 aio_username = os.getenv("aio_username")
 aio_key = os.getenv("aio_key")
 # Local time & weather from lat/lon
@@ -71,7 +75,8 @@ sleep_time = 900
 spi = board.SPI()
 tft_cs = board.D9
 tft_dc = board.D10
-display_bus = displayio.FourWire(spi, command=tft_dc, chip_select=tft_cs)
+
+display_bus = fourwire.FourWire(spi, command=tft_dc, chip_select=tft_cs)
 display = HX8357(display_bus, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT)
 display.rotation = 0
 _touch_flip = (False, True)
@@ -119,8 +124,8 @@ feather_weather_bg = displayio.TileGrid(
 # ---- SPLASH GROUP -----
 splash_label = label.Label(terminalio.FONT)
 splash_label.anchor_point = (0.5, 0.5)
-splash_label.anchored_position = (DISPLAY_WIDTH/2, DISPLAY_HEIGHT-20)
-splash_label.scale = (1)
+splash_label.anchored_position = (DISPLAY_WIDTH / 2, DISPLAY_HEIGHT - 20)
+splash_label.scale = 1
 splash_label.color = 0xFFFFFF
 loading_splash = displayio.Group()
 loading_splash.append(feather_weather_bg)
@@ -146,9 +151,10 @@ battery_monitor = LC709203F(board.I2C())
 battery_monitor.thermistor_bconstant = 3950
 battery_monitor.thermistor_enable = True
 
-# Converts seconds in minutes/hours/days
-# Attribution: Written by DJDevon3 & refined by Elpekenin
+
 def time_calc(input_time):
+    # Attribution: Written by DJDevon3 & refined by Elpekenin
+    """Converts seconds to minutes/hours/days"""
     if input_time < 60:
         return f"{input_time:.0f} seconds"
     if input_time < 3600:
@@ -156,6 +162,7 @@ def time_calc(input_time):
     if input_time < 86400:
         return f"{input_time / 60 / 60:.0f} hours"
     return f"{input_time / 60 / 60 / 24:.1f} days"
+
 
 # OpenWeather 2.5 Free API
 DATA_SOURCE = "https://api.openweathermap.org/data/2.5/onecall?"
@@ -165,20 +172,18 @@ DATA_SOURCE += "&exclude=hourly,daily"
 DATA_SOURCE += "&appid=" + OWKEY
 DATA_SOURCE += "&units=imperial"
 
+
 def _format_date(datetime):
-    return "{:02}/{:02}/{:02}".format(
-        datetime.tm_year,
-        datetime.tm_mon,
-        datetime.tm_mday,
+    """F-String formatted struct time conversion"""
+    return (
+        f"{datetime.tm_year:02}/" + f"{datetime.tm_mon:02}/" + f"{datetime.tm_mday:02} "
     )
 
 
 def _format_time(datetime):
-    return "{:02}:{:02}".format(
-        datetime.tm_hour,
-        datetime.tm_min,
-        # datetime.tm_sec,
-    )
+    """F-String formatted struct time conversion"""
+    return f"{datetime.tm_hour:02}:" + f"{datetime.tm_min:02}"
+
 
 splash_label.text = "Loading Fonts..."
 # Fonts are optional
@@ -203,10 +208,11 @@ TEXT_RED = 0xFF0000
 TEXT_WHITE = 0xFFFFFF
 TEXT_YELLOW = 0xFFFF00
 
-# Function for minimizing labels to 1 liners
-# Attribution: Anecdata (thanks!)
 splash_label.text = "Loading Labels..."
+
+
 def make_my_label(font, anchor_point, anchored_position, scale, color):
+    """Minimizes labels to 1 liners. Attribution: Anecdata"""
     func_label = label.Label(font)
     func_label.anchor_point = anchor_point
     func_label.anchored_position = anchored_position
@@ -214,9 +220,12 @@ def make_my_label(font, anchor_point, anchored_position, scale, color):
     func_label.color = color
     return func_label
 
+
 # name_label (FONT, (ANCHOR POINT), (ANCHOR POSITION), SCALE, COLOR)
 # loading screen label
-loading_label = make_my_label(terminalio.FONT, (0.5, 0.5), (DISPLAY_WIDTH / 2, DISPLAY_HEIGHT-20), 1, TEXT_WHITE)
+loading_label = make_my_label(
+    terminalio.FONT, (0.5, 0.5), (DISPLAY_WIDTH / 2, DISPLAY_HEIGHT - 20), 1, TEXT_WHITE
+)
 hello_label = make_my_label(
     terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH / 2, 15), 1, TEXT_WHITE
 )
@@ -226,34 +235,74 @@ preferences_value = make_my_label(
 label_preferences_current_brightness = make_my_label(
     terminalio.FONT, (1.0, 1.0), (DISPLAY_WIDTH - 10, 80), 1, TEXT_CYAN
 )
-wifi_settings_ssid = make_my_label(terminalio.FONT, (0.0, 0.0), (DISPLAY_WIDTH / 3, 50), 2, TEXT_WHITE)
-wifi_settings_pw = make_my_label(terminalio.FONT, (0.0, 0.0), (DISPLAY_WIDTH / 3, 150), 2, TEXT_WHITE)
-wifi_settings_instructions = make_my_label(terminalio.FONT, (0.0, 0.0), (DISPLAY_WIDTH / 4, 250), 1, TEXT_WHITE)
+wifi_settings_ssid = make_my_label(
+    terminalio.FONT, (0.0, 0.0), (DISPLAY_WIDTH / 3, 50), 2, TEXT_WHITE
+)
+wifi_settings_pw = make_my_label(
+    terminalio.FONT, (0.0, 0.0), (DISPLAY_WIDTH / 3, 150), 2, TEXT_WHITE
+)
+wifi_settings_instructions = make_my_label(
+    terminalio.FONT, (0.0, 0.0), (DISPLAY_WIDTH / 4, 250), 1, TEXT_WHITE
+)
 
-sys_info_data_label1 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50), 2, TEXT_WHITE)
-sys_info_data_label2 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 150), 1, TEXT_WHITE)
-sys_info_data_label3 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 150+32), 1, TEXT_WHITE)
-sys_info_data_label4 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 150+48), 1, TEXT_WHITE)
-sys_info_data_label5 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 150+64), 1, TEXT_WHITE)
-sys_info_data_label6 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 150+80), 1, TEXT_WHITE)
-sys_info_data_label7 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 150+96), 1, TEXT_WHITE)
+sys_info_data_label1 = make_my_label(
+    terminalio.FONT, (0.0, 0.0), (5, 50), 2, TEXT_WHITE
+)
+sys_info_data_label2 = make_my_label(
+    terminalio.FONT, (0.0, 0.0), (5, 150), 1, TEXT_WHITE
+)
+sys_info_data_label3 = make_my_label(
+    terminalio.FONT, (0.0, 0.0), (5, 150 + 32), 1, TEXT_WHITE
+)
+sys_info_data_label4 = make_my_label(
+    terminalio.FONT, (0.0, 0.0), (5, 150 + 48), 1, TEXT_WHITE
+)
+sys_info_data_label5 = make_my_label(
+    terminalio.FONT, (0.0, 0.0), (5, 150 + 64), 1, TEXT_WHITE
+)
+sys_info_data_label6 = make_my_label(
+    terminalio.FONT, (0.0, 0.0), (5, 150 + 80), 1, TEXT_WHITE
+)
+sys_info_data_label7 = make_my_label(
+    terminalio.FONT, (0.0, 0.0), (5, 150 + 96), 1, TEXT_WHITE
+)
 rssi_data_label = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 60), 1, TEXT_MAGENTA)
-rssi_data_label0 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 60 + 20), 1, TEXT_WHITE)
-rssi_data_label1 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 60 + 40), 1, TEXT_WHITE)
-rssi_data_label2 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 60 + 60), 1, TEXT_WHITE)
-rssi_data_label3 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 60 + 80), 1, TEXT_WHITE)
-rssi_data_label4 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 60 + 100), 1, TEXT_WHITE)
-rssi_data_label5 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 60 + 120), 1, TEXT_WHITE)
-rssi_data_label6 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 60 + 140), 1, TEXT_WHITE)
-rssi_data_label7 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 60 + 160), 1, TEXT_WHITE)
-rssi_data_label8 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 60 + 180), 1, TEXT_WHITE)
-rssi_data_label9 = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 60 + 200), 1, TEXT_WHITE)
+rssi_data_label0 = make_my_label(
+    terminalio.FONT, (0.0, 0.0), (5, 60 + 20), 1, TEXT_WHITE
+)
+rssi_data_label1 = make_my_label(
+    terminalio.FONT, (0.0, 0.0), (5, 60 + 40), 1, TEXT_WHITE
+)
+rssi_data_label2 = make_my_label(
+    terminalio.FONT, (0.0, 0.0), (5, 60 + 60), 1, TEXT_WHITE
+)
+rssi_data_label3 = make_my_label(
+    terminalio.FONT, (0.0, 0.0), (5, 60 + 80), 1, TEXT_WHITE
+)
+rssi_data_label4 = make_my_label(
+    terminalio.FONT, (0.0, 0.0), (5, 60 + 100), 1, TEXT_WHITE
+)
+rssi_data_label5 = make_my_label(
+    terminalio.FONT, (0.0, 0.0), (5, 60 + 120), 1, TEXT_WHITE
+)
+rssi_data_label6 = make_my_label(
+    terminalio.FONT, (0.0, 0.0), (5, 60 + 140), 1, TEXT_WHITE
+)
+rssi_data_label7 = make_my_label(
+    terminalio.FONT, (0.0, 0.0), (5, 60 + 160), 1, TEXT_WHITE
+)
+rssi_data_label8 = make_my_label(
+    terminalio.FONT, (0.0, 0.0), (5, 60 + 180), 1, TEXT_WHITE
+)
+rssi_data_label9 = make_my_label(
+    terminalio.FONT, (0.0, 0.0), (5, 60 + 200), 1, TEXT_WHITE
+)
 
-input_change_wifi = make_my_label(
-    terminalio.FONT, (0.0, 0.0), (5, 50), 1, TEXT_WHITE)
-input_new_cred = make_my_label(
-    terminalio.FONT, (0.0, 0.0), (100, 50), 1, TEXT_WHITE)
-input_lbl = label.Label(terminalio.FONT, scale=2, text="", color=0xffffff, background_color=0x00000)
+input_change_wifi = make_my_label(terminalio.FONT, (0.0, 0.0), (5, 50), 1, TEXT_WHITE)
+input_new_cred = make_my_label(terminalio.FONT, (0.0, 0.0), (100, 50), 1, TEXT_WHITE)
+input_lbl = label.Label(
+    terminalio.FONT, scale=2, text="", color=0xFFFFFF, background_color=0x00000
+)
 input_lbl.x = 100
 input_lbl.y = 50
 warning_label = make_my_label(
@@ -333,7 +382,7 @@ sprite_group.y = 45
 roundrect = RoundRect(
     int(10),
     int(DISPLAY_HEIGHT - 125),
-    DISPLAY_WIDTH-10,
+    DISPLAY_WIDTH - 10,
     40,
     10,
     fill=0x0,
@@ -345,7 +394,7 @@ roundrect = RoundRect(
 menu_roundrect = RoundRect(
     int(130),  # start corner x
     int(5),  # start corner y
-    DISPLAY_WIDTH-200,  # width
+    DISPLAY_WIDTH - 200,  # width
     200,  # height
     10,  # corner radius
     fill=None,
@@ -364,8 +413,8 @@ BUTTON_MARGIN = 5
 menu_button = SpriteButton(
     x=BUTTON_MARGIN,
     y=BUTTON_MARGIN,
-    width=7*16,
-    height=2*16,
+    width=7 * 16,
+    height=2 * 16,
     label="MENU",
     label_font=small_font,
     label_color=TEXT_WHITE,
@@ -375,10 +424,10 @@ menu_button = SpriteButton(
 )
 
 next_button = SpriteButton(
-    x=DISPLAY_WIDTH-3*16,
+    x=DISPLAY_WIDTH - 3 * 16,
     y=BUTTON_MARGIN,
-    width=3*16,
-    height=2*16,
+    width=3 * 16,
+    height=2 * 16,
     label=">",
     label_font=arial_font,
     label_color=TEXT_WHITE,
@@ -388,10 +437,10 @@ next_button = SpriteButton(
 )
 
 prev_button = SpriteButton(
-    x=DISPLAY_WIDTH-6*16-5,
+    x=DISPLAY_WIDTH - 6 * 16 - 5,
     y=BUTTON_MARGIN,
-    width=3*16,
-    height=2*16,
+    width=3 * 16,
+    height=2 * 16,
     label="<",
     label_font=arial_font,
     label_color=TEXT_WHITE,
@@ -468,9 +517,26 @@ item5_button = SpriteButton(
 my_slider = Slider(x=5, y=50, width=300, value=40000)
 
 splash_label.text = "Loading Soft Keyboard..."
-soft_kbd = SoftKeyboard(2, 100, DISPLAY_WIDTH-2, DISPLAY_HEIGHT-100, terminalio.FONT, forkawesome_font, layout_config="mobile_layout.json")
-#soft_kbd2 = SoftKeyboard(2, 100, DISPLAY_WIDTH-2, DISPLAY_HEIGHT-100, terminalio.FONT, forkawesome_font, layout_config="mobile_layout_special.json")
-
+soft_kbd = SoftKeyboard(
+    2,
+    100,
+    DISPLAY_WIDTH - 2,
+    DISPLAY_HEIGHT - 100,
+    terminalio.FONT,
+    forkawesome_font,
+    layout_config="mobile_layout.json",
+)
+"""
+soft_kbd2 = SoftKeyboard(
+    2,
+    100,
+    DISPLAY_WIDTH - 2,
+    DISPLAY_HEIGHT - 100,
+    terminalio.FONT,
+    forkawesome_font,
+    layout_config="mobile_layout_special.json",
+)
+"""
 splash_label.text = "Loading Display Groups..."
 # Create subgroups
 wallpaper_group = displayio.Group()
@@ -560,6 +626,8 @@ menu_button_group.append(prev_button)
 # display.root_group = main_group
 
 splash_label.text = "Loading Menu Functions..."
+
+
 def show_warning(text):
     # Function to display weather popup warning
     warning_label.text = text
@@ -570,16 +638,19 @@ def hide_warning():
     # Function to hide weather popup warning
     warning_group.hidden = True
 
+
 def show_menu():
     # Function to display popup menu
     menu_popout_label.text = "Menu Popout"
     menu_popout_group.hidden = False
     menu_popout_group_items.hidden = False
 
+
 def hide_menu():
     # Function to hide popup menu
     menu_popout_group.hidden = True
     menu_popout_group_items.hidden = True
+
 
 # Page Switching Function (FROM, TO)
 def root_group_switch(SHOUTY_REMOVE, SHOUTY_APPEND):
@@ -628,7 +699,7 @@ def root_group_switch(SHOUTY_REMOVE, SHOUTY_APPEND):
         SHOUTY_REMOVE.remove(input_new_cred)
         SHOUTY_REMOVE.remove(soft_kbd)
         SHOUTY_REMOVE.remove(input_lbl)
-    
+
     # Append order is layer order top to bottom for each page.
     SHOUTY_APPEND.append(wallpaper_group)  # load wallpaper 1st regardless of page
     if SHOUTY_APPEND == main_group:
@@ -669,12 +740,13 @@ def root_group_switch(SHOUTY_REMOVE, SHOUTY_APPEND):
         SHOUTY_APPEND.append(input_new_cred)
         SHOUTY_APPEND.append(soft_kbd)
         SHOUTY_APPEND.append(input_lbl)
-        
+
     SHOUTY_APPEND.append(hello_label)
     SHOUTY_APPEND.append(menu_button_group)
     SHOUTY_APPEND.append(menu_popout_group)
     SHOUTY_APPEND.append(menu_popout_group_items)
     display.root_group = SHOUTY_APPEND
+
 
 def group_cleanup():
     # When touch moves outside of button
@@ -687,7 +759,17 @@ def group_cleanup():
     prev_button.selected = False
     next_button.selected = False
 
-def menu_switching(current_group, prev_target, next_target, item1_target, item2_target, item3_target, item4_target, item5_target):
+
+def menu_switching(
+    current_group,
+    prev_target,
+    next_target,
+    item1_target,
+    item2_target,
+    item3_target,
+    item4_target,
+    item5_target,
+):
     if menu_button.contains(p):
         if not menu_button.selected:
             menu_button.selected = True
@@ -744,6 +826,7 @@ def menu_switching(current_group, prev_target, next_target, item1_target, item2_
         group_cleanup()
         hide_menu()
 
+
 hide_warning()
 hide_menu()
 
@@ -778,24 +861,24 @@ def message(mqtt_client, topic, message):
     # Method client's subscribed feed has a new value.
     print("New message on topic {0}: {1}".format(topic, message))
 
+
 def ioerrors(mqtt_client, topic, message):
     # Method for callback errors.
     print("New message on topic {0}: {1}".format(topic, message))
+
 
 def throttle(mqtt_client, topic, message):
     # Method for callback errors.
     print("New message on topic {0}: {1}".format(topic, message))
 
 
-# Initialize a new MQTT Client object
+# Initialize MQTT Client object
 mqtt_client = MQTT.MQTT(
     broker="io.adafruit.com",
-    port=8883,
     username=aio_username,
     password=aio_key,
     socket_pool=pool,
-    ssl_context=ssl.create_default_context(),
-    is_ssl=True,
+    ssl_context=SSL_CONTEXT,
 )
 
 # Connect callback handlers to mqtt_client
@@ -816,11 +899,17 @@ display_temperature = 0
 humid_input_range = [0.0, 100]  # interpolated increase
 humid_output_range = [0.0, 2.0]  # with humidity
 input_range = [50.0, 69, 72, 73, 75, 76, 80, 88.0, 120.0]
-output_range = [50.0 - 0.1, 69, 72.0 - 1.1, 73.0 - 1.2, 75.0 - 1.4, 76 - 1.5, 80 - 1.0, 88.0 - 0.0, 120.0 - 2.2]
-
-# adafruit_requests.Session should always be outside the loop
-# otherwise you get Out of Socket errors.
-requests = adafruit_requests.Session(pool, ssl.create_default_context())
+output_range = [
+    50.0 - 0.1,
+    69,
+    72.0 - 1.1,
+    73.0 - 1.2,
+    75.0 - 1.4,
+    76 - 1.5,
+    80 - 1.0,
+    88.0 - 0.0,
+    120.0 - 2.2,
+]
 
 last = time.monotonic()
 First_Run = True
@@ -882,14 +971,16 @@ while True:
 
         # Account for PCB heating bias, gets slightly hotter as ambient increases
         BME280_humidity = round(bme280.relative_humidity, 1)
-        relative_humidity = np.interp(BME280_humidity, humid_input_range, humid_output_range)
+        relative_humidity = np.interp(
+            BME280_humidity, humid_input_range, humid_output_range
+        )
         humidity_adjust = round(relative_humidity[0], 2)
         print(f"Humidity Adjust: {humidity_adjust}")
         temperature = bme280.temperature * 1.8 + 32
         temp_round = round(temperature, 2)
         print("Temp: ", temperature)  # biased reading
         display_temperature = np.interp(temperature, input_range, output_range)
-        BME280_temperature = round(display_temperature[0]+humidity_adjust, 2)
+        BME280_temperature = round(display_temperature[0] + humidity_adjust, 2)
         print(f"Actual Temp: {BME280_temperature:.1f}")
         if debug_OWM:
             BME280_pressure = 1005  # Manually set debug warning message
@@ -923,24 +1014,24 @@ while True:
         else:
             hide_warning()  # Normal pressures: 1110-1018 (no message)
 
-        print("| Connecting to WiFi...")
         if First_Run and display.root_group is loading_splash:
             splash_label.text = "Initializing WiFi 4..."
         if not First_Run and display.root_group is main_group:
             loading_label.text = "Checking Wifi..."
 
+        # Connect to Wi-Fi
+        print("\nConnecting to WiFi...")
         while not wifi.radio.ipv4_address:
             try:
-                wifi.radio.connect(ssid, appw)
+                wifi.radio.connect(ssid, password)
             except ConnectionError as e:
-                print("Connection Error:", e)
+                print("❌ Connection Error:", e)
                 print("Retrying in 10 seconds")
-                time.sleep(10)
-        print("| ✅ WiFi!")
+        print("✅ Wifi!")
 
         while wifi.radio.ipv4_address:
             try:
-                print("| | Attempting to GET Weather!")
+                print("| | Attempting to GET Weather...")
                 if debug_OWM:
                     print("Full API GET URL: ", DATA_SOURCE)
                     print("\n===============================")
@@ -953,7 +1044,9 @@ while True:
                     try:
                         owm_response = owm_request.json()
                         if owm_response["message"]:
-                            print(f"| | ❌ OpenWeatherMap Error:  {owm_response['message']}")
+                            print(
+                                f"| | ❌ OpenWeatherMap Error:  {owm_response['message']}"
+                            )
                             owm_request.close()
                     except (KeyError) as e:
                         if First_Run and display.root_group is loading_splash:
@@ -968,35 +1061,46 @@ while True:
                         get_timezone_offset = int(owm_response["timezone_offset"])  # 1
                         tz_offset_seconds = get_timezone_offset
                         if debug_OWM:
-                            print(f"Timezone Offset (in seconds): {get_timezone_offset}")
-                        get_timestamp = int(owm_response["current"]["dt"] + int(tz_offset_seconds))  # 2
+                            print(
+                                f"Timezone Offset (in seconds): {get_timezone_offset}"
+                            )
+                        get_timestamp = int(
+                            owm_response["current"]["dt"] + int(tz_offset_seconds)
+                        )  # 2
                         current_unix_time = time.localtime(get_timestamp)
                         current_struct_time = time.struct_time(current_unix_time)
                         current_date = "{}".format(_format_date(current_struct_time))
                         current_time = "{}".format(_format_time(current_struct_time))
 
-                        sunrise = int(owm_response["current"]["sunrise"] + int(tz_offset_seconds))  # 3
+                        sunrise = int(
+                            owm_response["current"]["sunrise"] + int(tz_offset_seconds)
+                        )  # 3
                         sunrise_unix_time = time.localtime(sunrise)
                         sunrise_struct_time = time.struct_time(sunrise_unix_time)
                         sunrise_time = "{}".format(_format_time(sunrise_struct_time))
 
-                        sunset = int(owm_response["current"]["sunset"] + int(tz_offset_seconds))  # 4
+                        sunset = int(
+                            owm_response["current"]["sunset"] + int(tz_offset_seconds)
+                        )  # 4
                         sunset_unix_time = time.localtime(sunset)
                         sunset_struct_time = time.struct_time(sunset_unix_time)
                         sunset_time = "{}".format(_format_time(sunset_struct_time))
 
-                        owm_temp = owm_response["current"]["temp"] # 5
+                        owm_temp = owm_response["current"]["temp"]  # 5
                         owm_pressure = owm_response["current"]["pressure"]  # 6
                         owm_humidity = owm_response["current"]["humidity"]  # 7
-                        weather_type = owm_response["current"]["weather"][0]["main"]  # 8
-                        owm_windspeed = float(owm_response["current"]["wind_speed"])  # 9
+                        weather_type = owm_response["current"]["weather"][0][
+                            "main"
+                        ]  # 8
+                        owm_windspeed = float(
+                            owm_response["current"]["wind_speed"]
+                        )  # 9
 
                         if "wind_gust" in owm_response["current"]:
                             owm_windgust = float(owm_response["current"]["wind_gust"])
                             print(f"| | | Gust: {owm_windgust}")
                         else:
                             print("| | | Gust: No Data")
-
 
                         print("| | | Sunrise:", sunrise_time)
                         print("| | | Sunset:", sunset_time)
@@ -1029,6 +1133,7 @@ while True:
 
             # Connect to Adafruit IO
             try:
+                print("| | Attempting MQTT Broker...")
                 mqtt_client.connect()
                 if First_Run and display.root_group is loading_splash:
                     splash_label.text = "Publishing to AdafruitIO..."
@@ -1047,10 +1152,17 @@ while True:
                 mqtt_client.publish(feed_05, BME280_altitude)
                 time.sleep(1)
 
-            except (ValueError, RuntimeError, ConnectionError, OSError, MMQTTException) as ex:
+            except (
+                ValueError,
+                RuntimeError,
+                ConnectionError,
+                OSError,
+                MMQTTException,
+            ) as ex:
                 print("| | ❌ Failed to connect, retrying\n", ex)
                 # traceback.print_exception(ex, ex, ex.__traceback__)
                 # supervisor.reload()
+                time.sleep(10)
                 continue
             mqtt_client.disconnect()
 
@@ -1071,10 +1183,21 @@ while True:
                 loading_splash.remove(feather_weather_bg)
 
             print("Entering Touch Loop")
-            while (time.monotonic() - last) <= sleep_time and display.root_group is main_group:
+            while (
+                time.monotonic() - last
+            ) <= sleep_time and display.root_group is main_group:
                 p = touchscreen.touch_point
                 if p:
-                    menu_switching(main_group, main_group3, main_group2, preferences_group, wifi_settings_group, rssi_group, sys_info_group, wifi_change_group)
+                    menu_switching(
+                        main_group,
+                        main_group3,
+                        main_group2,
+                        preferences_group,
+                        wifi_settings_group,
+                        rssi_group,
+                        sys_info_group,
+                        wifi_change_group,
+                    )
                 else:
                     # Default state always running
                     group_cleanup()
@@ -1086,10 +1209,21 @@ while True:
     while display.root_group is main_group2:
         wallpaper[0] = 1
         hello_label.text = "Feather Weather Page 2"
-        while (time.monotonic() - last) <= sleep_time and display.root_group is main_group2:
+        while (
+            time.monotonic() - last
+        ) <= sleep_time and display.root_group is main_group2:
             p = touchscreen.touch_point
             if p:
-                menu_switching(main_group2, main_group, main_group3, preferences_group, wifi_settings_group, rssi_group, sys_info_group, wifi_change_group)
+                menu_switching(
+                    main_group2,
+                    main_group,
+                    main_group3,
+                    preferences_group,
+                    wifi_settings_group,
+                    rssi_group,
+                    sys_info_group,
+                    wifi_change_group,
+                )
             else:
                 # Default state always running
                 group_cleanup()
@@ -1098,10 +1232,21 @@ while True:
     while display.root_group is main_group3:
         wallpaper[0] = 2
         hello_label.text = "Feather Weather Page 3"
-        while (time.monotonic() - last) <= sleep_time and display.root_group is main_group3:
+        while (
+            time.monotonic() - last
+        ) <= sleep_time and display.root_group is main_group3:
             p = touchscreen.touch_point
             if p:
-                menu_switching(main_group3, main_group2, main_group, preferences_group, wifi_settings_group, rssi_group, sys_info_group, wifi_change_group)
+                menu_switching(
+                    main_group3,
+                    main_group2,
+                    main_group,
+                    preferences_group,
+                    wifi_settings_group,
+                    rssi_group,
+                    sys_info_group,
+                    wifi_change_group,
+                )
             else:
                 # Default state always running
                 group_cleanup()
@@ -1110,9 +1255,13 @@ while True:
     while display.root_group is preferences_group:
         wallpaper[0] = 3
         hello_label.text = "Feather Weather Preferences"
-        while (time.monotonic() - last) <= sleep_time and display.root_group is preferences_group:
+        while (
+            time.monotonic() - last
+        ) <= sleep_time and display.root_group is preferences_group:
             p = touchscreen.touch_point
-            if p:  # Check each slider if the touch point is within the slider touch area
+            if (
+                p
+            ):  # Check each slider if the touch point is within the slider touch area
                 if my_slider.when_inside(p):
                     try:
                         my_slider.when_selected(p)
@@ -1125,7 +1274,16 @@ while True:
                     except Exception as e:
                         print(e)
                         continue
-                menu_switching(preferences_group, main_group, main_group, preferences_group, wifi_settings_group, rssi_group, sys_info_group, wifi_change_group)
+                menu_switching(
+                    preferences_group,
+                    main_group,
+                    main_group,
+                    preferences_group,
+                    wifi_settings_group,
+                    rssi_group,
+                    sys_info_group,
+                    wifi_change_group,
+                )
             else:
                 # Default state always running
                 group_cleanup()
@@ -1135,20 +1293,31 @@ while True:
         wallpaper[0] = 3
         hello_label.text = "Wifi Settings"
         ssid_len = len(ssid)
-        ssid_dash_replace = "*"*(ssid_len-2)
+        ssid_dash_replace = "*" * (ssid_len - 2)
         ssid_ast = ssid.replace(ssid[2:ssid_len], ssid_dash_replace)
         wifi_settings_ssid.text = f"SSID: \n{ssid_ast}"
 
-        appw_len = len(appw)
-        appw_dash_replace = "*"*(appw_len-2)
+        appw_len = len(password)
+        appw_dash_replace = "*" * (appw_len - 2)
         appw_ast = appw.replace(appw[2:appw_len], appw_dash_replace)
         wifi_settings_pw.text = f"Password: \n{appw_ast}"
         wifi_settings_instructions.text = "To change SSID & PW connect USB cable to PC\nOpen CIRCUITPY USB drive\nEdit settings.toml file"
 
-        while (time.monotonic() - last) <= sleep_time and display.root_group is wifi_settings_group:
+        while (
+            time.monotonic() - last
+        ) <= sleep_time and display.root_group is wifi_settings_group:
             p = touchscreen.touch_point
             if p:
-                menu_switching(wifi_settings_group, main_group, main_group, preferences_group, wifi_settings_group, rssi_group, sys_info_group, wifi_change_group)
+                menu_switching(
+                    wifi_settings_group,
+                    main_group,
+                    main_group,
+                    preferences_group,
+                    wifi_settings_group,
+                    rssi_group,
+                    sys_info_group,
+                    wifi_change_group,
+                )
             else:
                 # Default state always running
                 group_cleanup()
@@ -1165,7 +1334,11 @@ while True:
         wifi.radio.stop_scanning_networks()
         networks = sorted(networks, key=lambda net: net.rssi, reverse=True)
         for network in networks:
-            sorted_networks = {'ssid': network.ssid, 'rssi': network.rssi, 'channel': network.channel}
+            sorted_networks = {
+                "ssid": network.ssid,
+                "rssi": network.rssi,
+                "channel": network.channel,
+            }
             NetworkList.append([sorted_networks])
             # print("ssid:",network.ssid, "rssi:",network.rssi, "channel:",network.channel)
         jsonNetworkList = json.dumps(NetworkList)
@@ -1175,15 +1348,26 @@ while True:
         try:
             for i in range(min(10, len(json_list))):
                 label_text = f"{json_list[i][0]['ssid']:<30}\t{json_list[i][0]['rssi']:<20}\t{json_list[i][0]['channel']:<20}\n"
-                globals()[f'rssi_data_label{i}'].text = label_text
+                globals()[f"rssi_data_label{i}"].text = label_text
         except Exception as e:
             print(f"RSSI List Error: {e}")
             pass
 
-        while (time.monotonic() - last) <= sleep_time and display.root_group is rssi_group:
+        while (
+            time.monotonic() - last
+        ) <= sleep_time and display.root_group is rssi_group:
             p = touchscreen.touch_point
             if p:
-                menu_switching(rssi_group, main_group, main_group, preferences_group, wifi_settings_group, rssi_group, sys_info_group, wifi_change_group)
+                menu_switching(
+                    rssi_group,
+                    main_group,
+                    main_group,
+                    preferences_group,
+                    wifi_settings_group,
+                    rssi_group,
+                    sys_info_group,
+                    wifi_change_group,
+                )
             else:
                 # Default state always running
                 group_cleanup()
@@ -1197,7 +1381,7 @@ while True:
         sys_info_data_label1.text = f"Circuit Python Version:\n{u_name[3]}"
         sys_info_data_label2.text = f"Board: \n{u_name[4]}"
         sys_info_data_label3.text = f"Logic Chip: {u_name[0]}"
-        fs_stat = os.statvfs('/')
+        fs_stat = os.statvfs("/")
         NORdisk_size = fs_stat[0] * fs_stat[2] / 1024 / 1024
         NORfree_space = fs_stat[0] * fs_stat[3] / 1024 / 1024
         sys_info_data_label4.text = f"Flash Chip Size: {NORdisk_size:.2f} MB"
@@ -1216,16 +1400,29 @@ while True:
                 sys_info_data_label7.text = f"SD Card Free: {SD_Card_FREE_TOTAL:.2f} GB"
             if (SD_Card_FREE_TOTAL) <= 1.0:
                 SD_Card_FREE_TOTAL_MB = SD_Card_Size[0] * SD_Card_Size[3] / 1024 / 1024
-                sys_info_data_label7.text = f"SD Card Free: {SD_Card_FREE_TOTAL_MB:.2f} MB"
+                sys_info_data_label7.text = (
+                    f"SD Card Free: {SD_Card_FREE_TOTAL_MB:.2f} MB"
+                )
             # storage.umount(vfs)
         except Exception as e:
             print(e)
             pass
 
-        while (time.monotonic() - last) <= sleep_time and display.root_group is sys_info_group:
+        while (
+            time.monotonic() - last
+        ) <= sleep_time and display.root_group is sys_info_group:
             p = touchscreen.touch_point
             if p:
-                menu_switching(sys_info_group, main_group, main_group, preferences_group, wifi_settings_group, rssi_group, sys_info_group, wifi_change_group)
+                menu_switching(
+                    sys_info_group,
+                    main_group,
+                    main_group,
+                    preferences_group,
+                    wifi_settings_group,
+                    rssi_group,
+                    sys_info_group,
+                    wifi_change_group,
+                )
             else:
                 # Default state always running
                 group_cleanup()
@@ -1235,8 +1432,10 @@ while True:
         wallpaper[0] = 3
         hello_label.text = "Wifi Edit Credentials"
         input_change_wifi.text = "New Password: "
-        
-        while (time.monotonic() - last) <= sleep_time and display.root_group is wifi_change_group:
+
+        while (
+            time.monotonic() - last
+        ) <= sleep_time and display.root_group is wifi_change_group:
             p = touchscreen.touch_point
             key_value = soft_kbd.check_touches(p)
             if p:
@@ -1246,7 +1445,16 @@ while True:
                     input_lbl.text = input_lbl.text[:-1]
                 elif key_value == 224:  # special character switch key
                     input_lbl.text = input_lbl.text[:-1]
-                menu_switching(wifi_change_group, main_group2, main_group, preferences_group, wifi_settings_group, rssi_group, sys_info_group, wifi_change_group)
+                menu_switching(
+                    wifi_change_group,
+                    main_group2,
+                    main_group,
+                    preferences_group,
+                    wifi_settings_group,
+                    rssi_group,
+                    sys_info_group,
+                    wifi_change_group,
+                )
             else:
                 # Default state always running
                 group_cleanup()

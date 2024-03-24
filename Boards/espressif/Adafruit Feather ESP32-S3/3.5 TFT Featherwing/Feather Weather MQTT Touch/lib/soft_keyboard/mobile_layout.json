@@ -1,0 +1,139 @@
+{
+  "base_grid_size": [
+    10,
+    4
+  ],
+  "rows": [
+    {
+      "name": "row0",
+      "keys": [
+        {
+          "label": "Q"
+        },
+        {
+          "label": "W"
+        },
+        {
+          "label": "E"
+        },
+        {
+          "label": "R"
+        },
+        {
+          "label": "T"
+        },
+        {
+          "label": "Y"
+        },
+        {
+          "label": "U"
+        },
+        {
+          "label": "I"
+        },
+        {
+          "label": "O"
+        },
+        {
+          "label": "P"
+        }
+      ]
+    },
+    {
+      "name": "row1",
+      "keys": [
+        {
+          "label": "A",
+        },
+        {
+          "label": "S"
+        },
+        {
+          "label": "D"
+        },
+        {
+          "label": "F"
+        },
+        {
+          "label": "G"
+        },
+        {
+          "label": "H"
+        },
+        {
+          "label": "J"
+        },
+        {
+          "label": "K"
+        },
+        {
+          "label": "L",
+		  "col_span": 2
+        }
+      ]
+    },
+    {
+      "name": "row2",
+      "keys": [
+        {
+		  "label": "\uf062",
+          "key_value": 225,
+          "font": "symbol_font",
+          "scale": 1
+        },
+        {
+          "label": "Z"
+        },
+        {
+          "label": "X"
+        },
+        {
+          "label": "C"
+        },
+        {
+          "label": "V"
+        },
+        {
+          "label": "B"
+        },
+        {
+          "label": "N"
+        },
+        {
+          "label": "M"
+        },
+        {
+          "label": "\uf191",
+          "key_value": 42,
+		  "font": "symbol_font",
+          "scale": 1,
+          "col_span": 2
+        }
+      ]
+    },
+    {
+      "name": "row3",
+      "keys": [
+        {
+          "label": "123",
+          "key_value": 224,
+		  "col_span": 2
+        },
+        {
+          "label": ":)",
+          "key_value": 226
+        },
+        {
+          "label": "space",
+          "key_value": " ",
+          "col_span": 4
+        },
+        {
+          "label": "return",
+          "key_value": 40,
+          "col_span": 3
+        }
+      ]
+    }
+  ]
+}
