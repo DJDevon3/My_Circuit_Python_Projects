@@ -69,7 +69,7 @@ feed_05 = aio_username + "/feeds/BME280-Altitude"
 
 # Time in seconds between updates (polling)
 # 600 = 10 mins, 900 = 15 mins, 1800 = 30 mins, 3600 = 1 hour
-sleep_time = 900
+SLEEP_TIME = 900
 
 # Initialize TFT Display
 spi = board.SPI()
@@ -131,6 +131,40 @@ loading_splash = displayio.Group()
 loading_splash.append(feather_weather_bg)
 loading_splash.append(splash_label)
 display.root_group = loading_splash
+
+splash_label.text = "Initializing Battery Voltage Monitor..."
+BATTERY_MON_ADDRESS = 0x0B  # Address for ESP32-S3 Feather
+
+
+def hack_for_i2c_issue():
+    """LC709203F Battery Monitor Workaround"""
+    i2c = board.I2C()
+    while not i2c.try_lock():
+        pass
+    running = True
+    try:
+        while running:
+            """
+            print(
+                "I2C addresses found:",
+                [hex(device_address) for device_address in i2c.scan()],
+            )
+            """
+            running = False
+        return i2c
+    finally:  # unlock the i2c bus when ctrl-c'ing out of the loop
+        i2c.unlock()
+
+
+# LC709203F Battery Monitor
+# https://github.com/adafruit/Adafruit_CircuitPython_LC709203F/blob/main/adafruit_lc709203f.py
+# only up to 3000 supported, don't use PackSize if battery larger than 3000mah
+i2c = hack_for_i2c_issue()
+battery_monitor = LC709203F(i2c)
+# battery_monitor.pack_size = PackSize.MAH3000
+battery_monitor.thermistor_bconstant = 3950
+battery_monitor.thermistor_enable = True
+
 splash_label.text = "Initializing BME280 Sensor..."
 
 # Initialize BME280 Sensor
@@ -140,17 +174,6 @@ bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c)
 # bme280.sea_level_pressure = bme280.pressure
 # print("Sea Level Pressure: ", bme280.sea_level_pressure)
 # print("Altitude = %0.2f meters" % bme280.altitude)
-
-splash_label.text = "Initializing Battery Voltage Monitor..."
-i2c = board.I2C()
-battery_monitor = LC709203F(board.I2C())
-# LC709203F github repo library
-# https://github.com/adafruit/Adafruit_CircuitPython_LC709203F/blob/main/adafruit_lc709203f.py
-# only up to 3000 supported, don't use PackSize if battery larger than 3000mah
-# battery_monitor.pack_size = PackSize.MAH3000
-battery_monitor.thermistor_bconstant = 3950
-battery_monitor.thermistor_enable = True
-
 
 def time_calc(input_time):
     # Attribution: Written by DJDevon3 & refined by Elpekenin
@@ -205,6 +228,7 @@ TEXT_MAGENTA = 0xFF00FF
 TEXT_ORANGE = 0xFFA500
 TEXT_PURPLE = 0x800080
 TEXT_RED = 0xFF0000
+TEXT_TEAL = 0xB2D8D8
 TEXT_WHITE = 0xFFFFFF
 TEXT_YELLOW = 0xFFFF00
 
@@ -638,7 +662,41 @@ def hide_warning():
     # Function to hide weather popup warning
     warning_group.hidden = True
 
+def usb_battery_monitor(usb_sense):
+    """ Set battery icon and voltage label """
+    try:
+        vbat_label.text = f"{battery_monitor.cell_voltage:.2f}v"
+    except (ValueError, RuntimeError, OSError) as e:
+        print("LC709203F Error: \n", e)
 
+    # print("USB Sense: ", usb_sense)  # Boolean value
+    if usb_sense:  # if on USB power show plug sprite icon
+        vbat_label.color = TEXT_LIGHTBLUE
+        sprite[0] = 5
+    else:  # if on battery power only
+        # Changes battery voltage color depending on charge level
+        if vbat_label.text >= "4.23":
+            vbat_label.color = TEXT_LIGHTBLUE
+            sprite[0] = 5
+        elif "4.10" <= vbat_label.text <= "4.22":
+            vbat_label.color = TEXT_GREEN
+            sprite[0] = 0
+        elif "4.00" <= vbat_label.text <= "4.09":
+            vbat_label.color = TEXT_TEAL
+            sprite[0] = 1
+        elif "3.90" <= vbat_label.text <= "3.99":
+            vbat_label.color = TEXT_YELLOW
+            sprite[0] = 2
+        elif "3.80" <= vbat_label.text <= "3.89":
+            vbat_label.color = TEXT_ORANGE
+            sprite[0] = 3
+        # TFT cutoff voltage is 3.70
+        elif vbat_label.text <= "3.79":
+            vbat_label.color = TEXT_RED
+            sprite[0] = 4
+        else:
+            vbat_label.color = TEXT_WHITE
+    
 def show_menu():
     # Function to display popup menu
     menu_popout_label.text = "Menu Popout"
@@ -770,6 +828,7 @@ def menu_switching(
     item4_target,
     item5_target,
 ):
+    """ Touchscreen Popout Menu for root_group_switch """
     if menu_button.contains(p):
         if not menu_button.selected:
             menu_button.selected = True
@@ -827,19 +886,19 @@ def menu_switching(
         hide_menu()
 
 
-hide_warning()
-hide_menu()
+hide_warning()  # sets default weather warning to hidden
+hide_menu()  # sets default menu popout to hidden
 
 splash_label.text = "Loading AdafruitIO Functions..."
 # Define callback methods when events occur
 def connect(mqtt_client, userdata, flags, rc):
     # Method when mqtt_client connected to the broker.
-    print("| | ✅ Connected to MQTT Broker!")
+    print(" | ✅ Connected to MQTT Broker!")
 
 
 def disconnect(mqtt_client, userdata, rc):
     # Method when the mqtt_client disconnects from broker.
-    print("| | ✂️ Disconnected from MQTT Broker")
+    print(" | ✂️ Disconnected from MQTT Broker")
 
 
 def subscribe(mqtt_client, userdata, topic, granted_qos):
@@ -854,7 +913,7 @@ def unsubscribe(mqtt_client, userdata, topic, pid):
 
 def publish(mqtt_client, userdata, topic, pid):
     # Method when the mqtt_client publishes data to a feed.
-    print(f"| | | Published {topic}")
+    print(f" | | 📖 Published {topic}")
 
 
 def message(mqtt_client, topic, message):
@@ -913,75 +972,37 @@ output_range = [
 
 last = time.monotonic()
 First_Run = True
-newline = "\n"
+temp_label.text = "°F"
 splash_label.text = "Loading GUI..."
+OWM_ERROR = " | ❌ OpenWeatherMap Error: "
 while True:
     while display.root_group is main_group or loading_splash:
         wallpaper[0] = 0
         if not First_Run and display.root_group is main_group:
             loading_group.append(loading_label)
             loading_label.text = "Loading..."
-        debug_OWM = False  # Set True for Serial Print Debugging
         bme280.sea_level_pressure = bme280.pressure
         hello_label.text = "Feather Weather ESP32-S3 MQTT Touch"
         print("===============================")
-
-        # USB Power Sensing
-        try:
-            vbat_label.text = f"{battery_monitor.cell_voltage:.2f}v"
-        except (ValueError, RuntimeError, OSError) as e:
-            print("LC709203F Error: \n", e)
-
-        # Set USB plug icon and voltage label to white
+        
+        # Battery voltage label and icon
         usb_sense = supervisor.runtime.usb_connected
-        if debug_OWM:
-            print("USB Sense: ", usb_sense)  # Boolean value
-        if usb_sense:  # if on USB power show plug sprite icon
-            vbat_label.color = TEXT_WHITE
-            sprite[0] = 5
-        if not usb_sense:  # if on battery power only
-            # Changes battery voltage color depending on charge level
-            if vbat_label.text >= "4.23":
-                vbat_label.color = TEXT_WHITE
-                sprite[0] = 5
-            elif "4.10" <= vbat_label.text <= "4.22":
-                vbat_label.color = TEXT_GREEN
-                sprite[0] = 0
-            elif "4.00" <= vbat_label.text <= "4.09":
-                vbat_label.color = TEXT_LIGHTBLUE
-                sprite[0] = 1
-            elif "3.90" <= vbat_label.text <= "3.99":
-                vbat_label.color = TEXT_YELLOW
-                sprite[0] = 2
-            elif "3.80" <= vbat_label.text <= "3.89":
-                vbat_label.color = TEXT_ORANGE
-                sprite[0] = 3
-            # TFT cutoff voltage is 3.70
-            elif vbat_label.text <= "3.79":
-                vbat_label.color = TEXT_RED
-                sprite[0] = 4
-            else:
-                vbat_label.color = TEXT_WHITE
-
-        # Local sensor data display
-        temp_label.text = "°F"
-
-        # Board Uptime
-        print("Board Uptime: ", time_calc(time.monotonic()))
-
+        usb_battery_monitor(usb_sense)
+        
         # Account for PCB heating bias, gets slightly hotter as ambient increases
         BME280_humidity = round(bme280.relative_humidity, 1)
         relative_humidity = np.interp(
             BME280_humidity, humid_input_range, humid_output_range
         )
         humidity_adjust = round(relative_humidity[0], 2)
-        print(f"Humidity Adjust: {humidity_adjust}")
+        # print(f"Humidity Adjust: {humidity_adjust}")
         temperature = bme280.temperature * 1.8 + 32
         temp_round = round(temperature, 2)
-        print("Temp: ", temperature)  # biased reading
+        # print("Temp: ", temperature)  # biased reading
         display_temperature = np.interp(temperature, input_range, output_range)
         BME280_temperature = round(display_temperature[0] + humidity_adjust, 2)
-        print(f"Actual Temp: {BME280_temperature:.1f}")
+        # print(f"Actual Temp: {BME280_temperature:.1f}")
+        debug_OWM = False  # Set True for Serial Debugging
         if debug_OWM:
             BME280_pressure = 1005  # Manually set debug warning message
             print(f"BME280 Pressure: {BME280_pressure}")
@@ -1025,15 +1046,15 @@ while True:
             try:
                 wifi.radio.connect(ssid, password)
             except ConnectionError as e:
-                print("❌ Connection Error:", e)
-                print("Retrying in 10 seconds")
-        print("✅ Wifi!")
+                print(" ❌ Connection Error:", e)
+                print(" Retrying in 10 seconds")
+        print(" 📡 Wifi!")
 
         while wifi.radio.ipv4_address:
             try:
-                print("| | Attempting to GET Weather...")
+                print(" | Attempting to GET Weather...")
                 if debug_OWM:
-                    print("Full API GET URL: ", DATA_SOURCE)
+                    print(" | Full API GET URL: ", DATA_SOURCE)
                     print("\n===============================")
                 with requests.get(DATA_SOURCE) as owm_request:
 
@@ -1045,7 +1066,7 @@ while True:
                         owm_response = owm_request.json()
                         if owm_response["message"]:
                             print(
-                                f"| | ❌ OpenWeatherMap Error:  {owm_response['message']}"
+                                f"{OWM_ERROR}{owm_response['message']}"
                             )
                             owm_request.close()
                     except (KeyError) as e:
@@ -1054,8 +1075,8 @@ while True:
                         if not First_Run and display.root_group is main_group:
                             loading_label.text = "Getting Weather..."
                         owm_response = owm_request.json()
-                        print("| | Account within Request Limit", e)
-                        print("| | ✅ Connected to OpenWeatherMap")
+                        print(" | Account within Request Limit", e)
+                        print(" | ✅ Connected to OpenWeatherMap!")
 
                         # Timezone & offset automatically returned based on lat/lon
                         get_timezone_offset = int(owm_response["timezone_offset"])  # 1
@@ -1098,18 +1119,18 @@ while True:
 
                         if "wind_gust" in owm_response["current"]:
                             owm_windgust = float(owm_response["current"]["wind_gust"])
-                            print(f"| | | Gust: {owm_windgust}")
+                            print(f" | | Gust: {owm_windgust}")
                         else:
-                            print("| | | Gust: No Data")
+                            print(" | | Gust: No Data")
 
-                        print("| | | Sunrise:", sunrise_time)
-                        print("| | | Sunset:", sunset_time)
-                        print("| | | Temp:", owm_temp)
-                        print("| | | Pressure:", owm_pressure)
-                        print("| | | Humidity:", owm_humidity)
-                        print("| | | Weather Type:", weather_type)
-                        print("| | | Wind Speed:", owm_windspeed)
-                        print("| | | Timestamp:", current_date + " " + current_time)
+                        print(" | | Sunrise:", sunrise_time)
+                        print(" | | Sunset:", sunset_time)
+                        print(" | | Temp:", owm_temp)
+                        print(" | | Pressure:", owm_pressure)
+                        print(" | | Humidity:", owm_humidity)
+                        print(" | | Weather Type:", weather_type)
+                        print(" | | Wind Speed:", owm_windspeed)
+                        print(" | | Timestamp:", current_date + " " + current_time)
 
                         date_label.text = current_date
                         time_label.text = current_time
@@ -1121,19 +1142,19 @@ while True:
                         pass
 
             except (ValueError, RuntimeError) as e:
-                print("ValueError: Failed to get OWM data, retrying\n", e)
+                print(" ❌  ValueError: Failed to get OWM data, retrying\n", e)
                 supervisor.reload()
                 break
             except OSError as g:
                 if g.errno == -2:
-                    print("gaierror, breaking out of loop\n", g)
+                    print(" ❌ gaierror, breaking out of loop\n", g)
                     time.sleep(240)
                     break
-            print("| | ✂️ Disconnected from OpenWeatherMap")
+            print(" | ✂️ Disconnected from OpenWeatherMap")
 
             # Connect to Adafruit IO
             try:
-                print("| | Attempting MQTT Broker...")
+                print(" | Attempting MQTT Broker...")
                 mqtt_client.connect()
                 if First_Run and display.root_group is loading_splash:
                     splash_label.text = "Publishing to AdafruitIO..."
@@ -1159,22 +1180,25 @@ while True:
                 OSError,
                 MMQTTException,
             ) as ex:
-                print("| | ❌ Failed to connect, retrying\n", ex)
+                print(" | ❌ Failed to connect, retrying\n", ex)
                 # traceback.print_exception(ex, ex, ex.__traceback__)
                 # supervisor.reload()
                 time.sleep(10)
                 continue
             mqtt_client.disconnect()
-
-            print("| ✂️ Disconnected from Wifi")
+            
+            print(" ✂️ Disconnected from Wifi")
             print(f"Loading Time: {time.monotonic() - _now}")
-            print("Next Update: ", time_calc(sleep_time))
-
+            print(f"Board Uptime: {time_calc(time.monotonic())}")
+            print(f"Next Update: {time_calc(SLEEP_TIME)}")
+            print("Finished!")
+            print("===============================")
+            
             if not First_Run and display.root_group is main_group:
-                loading_label.text = f"Next Update{newline}{time_calc(sleep_time)}"
+                loading_label.text = f"Next Update\n{time_calc(SLEEP_TIME)}"
                 time.sleep(5)
                 loading_group.remove(loading_label)
-
+                
             if First_Run:
                 First_Run = False
                 display.root_group = main_group
@@ -1185,7 +1209,7 @@ while True:
             print("Entering Touch Loop")
             while (
                 time.monotonic() - last
-            ) <= sleep_time and display.root_group is main_group:
+            ) <= SLEEP_TIME and display.root_group is main_group:
                 p = touchscreen.touch_point
                 if p:
                     menu_switching(
@@ -1204,14 +1228,14 @@ while True:
             last = time.monotonic()
             print("Exited Sleep Loop")
             break
-            # time.sleep(sleep_time)
+            # time.sleep(SLEEP_TIME)
 
     while display.root_group is main_group2:
         wallpaper[0] = 1
         hello_label.text = "Feather Weather Page 2"
         while (
             time.monotonic() - last
-        ) <= sleep_time and display.root_group is main_group2:
+        ) <= SLEEP_TIME and display.root_group is main_group2:
             p = touchscreen.touch_point
             if p:
                 menu_switching(
@@ -1234,7 +1258,7 @@ while True:
         hello_label.text = "Feather Weather Page 3"
         while (
             time.monotonic() - last
-        ) <= sleep_time and display.root_group is main_group3:
+        ) <= SLEEP_TIME and display.root_group is main_group3:
             p = touchscreen.touch_point
             if p:
                 menu_switching(
@@ -1257,7 +1281,7 @@ while True:
         hello_label.text = "Feather Weather Preferences"
         while (
             time.monotonic() - last
-        ) <= sleep_time and display.root_group is preferences_group:
+        ) <= SLEEP_TIME and display.root_group is preferences_group:
             p = touchscreen.touch_point
             if (
                 p
@@ -1299,13 +1323,16 @@ while True:
 
         appw_len = len(password)
         appw_dash_replace = "*" * (appw_len - 2)
-        appw_ast = appw.replace(appw[2:appw_len], appw_dash_replace)
+        appw_ast = password.replace(password[2:appw_len], appw_dash_replace)
         wifi_settings_pw.text = f"Password: \n{appw_ast}"
-        wifi_settings_instructions.text = "To change SSID & PW connect USB cable to PC\nOpen CIRCUITPY USB drive\nEdit settings.toml file"
+        wifi_settings_instructions.text = ("To change SSID & PW"
+                                           "connect USB cable to PC\n"
+                                           "Open CIRCUITPY USB drive\n"
+                                           "Edit settings.toml file")
 
         while (
             time.monotonic() - last
-        ) <= sleep_time and display.root_group is wifi_settings_group:
+        ) <= SLEEP_TIME and display.root_group is wifi_settings_group:
             p = touchscreen.touch_point
             if p:
                 menu_switching(
@@ -1340,14 +1367,17 @@ while True:
                 "channel": network.channel,
             }
             NetworkList.append([sorted_networks])
-            # print("ssid:",network.ssid, "rssi:",network.rssi, "channel:",network.channel)
+            print(f"ssid: {network.ssid} | rssi: {network.rssi} | "
+                  + f"channel: {network.channel}")
         jsonNetworkList = json.dumps(NetworkList)
         json_list = json.loads(jsonNetworkList)
         # print(f"Items in RSSI List: {len(json_list)}")
         rssi_data_label.text = "SSID\t\t\t\t\t\t\t  RSSI\t\t\t\t    CHANNEL\n"
         try:
             for i in range(min(10, len(json_list))):
-                label_text = f"{json_list[i][0]['ssid']:<30}\t{json_list[i][0]['rssi']:<20}\t{json_list[i][0]['channel']:<20}\n"
+                label_text = (f"{json_list[i][0]['ssid']:<30}\t"
+                              + f"{json_list[i][0]['rssi']:<20}\t"
+                              + f"{json_list[i][0]['channel']:<20}\n")
                 globals()[f"rssi_data_label{i}"].text = label_text
         except Exception as e:
             print(f"RSSI List Error: {e}")
@@ -1355,7 +1385,7 @@ while True:
 
         while (
             time.monotonic() - last
-        ) <= sleep_time and display.root_group is rssi_group:
+        ) <= SLEEP_TIME and display.root_group is rssi_group:
             p = touchscreen.touch_point
             if p:
                 menu_switching(
@@ -1410,7 +1440,7 @@ while True:
 
         while (
             time.monotonic() - last
-        ) <= sleep_time and display.root_group is sys_info_group:
+        ) <= SLEEP_TIME and display.root_group is sys_info_group:
             p = touchscreen.touch_point
             if p:
                 menu_switching(
@@ -1435,7 +1465,7 @@ while True:
 
         while (
             time.monotonic() - last
-        ) <= sleep_time and display.root_group is wifi_change_group:
+        ) <= SLEEP_TIME and display.root_group is wifi_change_group:
             p = touchscreen.touch_point
             key_value = soft_kbd.check_touches(p)
             if p:
