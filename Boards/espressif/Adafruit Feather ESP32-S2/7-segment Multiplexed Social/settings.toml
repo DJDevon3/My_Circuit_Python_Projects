@@ -1,0 +1,17 @@
+CIRCUITPY_WIFI_SSID = "Your_SSID"
+CIRCUITPY_WIFI_PASSWORD = "Your Wifi Password"
+timezone = "America/New_York"  # Check http://worldtimeapi.org/timezones
+aio_username = "AdafruitIO Username"
+aio_key = "AdafruitIO_Key"
+YOUTUBE_USERNAME = "Youtube Username"
+YOUTUBE_TOKEN = "32 character token"
+TWITTER_USERNAME = "Twitter Username"
+TWITTER_USERID = "TwitterID"  # numerical id not username
+TWITTER_BEARER_TOKEN = "Long 64 character token"
+GITHUB_USERNAME = "Username"
+GITHUB_TOKEN = "64 character token"
+TWITCH_CLIENT_ID = "Twitch API Client ID"
+TWITCH_CLIENT_SECRET = "Twitch Client Secret"
+TWITCH_USER_ID = "Twitch Numerical ID"
+MASTODON_SERVER = "Your Mastodon.server"
+MASTODON_USERID = "Your Mastodon User Number"
