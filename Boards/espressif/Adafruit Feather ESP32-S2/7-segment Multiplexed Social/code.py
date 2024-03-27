@@ -13,11 +13,11 @@ import wifi
 import adafruit_requests
 import board
 import busio
-from analogio import AnalogOut
+import pwmio
 from adafruit_ht16k33 import segments
 import adafruit_tca9548a
 
-# Get WiFi details, ensure these are setup in settings.toml
+# Ensure ALL of these are setup in settings.toml
 ssid = os.getenv("CIRCUITPY_WIFI_SSID")
 password = os.getenv("CIRCUITPY_WIFI_PASSWORD")
 TWITCH_CID = os.getenv("TWITCH_CLIENT_ID")
@@ -33,13 +33,13 @@ TWITTER_TOKEN = os.getenv("TWITTER_BEARER_TOKEN")
 GITHUB_UID = os.getenv("GITHUB_USERNAME")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 
-# Mastodon V1 API - Public access (no dev creds or app required)
-# Visit https://docs.joinmastodon.org/client/public/ for API docs
 # For finding your Mastodon numerical UserID
-# Example: https://mastodon.YOURSERVER/api/v1/accounts/lookup?acct=YourUserName
-MASTODON_SERVER = os.getenv("MASTODON_SERVER")  # Set server instance
-MASTODON_USERID = os.getenv("MASTODON_USERID")  # Numerical UserID endpoints from
-
+# Example: https://mastodon.social/api/v1/accounts/lookup?acct=Username@Mastodon.social
+MASTODON_SERVER = os.getenv("MASTODON_INSTANCE")  # Set server instance
+MASTODON_UID = os.getenv("MASTODON_USERNAME")  # Your server Username
+# Requires Steam Developer API key
+STEAM_UNUM = os.getenv("STEAM_ID")
+STEAM_KEY = os.getenv("STEAM_API_KEY")
 
 # Initialize 7-Segment Backpack
 i2c = board.I2C()
@@ -74,11 +74,17 @@ def time_calc(input_time):
         return f"{input_time / 60 / 60:.0f} hours"
     return f"{input_time / 60 / 60 / 24:.1f} days"
 
-
-# I have a physical arcade button for board reset
-Reset_LED = AnalogOut(board.A0)
-Reset_LED.value = 65535
-
+def _format_datetime(datetime):
+    """F-String formatted struct time conversion"""
+    return (
+        f"{datetime.tm_mon:02}/"
+        + f"{datetime.tm_mday:02}/"
+        + f"{datetime.tm_year:02} "
+        + f"{datetime.tm_hour:02}:"
+        + f"{datetime.tm_min:02}:"
+        + f"{datetime.tm_sec:02}"
+    )
+    
 # Initialize & combine backpack addresses
 red = segments.Seg7x4(tca[0], address=(0x74, 0x75))
 red.fill(0)
@@ -88,7 +94,7 @@ red.print("youtube")
 blue = segments.Seg7x4(tca[7], address=(0x74, 0x75))
 blue.fill(0)
 blue.brightness = 0.5
-blue.print("twitter")
+blue.print("mastodon")
 
 green = segments.Seg7x4(tca[5], address=(0x74, 0x75))
 green.fill(0)
@@ -98,7 +104,7 @@ green.print("github")
 yellow = segments.Seg7x4(tca[2], address=(0x74, 0x75))
 yellow.fill(0)
 yellow.brightness = 0.5
-yellow.print("mastodon")
+yellow.print("steam")
 
 white = segments.Seg7x4(i2c2, address=(0x71, 0x72))
 white.fill(0)
@@ -113,46 +119,38 @@ YOUTUBE_SOURCE = (
     + str(YOUTUBE_KEY)
 )
 
-# TWITTER
-# Used with any Twitter 0auth request. Twitter developer account bearer token required.
-twitter_header = {"Authorization": "Bearer " + str(TWITTER_TOKEN)}
-# Twitter UserID is a number.
-# https://api.twitter.com/2/users/[ID]?user.fields=public_metrics,created_at,pinned_tweet_id&expansions=pinned_tweet_id&tweet.fields=created_at,public_metrics,source,context_annotations,entities
-TW_SOURCE = ("https://api.twitter.com/2/users/"
-             + TWITTER_UID
-             + "?user.fields=public_metrics,"
-             + "created_at,"
-             + "pinned_tweet_id"
-             + "&expansions=pinned_tweet_id"
-             + "&tweet.fields=created_at,"
-             + "public_metrics,"
-             + "source,"
-             + "context_annotations,"
-             + "entities"
-             )
-
 # First we use Client ID & Client Secret to create a token with POST
 # You must be logged into Twitch when you do this.
 twitch_0auth_header = {"Content-Type": "application/x-www-form-urlencoded"}
 TWITCH_0AUTH_TOKEN = "https://id.twitch.tv/oauth2/token"
 
 GITHUB_HEADER = {"Authorization": " token " + GITHUB_TOKEN}
-GITHUB_SOURCE = "https://api.github.com/users/" + GITHUB_UID
+GITHUB_SOURCE = (f"https://api.github.com/users/{GITHUB_UID}")
 
 # Publicly available data no header required
-MAST_SOURCE = (
-    "https://"
-    + MASTODON_SERVER
-    + "/api/v1/accounts/"
-    + MASTODON_USERID
-    + "/statuses?limit=1"
-)
+MASTODON_HEADER = {'Content-Type': 'application/json'}
+MAST_SOURCE = (f"https://{MASTODON_SERVER}/api/v1/accounts/lookup?"
+               + f"acct={MASTODON_UID}@{MASTODON_SERVER}")
 
 # Originally attempted to use SVG. Found JSON exists with same filename.
 # https://img.shields.io/discord/327254708534116352.svg
 ADA_DISCORD_JSON = "https://img.shields.io/discord/327254708534116352.json"
 
+# Deconstruct URL (pylint hates long lines)
+# http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/
+# ?key=XXXXXXXXXXXXXXXXXXXXX&include_played_free_games=1&steamid=XXXXXXXXXXXXXXXX&format=json
+STEAM_SOURCE = ("http://api.steampowered.com/IPlayerService/"
+                + "GetOwnedGames/v0001/?" +
+                f"key={STEAM_KEY}" +
+                "&include_played_free_games=1" +
+                f"&steamid={STEAM_UNUM}" +
+                "&format=json"
+                )
+
 while True:
+    # Arcade button for board reset. This powers the LED.
+    Reset_LED = pwmio.PWMOut(board.A0, frequency=25000, duty_cycle=0)
+    Reset_LED.duty_cycle = 32768  # duty cycle is brightness (0-65535)
     gc.collect()
     # Connect to Wi-Fi
     print("\nConnecting to WiFi...")
@@ -164,43 +162,25 @@ while True:
             print("Retrying in 10 seconds")
         gc.collect()
     print("✅ Wifi!")
+    print(" | Shuffling data to 7-Segment Displays")
+    print(" | This could take a minute...")
 
     try:
-        print(" | Attempting to GET YouTube JSON...")
         with requests.get(YOUTUBE_SOURCE) as youtube_response:
             try:
                 youtube_json = youtube_response.json()
             except ConnectionError as e:
                 print("Connection Error:", e)
                 print("Retrying in 10 seconds")
-            print(" | ✅ YouTube JSON!")
 
             if DEBUG:
                 print(f" | Full API GET URL: {YOUTUBE_SOURCE}")
                 print(f" | Full API Dump: {youtube_json}")
             # Key:Value RESPONSES
-            if "pageInfo" in youtube_json:
-                totalResults = youtube_json["pageInfo"]["totalResults"]
-                print(f" |  | Matching Results: {totalResults}")
             if "items" in youtube_json:
-                YT_request_kind = youtube_json["items"][0]["kind"]
-                print(f" |  | Request Kind: {YT_request_kind}")
-
-                YT_channel_id = youtube_json["items"][0]["id"]
-                print(f" |  | Channel ID: {YT_channel_id}")
-
-                YT_videoCount = youtube_json["items"][0]["statistics"]["videoCount"]
-                print(f" |  | Videos: {YT_videoCount}")
-
                 YT_viewCount = youtube_json["items"][0]["statistics"]["viewCount"]
-                print(f" |  | Views: {YT_viewCount}")
-
                 YT_subsCount = youtube_json["items"][0]["statistics"]["subscriberCount"]
-                print(f" |  | Subscribers: {YT_subsCount}")
-            if "kind" in youtube_json:
-                YT_response_kind = youtube_json["kind"]
-                print(f" |  | Response Kind: {YT_response_kind}")
-
+                
             # YouTube 7-Segment Display
             red.brightness = 0.8
             red.fill(0)
@@ -218,47 +198,36 @@ while True:
             # Marquee scrolling, 2nd parameter speed in seconds
             # red.marquee(YT_response_channel_subscriberCount, 0.9)
             youtube_response.close()
+        
+        # Mastodon
+        try:
+            mastodon_response = requests.get(url=MAST_SOURCE, headers=MASTODON_HEADER)
+            mastodon_json = mastodon_response.json()
+        except ConnectionError as e:
+            print(f"Connection Error: {e}")
+            print("Retrying in 10 seconds")
+        DEBUG_RESPONSE = False
+        if DEBUG_RESPONSE:
+            print(f" |  | Full API GET URL: {MASTODON_HEADER} {MAST_SOURCE}")
+        mastodon_follower_count = mastodon_json["followers_count"]
+        mastodon_toot_count = mastodon_json["statuses_count"]
+        # Mastodon 7-Segment Display
+        blue.brightness = 0.8
+        blue.fill(0)
+        blue.print("toots")
+        time.sleep(2)
+        blue.fill(0)
+        blue.print(mastodon_toot_count)
+        time.sleep(2)
+        blue.fill(0)
+        blue.print("subs")
+        time.sleep(2)
+        blue.fill(0)
+        blue.print(mastodon_follower_count)
+        gc.collect()
+        mastodon_response.close()
 
-        print("\nAttempting to GET TWITTER Stats!")
-        print("===============================")
-        with requests.get(url=TW_SOURCE, headers=twitter_header) as twitter_response:
-            try:
-                twitter_json = twitter_response.json()
-            except ConnectionError as e:
-                print("Connection Error:", e)
-                print("Retrying in 10 seconds")
-            twitter_json = twitter_json["data"]
-            # Uncomment line below to print API URL you're sending to Twitter
-            # print("Full API GET URL: ", TW_SOURCE)
-            # print(twitter_json)
-            twitter_userid = twitter_json["id"]
-            print("User ID: ", twitter_userid)
-            twitter_username = twitter_json["name"]
-            print("Name: ", twitter_username)
-            twitter_join_date = twitter_json["created_at"]
-            print("Member Since: ", twitter_join_date)
-            twitter_tweet_count = twitter_json["public_metrics"]["tweet_count"]
-            print("Tweets: ", twitter_tweet_count)
-            twitter_follower_count = twitter_json["public_metrics"]["followers_count"]
-            print("Followers: ", twitter_follower_count)
-
-            # Twitter 7-Segment Display
-            blue.brightness = 0.8
-            blue.fill(0)
-            blue.print("tweets")
-            time.sleep(2)
-            blue.fill(0)
-            blue.print(twitter_tweet_count)
-            time.sleep(2)
-            blue.fill(0)
-            blue.print("subs")
-            time.sleep(2)
-            blue.fill(0)
-            blue.print(twitter_follower_count)
-            gc.collect()
-
-        # ------------- POST FOR BEARER TOKEN -----------------
-        print(" | Attempting Bearer Token Request!")
+        # ------------- POST FOR TWITCH BEARER TOKEN -----------------
         if DEBUG:
             print(f"Full API GET URL: {TWITCH_0AUTH_TOKEN}")
         twitch_0auth_data = (
@@ -281,31 +250,19 @@ while True:
         except ConnectionError as e:
             print(f"Connection Error: {e}")
             print("Retrying in 10 seconds")
-        print(" | 🔑 Token Authorized!")
 
         # STREAMER WARNING: your client secret will be viewable
         if DEBUG:
             print(f"JSON Dump: {twitch_0auth_json}")
             print(f"Header: {twitch_0auth_header}")
             print(f"Access Token: {twitch_access_token}")
-            twitch_token_type = twitch_0auth_json["token_type"]
-            print(f"Token Type: {twitch_token_type}")
-        twitch_token_expiration = twitch_0auth_json["expires_in"]
-        print(f" | Token Expires in: {time_calc(twitch_token_expiration)}")
-
         # Twitch 7-Segment Display
         yellow.brightness = 0.8
         yellow.fill(0)
         yellow.print("twitch")
         time.sleep(2)
-        yellow.fill(0)
-        yellow.print("token")
-        time.sleep(2)
-        yellow.fill(0)
-        yellow.print(twitch_token_type)
-        gc.collect()
 
-        # ----------------------------- GET DATA --------------------
+        # -----------------------TWITCH GET DATA --------------------
         # Bearer token is refreshed every time script runs :)
         # Twitch sets token expiration to about 64 days
         # Helix is the name of the current Twitch API
@@ -321,7 +278,8 @@ while True:
             + "broadcaster_id="
             + TWITCH_UID
         )
-        print(" | Attempting to GET Twitch JSON!")
+        
+        # Twitch GET
         twitch_response = requests.get(
             url=TWITCH_FOLLOWERS_SOURCE, headers=twitch_header
         )
@@ -334,6 +292,7 @@ while True:
             print(f" | Full API GET URL: {TWITCH_FOLLOWERS_SOURCE}")
             print(f" | Header: {twitch_header}")
             print(f" | JSON Full Response: {twitch_json}")
+        # Error Responses
         if "status" in twitch_json:
             twitch_error_status = twitch_json["status"]
             print(f"❌ Status: {twitch_error_status}")
@@ -343,10 +302,9 @@ while True:
         if "message" in twitch_json:
             twitch_error_msg = twitch_json["message"]
             print(f"❌ Message: {twitch_error_msg}")
+        # Key:Value Responses
         if "total" in twitch_json:
-            print(" | ✅ Twitch JSON!")
             twitch_followers = twitch_json["total"]
-            print(f" |  | Followers: {twitch_followers}")
         # Twitch 7-Segment Display
         yellow.brightness = 0.8
         yellow.fill(0)
@@ -355,123 +313,42 @@ while True:
         yellow.fill(0)
         yellow.print(twitch_followers)
         gc.collect()
-
         twitch_response.close()
-        print("✂️ Disconnected from Twitch API")
 
-        print(" | Attempting to GET Github JSON!")
+        # Github
         try:
             github_response = requests.get(url=GITHUB_SOURCE, headers=GITHUB_HEADER)
             github_json = github_response.json()
         except ConnectionError as e:
             print("Connection Error:", e)
             print("Retrying in 10 seconds")
-        print(" | ✅ Github JSON!")
-
-        github_joined = github_json["created_at"]
-        print(" |  | Join Date: ", github_joined)
-
-        github_id = github_json["id"]
-        print(" |  | UserID: ", github_id)
-
-        github_location = github_json["location"]
-        print(" |  | Location: ", github_location)
-
-        github_name = github_json["name"]
-        print(" |  | Username: ", github_name)
-
-        github_repos = github_json["public_repos"]
-        print(" |  | Respositores: ", github_repos)
-
-        github_followers = github_json["followers"]
-        print(" |  | Followers: ", github_followers)
-        github_bio = github_json["bio"]
-        print(" |  | Bio: ", github_bio)
-
         if DEBUG:
             print("Full API GET URL: ", GITHUB_SOURCE)
             print(github_json)
-        # Github 7-Segment Display
-        green.brightness = 0.8
-        green.fill(0)
-        green.print("subs")
-        time.sleep(2)
-        green.fill(0)
-        green.print(github_followers)
-        gc.collect()
-
+        # Error Response
+        if "message" in github_json:
+            github_error_message = github_json["message"]
+            print(f"❌ Error: {github_error_message}")
+        else:
+            github_followers = github_json["followers"]
+            # Github 7-Segment Display
+            green.brightness = 0.8
+            green.fill(0)
+            green.print("subs")
+            time.sleep(2)
+            green.fill(0)
+            green.print(github_followers)
+            gc.collect()
         github_response.close()
-        print("✂️ Disconnected from Github API")
-
-        print(" | Attempting to GET MASTODON JSON!")
-        # Set debug to True for full JSON response.
-        # WARNING: may include visible credentials
-        # MICROCONTROLLER WARNING: might crash by returning too much data
-        DEBUG_RESPONSE = False
-
-        try:
-            mastodon_response = requests.get(url=MAST_SOURCE)
-            mastodon_json = mastodon_response.json()
-        except ConnectionError as e:
-            print(f"Connection Error: {e}")
-            print("Retrying in 10 seconds")
-        mastodon_json = mastodon_json[0]
-        print(" | ✅ Mastodon JSON!")
-
-        if DEBUG_RESPONSE:
-            print(" |  | Full API GET URL: ", MAST_SOURCE)
-            mastodon_userid = mastodon_json["account"]["id"]
-            print(f" |  | User ID: {mastodon_userid}")
-            print(mastodon_json)
-        mastodon_name = mastodon_json["account"]["display_name"]
-        print(f" |  | Name: {mastodon_name}")
-        mastodon_join_date = mastodon_json["account"]["created_at"]
-        print(f" |  | Member Since: {mastodon_join_date}")
-        mastodon_follower_count = mastodon_json["account"]["followers_count"]
-        print(f" |  | Followers: {mastodon_follower_count}")
-        mastodon_following_count = mastodon_json["account"]["following_count"]
-        print(f" |  | Following: {mastodon_following_count}")
-        mastodon_toot_count = mastodon_json["account"]["statuses_count"]
-        print(f" |  | Toots: {mastodon_toot_count}")
-        mastodon_last_toot = mastodon_json["account"]["last_status_at"]
-        print(f" |  | Last Toot: {mastodon_last_toot}")
-        mastodon_bio = mastodon_json["account"]["note"]
-        print(f" |  | Bio: {mastodon_bio[3:-4]}")  # removes html "<p> & </p>"
-
-        # Mastodon 7-Segment Display
-        green.brightness = 0.8
-        time.sleep(2)
-        green.fill(0)
-        green.print("mastodon")
-        time.sleep(2)
-        green.fill(0)
-        green.print("toots")
-        time.sleep(2)
-        green.fill(0)
-        green.print(mastodon_toot_count)
-        time.sleep(2)
-        green.fill(0)
-        green.print("subs")
-        time.sleep(2)
-        green.fill(0)
-        green.print(mastodon_follower_count)
-        gc.collect()
-
-        mastodon_response.close()
-        print("✂️ Disconnected from Mastodon API")
-
-        print(" | Attempting to GET Adafruit Discord JSON!")
-        # Set debug to True for full JSON response.
-        DEBUG_RESPONSE = True
-
+        
+        # Discord Adafruit Shields.io
         try:
             shieldsio_response = requests.get(url=ADA_DISCORD_JSON)
             shieldsio_json = shieldsio_response.json()
         except ConnectionError as e:
             print(f"Connection Error: {e}")
             print("Retrying in 10 seconds")
-        print(" | ✅ Adafruit Discord JSON!")
-
+        DEBUG_RESPONSE = False
         if DEBUG_RESPONSE:
             print(" |  | Full API GET URL: ", ADA_DISCORD_JSON)
             print(" |  | JSON Dump: ", shieldsio_json)
@@ -479,8 +356,6 @@ while True:
         ONLINE_STRING = " online"
         REPLACE_WITH_NOTHING = ""
         discord_users = ada_users.replace(ONLINE_STRING, REPLACE_WITH_NOTHING)
-        print(f" |  | Active Online Users: {discord_users}")
-
         # Discord 7-Segment Display
         white.fill(0)
         white.print("online")
@@ -488,9 +363,36 @@ while True:
         white.fill(0)
         white.print(discord_users)
         gc.collect()
-
         shieldsio_response.close()
-        print("✂️ Disconnected from Discord Shields.io API")
+        
+        # STEAM
+        with requests.get(STEAM_SOURCE) as steam_response:
+            try:
+                steam_json = steam_response.json()
+            except ConnectionError as e:
+                print("Connection Error:", e)
+        DEBUG_STEAM = False
+        if DEBUG_STEAM:
+            print("Full API GET URL: ", STEAM_SOURCE)
+            # STEAM full response is a baaaad idea but its here if your into bad ideas.
+            # print(steam_json)  # uncomment at your microcontrollers peril
+        game_count = steam_json["response"]["game_count"]
+        # Mastodon 7-Segment Display
+        green.brightness = 0.8
+        time.sleep(2)
+        green.fill(0)
+        green.print("steam")
+        time.sleep(2)
+        green.fill(0)
+        green.print("games")
+        time.sleep(2)
+        green.fill(0)
+        green.print(game_count)
+        time.sleep(2)
+        gc.collect()
+        steam_response.close()
+        print("✂️ Disconnected from all API's")
+        
     except (ValueError, RuntimeError) as e:
         print(f"Failed to get data: {e}")
 
