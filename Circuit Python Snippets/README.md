@@ -4,6 +4,24 @@ Check out [TodBot's Circuit Python Tricks](https://github.com/todbot/circuitpyth
 
 These are a few common code snippets that I continually find myself looking at past projects to snag. No sense in re-inventing the wheel. 
 
+## Circuit Python Board Info
+- Attribution Carter Nelson
+```py
+import os
+foo = os.uname()
+print(foo)
+print(foo.release)
+print(foo.version)
+print(foo.machine)
+```
+output:
+```py
+(sysname='nrf52', nodename='nrf52', release='8.2.10', version='8.2.10 on 2024-02-14', machine='Adafruit ItsyBitsy nRF52840 Express with nRF52840')
+'8.2.10'
+'8.2.10 on 2024-02-14'
+'Adafruit ItsyBitsy nRF52840 Express with nRF52840'
+```
+
 ## Make_My_Label (short form label creation function)
 - This is particularly useful when you have tons of labels. Each label requires much fewer lines.
 ```py
