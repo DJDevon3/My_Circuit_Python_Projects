@@ -4,7 +4,7 @@
 - Prints Count (bytearray)
 - Prints SHA Digest (bytearray)
 
-Do not lock the chip until you've filled in the configuration details!  Once the chip is locked it's permanently locked and can never be reconfigured and this script wil not work!  If you've locked the chip please see the [CSR example here](https://github.com/DJDevon3/My_Circuit_Python_Projects/tree/main/Boards/espressif/Unexpected%20Maker%20Feather%20S3/4.0%20ST7796S/ATECC%20Crypto%20Module%20CSR%20Write).
+Do not lock the chip until you've filled in the configuration details!  Once the chip is locked it's permanently locked and can never be reconfigured! The configuration is permanently written to eeprom then peramently locked.  If you've locked the chip please see the [CSR example here](https://github.com/DJDevon3/My_Circuit_Python_Projects/tree/main/Boards/espressif/Unexpected%20Maker%20Feather%20S3/4.0%20ST7796S/ATECC%20Crypto%20Module%20CSR%20Write).
 
 ### Code.py Output: (results obfuscated)
 ```py
