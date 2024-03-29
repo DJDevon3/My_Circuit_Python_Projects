@@ -1,8 +1,11 @@
 # Adafruit ATECC Crypto Module on TFT Display
 - Displays Serial Number
 - Displays Random Value
-- Displays Count (bytearray)
-- Generates CSR (I combined the CSR example with the simpletest example)
+- Displays Circuit Python Generated Random Number
+
+![IMG_1510](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/7d42cfa8-f820-4ff0-86b4-768a7d3cc87a)
+
+Generates CSR in Serial/REPL (I combined the CSR example with the simpletest example)
 
 Serial output example:
 ```py
