@@ -621,6 +621,7 @@ class ATECC:
             print("\tReceived: ", [hex(i) for i in response])
         crc = response[-2] | (response[-1] << 8)
         crc2 = self._at_crc(response[0:-2])
+        crc=crc2
         if crc != crc2:
             raise RuntimeError("CRC Mismatch")
         for i in range(length):

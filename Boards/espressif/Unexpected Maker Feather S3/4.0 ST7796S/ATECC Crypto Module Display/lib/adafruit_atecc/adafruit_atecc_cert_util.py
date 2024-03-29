@@ -36,7 +36,7 @@ Implementation Notes
 * Adafruit CircuitPython firmware for the supported boards:
   https://github.com/adafruit/circuitpython/releases
 """
-from adafruit_binascii import b2a_base64
+from adafruit_binascii import b2a_base64, a2b_base64
 import adafruit_atecc.adafruit_atecc_asn1 as asn1
 from adafruit_atecc.adafruit_atecc import ATECC
 
@@ -173,4 +173,5 @@ class CSR:
         asn1.get_signature(signature, csr)
         # encode and return
         csr = b2a_base64(csr)
+        # print(a2b_base64(csr))
         return csr
