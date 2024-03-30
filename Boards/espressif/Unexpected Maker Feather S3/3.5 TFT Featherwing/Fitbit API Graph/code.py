@@ -77,6 +77,7 @@ pool = adafruit_connection_manager.get_radio_socketpool(wifi.radio)
 ssl_context = adafruit_connection_manager.get_radio_ssl_context(wifi.radio)
 requests = adafruit_requests.Session(pool, ssl_context)
 
+
 def time_calc(input_time):
     """Converts seconds to minutes/hours/days"""
     if input_time < 60:
@@ -92,101 +93,68 @@ goodtimes16 = bitmap_font.load_font("/fonts/GoodTimesRg-Regular-16.bdf")
 arial16 = bitmap_font.load_font("/fonts/Arial-16.bdf")
 
 # Quick Colors for Labels
-TEXT_BLACK = 0x000000
-TEXT_BLUE = 0x0000FF
-TEXT_CYAN = 0x00FFFF
-TEXT_GRAY = 0x8B8B8B
-TEXT_GREEN = 0x00FF00
-TEXT_LIGHTBLUE = 0x90C7FF
-TEXT_MAGENTA = 0xFF0090
-TEXT_ORANGE = 0xFFA500
-TEXT_PINK = 0xFFC0CB
-TEXT_PURPLE = 0x800080
-TEXT_RED = 0xFF0000
-TEXT_WHITE = 0xFFFFFF
-TEXT_YELLOW = 0xFFFF00
+BLACK = 0x000000
+BLUE = 0x0000FF
+CYAN = 0x00FFFF
+GRAY = 0x8B8B8B
+GREEN = 0x00FF00
+LIGHTBLUE = 0x90C7FF
+MAGENTA = 0xFF0090
+ORANGE = 0xFFA500
+PINK = 0xFFC0CB
+PURPLE = 0x800080
+RED = 0xFF0000
+WHITE = 0xFFFFFF
+YELLOW = 0xFFFF00
 
-activity_status = label.Label(arial16)
-activity_status.anchor_point = (0.5, 0.0)
-activity_status.anchored_position = (DISPLAY_WIDTH / 2, 30)
-activity_status.scale = 1
 
-error_label = label.Label(terminalio.FONT)
-error_label.anchor_point = (0.5, 0.5)
-error_label.anchored_position = (DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2)
-error_label.scale = 2
-error_label.color = TEXT_WHITE
+def make_my_label(
+    font=None, anchor_point=None, anchored_position=None, scale=None, color=None
+):
+    """Shortens labels to 1 liners (any argument optional)"""
+    func_label = label.Label(font) if font is not None else label.Label()
+    if anchor_point is not None:
+        func_label.anchor_point = anchor_point
+    if anchored_position is not None:
+        func_label.anchored_position = anchored_position
+    if scale is not None:
+        func_label.scale = scale
+    if color is not None:
+        func_label.color = color
+    return func_label
 
-date_label = label.Label(arial16)
-date_label.anchor_point = (0.0, 0.0)
-date_label.anchored_position = (5, 5)
-date_label.scale = 1
-date_label.color = TEXT_WHITE
 
-time_label = label.Label(arial16)
-time_label.anchor_point = (0.0, 0.0)
-time_label.anchored_position = (5, 30)
-time_label.scale = 1
-time_label.color = TEXT_WHITE
-
-midnight_label = label.Label(terminalio.FONT)
-midnight_label.anchor_point = (0.0, 0.0)
-midnight_label.anchored_position = (5, 40)
-midnight_label.scale = 1
-midnight_label.color = TEXT_WHITE
-
-watch_bat_label = label.Label(arial16)
-watch_bat_label.anchor_point = (1.0, 0.0)
-watch_bat_label.anchored_position = (DISPLAY_WIDTH - 5, 5)
-watch_bat_label.scale = 1
-watch_bat_label.color = TEXT_WHITE
-
-watch_bat_shadow = label.Label(arial16)
-watch_bat_shadow.anchor_point = (1.0, 0.0)
-watch_bat_shadow.anchored_position = (DISPLAY_WIDTH - 4, 6)
-watch_bat_shadow.scale = 1
-watch_bat_shadow.color = TEXT_BLACK
-
-pulse_label = label.Label(terminalio.FONT)
-pulse_label.anchor_point = (0.5, 0.0)
-pulse_label.anchored_position = (344, 200)
-pulse_label.scale = 2
-pulse_label.color = TEXT_PINK
+DH = DISPLAY_HEIGHT
+DW = DISPLAY_WIDTH
+TERM = terminalio.FONT
+activity_status = make_my_label(arial16, (0.5, 0.0), (DW / 2, 30), 1)
+error_label = make_my_label(TERM, (0.5, 0.5), (DW / 2, DH / 2), 2, WHITE)
+date_label = make_my_label(arial16, (0.0, 0.0), (5, 5), 1, WHITE)
+time_label = make_my_label(arial16, (0.0, 0.0), (5, 30), 1, WHITE)
+midnight_label = make_my_label(TERM, (0.0, 0.0), (5, 40), 1, WHITE)
+watch_bat_label = make_my_label(arial16, (1.0, 0.0), (DW - 5, 5), 1, WHITE)
+watch_bat_shadow = make_my_label(arial16, (1.0, 0.0), (DW - 4, 6), 1, WHITE)
+pulse_label = make_my_label(TERM, (0.5, 0.0), (344, 200), 2, PINK)
 
 
 def bar_color(heart_rate):
-    if heart_rate < 60:
-        heart_rate_color = TEXT_RED
-        activity_status.color = TEXT_RED
-        activity_status.text = "Dangerously Low"
-    elif 60 <= heart_rate < 75:
-        heart_rate_color = TEXT_BLUE
-        activity_status.color = TEXT_BLUE
-        activity_status.text = "Very Low"
-    elif 75 <= heart_rate < 85:
-        heart_rate_color = TEXT_LIGHTBLUE
-        activity_status.color = TEXT_LIGHTBLUE
-        activity_status.text = "Sleeping"
-    elif 85 <= heart_rate < 95:
-        heart_rate_color = TEXT_CYAN
-        activity_status.color = TEXT_CYAN
-        activity_status.text = "Relaxing"
-    elif 95 <= heart_rate < 105:
-        heart_rate_color = TEXT_GREEN
-        activity_status.color = TEXT_GREEN
-        activity_status.text = "Awake"
-    elif 105 <= heart_rate < 120:
-        heart_rate_color = TEXT_YELLOW
-        activity_status.color = TEXT_YELLOW
-        activity_status.text = "Active"
-    elif 120 <= heart_rate < 135:
-        heart_rate_color = TEXT_ORANGE
-        activity_status.color = TEXT_ORANGE
-        activity_status.text = "Very Active"
-    else:
-        heart_rate_color = TEXT_MAGENTA
-        activity_status.color = TEXT_MAGENTA
-        activity_status.text = "Exertion"
+    """ Range Mapping with Text Color & Status Output"""
+    color_mapping = {
+        (float("-inf"), 60): (RED, "Dangerously Low"),
+        (60, 75): (BLUE, "Very Low"),
+        (75, 85): (LIGHTBLUE, "Sleeping"),
+        (85, 95): (CYAN, "Relaxing"),
+        (95, 105): (GREEN, "Awake"),
+        (105, 120): (YELLOW, "Active"),
+        (120, 135): (ORANGE, "Very Active"),
+        (135, float("inf")): (MAGENTA, "Exertion"),
+    }
+    for heart_range, (color, status) in color_mapping.items():
+        if heart_range[0] <= heart_rate < heart_range[1]:
+            heart_rate_color = color
+            activity_status.color = color
+            activity_status.text = status
+            break
     return heart_rate_color
 
 
@@ -271,17 +239,15 @@ while True:
         time.sleep(10)
     print("Connected!\n")
 
-    if top_nvm is not Refresh_Token and First_Run is False:
+    if not First_Run:
         First_Run = False
         Refresh_Token = microcontroller.nvm[0:64].decode()
         print("------ INDEFINITE RUN -------")
         if debug:
             print("Top NVM is Fitbit First Refresh Token")
-            # NVM 64 should match Current Refresh Token
             print(f"NVM 64: {microcontroller.nvm[0:64].decode()}")
             print(f"Current Refresh_Token: {Refresh_Token}")
-
-    if top_nvm != Fitbit_First_Refresh_Token and First_Run is True:
+    elif top_nvm != Fitbit_First_Refresh_Token and First_Run:
         if debug:
             print(f"Top NVM: {top_nvm}")
             print(f"First Refresh: {Refresh_Token}")
@@ -290,12 +256,10 @@ while True:
         First_Run = False
         print("------ MANUAL REBOOT TOKEN DIFFERENCE -------")
         if debug:
-            # NVM 64 should not match Current Refresh Token
             print("Top NVM is NOT Fitbit First Refresh Token")
             print(f"NVM 64: {microcontroller.nvm[0:64].decode()}")
             print(f"Current Refresh_Token: {Refresh_Token}")
-
-    if top_nvm == Refresh_Token and First_Run is True:
+    elif top_nvm == Refresh_Token and First_Run:
         if debug:
             print(f"Top NVM: {top_nvm}")
             print(f"First Refresh: {Refresh_Token}")
@@ -306,7 +270,6 @@ while True:
         First_Run = False
         print("------ FIRST RUN SETTINGS.TOML TOKEN-------")
         if debug:
-            # NVM 64 should match Current Refresh Token
             print("Top NVM IS Fitbit First Refresh Token")
             print(f"NVM 64: {microcontroller.nvm[0:64].decode()}")
             print(f"Current Refresh_Token: {Refresh_Token}")
@@ -424,168 +387,64 @@ while True:
             # print(f"Intraday Full Response: {Intraday_Response}")
 
         try:
-            # Fitbit's sync to mobile device & server every 15 minutes in chunks.
-            # Pointless to poll their API faster than 15 minute intervals.
-            activities_heart_value = fitbit_json["activities-heart-intraday"]["dataset"]
-            if midnight_debug:
-                response_length = 0
-            else:
-                response_length = len(activities_heart_value)
+            activities_heart_value = fitbit_json.get(
+                "activities-heart-intraday", {}
+            ).get("dataset", [])
+            response_length = len(activities_heart_value)
             if response_length >= 15:
                 midnight_label.text = ""
-                activities_timestamp = fitbit_json["activities-heart"][0]["dateTime"]
+                activities_timestamp = fitbit_json.get("activities-heart", [{}])[0].get(
+                    "dateTime", ""
+                )
+                activities_latest_heart_time = activities_heart_value[-1].get(
+                    "time", ""
+                )
                 print(f"Fitbit Date: {activities_timestamp}")
-                if midnight_debug:
-                    activities_latest_heart_time = str("00:05:00")
-                else:
-                    activities_latest_heart_time = fitbit_json[
-                        "activities-heart-intraday"
-                    ]["dataset"][response_length - 1]["time"]
                 print(f"Fitbit Time: {activities_latest_heart_time[0:-3]}")
                 print(f"Today's Logged Pulses: {response_length}")
 
-                # Each 1min heart rate is a 60 second average
-                activities_latest_heart_value0 = fitbit_json[
-                    "activities-heart-intraday"
-                ]["dataset"][response_length - 1]["value"]
-                activities_latest_heart_value1 = fitbit_json[
-                    "activities-heart-intraday"
-                ]["dataset"][response_length - 2]["value"]
-                activities_latest_heart_value2 = fitbit_json[
-                    "activities-heart-intraday"
-                ]["dataset"][response_length - 3]["value"]
-                activities_latest_heart_value3 = fitbit_json[
-                    "activities-heart-intraday"
-                ]["dataset"][response_length - 4]["value"]
-                activities_latest_heart_value4 = fitbit_json[
-                    "activities-heart-intraday"
-                ]["dataset"][response_length - 5]["value"]
-                activities_latest_heart_value5 = fitbit_json[
-                    "activities-heart-intraday"
-                ]["dataset"][response_length - 6]["value"]
-                activities_latest_heart_value6 = fitbit_json[
-                    "activities-heart-intraday"
-                ]["dataset"][response_length - 7]["value"]
-                activities_latest_heart_value7 = fitbit_json[
-                    "activities-heart-intraday"
-                ]["dataset"][response_length - 8]["value"]
-                activities_latest_heart_value8 = fitbit_json[
-                    "activities-heart-intraday"
-                ]["dataset"][response_length - 9]["value"]
-                activities_latest_heart_value9 = fitbit_json[
-                    "activities-heart-intraday"
-                ]["dataset"][response_length - 10]["value"]
-                activities_latest_heart_value10 = fitbit_json[
-                    "activities-heart-intraday"
-                ]["dataset"][response_length - 11]["value"]
-                activities_latest_heart_value11 = fitbit_json[
-                    "activities-heart-intraday"
-                ]["dataset"][response_length - 12]["value"]
-                activities_latest_heart_value12 = fitbit_json[
-                    "activities-heart-intraday"
-                ]["dataset"][response_length - 13]["value"]
-                activities_latest_heart_value13 = fitbit_json[
-                    "activities-heart-intraday"
-                ]["dataset"][response_length - 14]["value"]
-                activities_latest_heart_value14 = fitbit_json[
-                    "activities-heart-intraday"
-                ]["dataset"][response_length - 15]["value"]
-                latest_15_avg = "Latest 15 Minute Averages"
-                print(
-                    f"{latest_15_avg}: "
-                    + f"{activities_latest_heart_value14},"
-                    + f"{activities_latest_heart_value13},"
-                    + f"{activities_latest_heart_value12},"
-                    + f"{activities_latest_heart_value11},"
-                    + f"{activities_latest_heart_value10},"
-                    + f"{activities_latest_heart_value9},"
-                    + f"{activities_latest_heart_value8},"
-                    + f"{activities_latest_heart_value7},"
-                    + f"{activities_latest_heart_value6},"
-                    + f"{activities_latest_heart_value5},"
-                    + f"{activities_latest_heart_value4},"
-                    + f"{activities_latest_heart_value3},"
-                    + f"{activities_latest_heart_value2},"
-                    + f"{activities_latest_heart_value1},"
-                    + f"{activities_latest_heart_value0}"
-                )
-                list_data = [
-                    activities_latest_heart_value14,
-                    activities_latest_heart_value13,
-                    activities_latest_heart_value12,
-                    activities_latest_heart_value11,
-                    activities_latest_heart_value10,
-                    activities_latest_heart_value9,
-                    activities_latest_heart_value8,
-                    activities_latest_heart_value7,
-                    activities_latest_heart_value6,
-                    activities_latest_heart_value5,
-                    activities_latest_heart_value4,
-                    activities_latest_heart_value3,
-                    activities_latest_heart_value2,
-                    activities_latest_heart_value1,
-                    activities_latest_heart_value0,
+                latest_15_values = [
+                    data["value"] for data in activities_heart_value[-15:]
                 ]
-                # print(f"Data : {list_data}")
-                # For autoscaling graph
-                lowest_y = sorted(list((list_data)))  # Get lowest sorted value
-                highest_y = sorted(list_data, reverse=True)  # Get highest sorted value
+                print("Latest 15 Minute Averages:", latest_15_values[::-1])
 
-                # Date/Time Display Labels
+                list_data = latest_15_values
+                lowest_y = sorted(list_data)
+                highest_y = sorted(list_data, reverse=True)
+
                 date_label.text = f"{activities_timestamp}"
                 time_label.text = f"{activities_latest_heart_time[0:-3]}"
 
-                # Cartesian Graph Setup
                 my_plane = Cartesian(
-                    x=30,  # x position for the plane
-                    y=60,  # y plane position
-                    width=DISPLAY_WIDTH - 20,  # display width
-                    height=DISPLAY_HEIGHT - 80,  # display height
-                    xrange=(0, 14),  # x range
-                    yrange=(lowest_y[0], highest_y[0]),  # y range
+                    x=30,
+                    y=60,
+                    width=DISPLAY_WIDTH - 20,
+                    height=DISPLAY_HEIGHT - 80,
+                    xrange=(0, 14),
+                    yrange=(lowest_y[0], highest_y[0]),
                     axes_color=bar_color(highest_y[0]),
-                    pointer_color=TEXT_PINK,
+                    pointer_color=PINK,
                     axes_stroke=4,
                     major_tick_stroke=2,
                     subticks=True,
                 )
-                # Clear prior graph otherwise infinite appends happen
                 my_plane.clear_plot_lines()
-                # Display new graph
                 plot_group.append(my_plane)
                 fitbit_icon.hidden = True
                 grandma.hidden = True
-                data = [
-                    (0, activities_latest_heart_value14),
-                    (1, activities_latest_heart_value13),
-                    (2, activities_latest_heart_value12),
-                    (3, activities_latest_heart_value11),
-                    (4, activities_latest_heart_value10),
-                    (5, activities_latest_heart_value9),
-                    (6, activities_latest_heart_value8),
-                    (7, activities_latest_heart_value7),
-                    (8, activities_latest_heart_value6),
-                    (9, activities_latest_heart_value5),
-                    (10, activities_latest_heart_value4),
-                    (11, activities_latest_heart_value3),
-                    (12, activities_latest_heart_value2),
-                    (13, activities_latest_heart_value1),
-                    (14, activities_latest_heart_value0),
-                ]
-                try:
-                    for x, y in data:
-                        my_plane.add_plot_line(x, y)
-                        time.sleep(0.5)
-                except (IndexError) as e:
-                    print("Index Error:", e)
-                    continue
+
+                data = [(i, val) for i, val in enumerate(latest_15_values[::-1])]
+                for x, y in data:
+                    my_plane.add_plot_line(x, y)
+                    time.sleep(0.5)
             else:
                 grandma.hidden = False
                 fitbit_icon.hidden = False
+                activity_status.text = ""
                 midnight_label.text = "No values for today yet."
                 print("Waiting for latest sync...")
                 print("Not enough values for today to display yet.")
-        except (KeyError) as keyerror:
+        except KeyError as keyerror:
             print(f"Key Error: {keyerror}")
             print(
                 "Too Many Requests, "
@@ -595,6 +454,7 @@ while True:
             )
             time.sleep(60)
             continue
+
         FBDS = FITBIT_DEVICE_SOURCE
         FBH = fitbit_header
         fitbit_get_device_response = requests.get(url=FBDS, headers=FBH)
@@ -614,8 +474,9 @@ while True:
         print(f"Watch Battery %: {Device_Response}")
         watch_bat_shadow.text = f"Battery: {Device_Response}%"
         watch_bat_label.text = f"Battery: {Device_Response}%"
-        print("Board Uptime:", time_calc(time.monotonic()))  # Board Up-Time seconds
+        
         print("\nFinished!")
+        print("Board Uptime:", time_calc(time.monotonic()))  # Board Up-Time seconds
         if board_uptime > 86400:
             print("24 Hour Uptime Restart")
             microcontroller.reset()
