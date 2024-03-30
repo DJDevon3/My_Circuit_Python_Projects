@@ -6,38 +6,23 @@
 Everyone has their own resting heart rate that should be tailored to the individual.  You can do that here:
 ```py
 def bar_color(heart_rate):
-    if heart_rate < 60:
-        heart_rate_color = TEXT_PURPLE
-        activity_status.color = TEXT_PURPLE
-        activity_status.text = "Dangerously Low"
-    elif 60 <= heart_rate < 75:
-        heart_rate_color = TEXT_BLUE
-        activity_status.color = TEXT_BLUE
-        activity_status.text = "Very Low"
-    elif 75 <= heart_rate < 85:
-        heart_rate_color = TEXT_LIGHTBLUE
-        activity_status.color = TEXT_LIGHTBLUE
-        activity_status.text = "Sleeping"
-    elif 85 <= heart_rate < 95:
-        heart_rate_color = TEXT_GREEN
-        activity_status.color = TEXT_GREEN
-        activity_status.text = "Relaxing"
-    elif 95 <= heart_rate < 105:
-        heart_rate_color = TEXT_YELLOW
-        activity_status.color = TEXT_YELLOW
-        activity_status.text = "Awake"
-    elif 105 <= heart_rate < 120:
-        heart_rate_color = TEXT_ORANGE
-        activity_status.color = TEXT_ORANGE
-        activity_status.text = "Active"
-    elif 120 <= heart_rate < 135:
-        heart_rate_color = TEXT_MAGENTA
-        activity_status.color = TEXT_MAGENTA
-        activity_status.text = "Very Active"
-    else:
-        heart_rate_color = TEXT_RED
-        activity_status.color = TEXT_RED
-        activity_status.text = "Exertion"
+    """ Range Mapping with Text Color & Status Output"""
+    color_mapping = {
+        (float("-inf"), 60): (RED, "Dangerously Low"),
+        (60, 75): (BLUE, "Very Low"),
+        (75, 85): (LIGHTBLUE, "Sleeping"),
+        (85, 95): (CYAN, "Relaxing"),
+        (95, 105): (GREEN, "Awake"),
+        (105, 120): (YELLOW, "Active"),
+        (120, 135): (ORANGE, "Very Active"),
+        (135, float("inf")): (MAGENTA, "Exertion"),
+    }
+    for heart_range, (color, status) in color_mapping.items():
+        if heart_range[0] <= heart_rate < heart_range[1]:
+            heart_rate_color = color
+            activity_status.color = color
+            activity_status.text = status
+            break
     return heart_rate_color
 ```
 
