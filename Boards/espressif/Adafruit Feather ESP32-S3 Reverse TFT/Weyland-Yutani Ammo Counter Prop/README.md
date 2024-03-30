@@ -8,5 +8,12 @@ Serial output:
 ```py
 Fire!
 Fire!
+Fire!
+Fire!
+Fire!
+Fire!
+Fire!
+Fire!
+Fire!
 reset
 ```
