@@ -82,20 +82,20 @@ code.py output:
 Connecting to WiFi...
 Connected!
 
------- MANUAL CTRL+S TOKEN DIFFERENCE -------
+------ MANUAL REBOOT TOKEN DIFFERENCE -------
 Next token written to NVM Successfully!
 
 Attempting to GET FITBIT Intraday Stats!
 ===============================
-Fitbit Date: 2023-08-07
-Fitbit Time: 09:15
-Today's Logged Pulses: 553
-Latest 15 Minute Averages: 92,95,90,94,90,93,90,94,92,93,91,93,93,91,99
-Watch Battery %: 60
-Board Uptime: 2.1 days
+Fitbit Date: 2024-03-30
+Fitbit Time: 03:10
+Today's Logged Pulses: 188
+Latest 15 Minute Averages: [78, 81, 82, 80, 81, 86, 88, 88, 90, 91, 88, 87, 87, 87, 86]
+Watch Battery %: 85
 
 Finished!
-Next Update in: 30 seconds
+Board Uptime: 3 hours
+Next Update in: 15 minutes
 ===============================
 ```
 ### Indefinite Run: Serial Output
