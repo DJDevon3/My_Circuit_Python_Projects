@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2024 DJDevon3
 # SPDX-License-Identifier: MIT
-# Coded with Circuit Python 8.2.10
+# Coded with Circuit Python 9.1
+""" Fitbit API Graph on TFT Display """
 
 import os
 import board
@@ -8,11 +9,11 @@ import time
 import displayio
 import terminalio
 import microcontroller
-import ssl
 import wifi
-import socketpool
+import adafruit_connection_manager
 import digitalio
 import storage
+from fourwire import FourWire
 import adafruit_sdcard
 from adafruit_bitmapsaver import save_pixels
 from adafruit_bitmap_font import bitmap_font
@@ -24,9 +25,6 @@ import adafruit_requests
 
 displayio.release_displays()
 
-# Initialize WiFi Pool (There can be only 1 pool & top of script)
-pool = socketpool.SocketPool(wifi.radio)
-
 DISPLAY_WIDTH = 480
 DISPLAY_HEIGHT = 320
 
@@ -34,7 +32,7 @@ DISPLAY_HEIGHT = 320
 spi = board.SPI()
 tft_cs = board.D9
 tft_dc = board.D10
-display_bus = displayio.FourWire(spi, command=tft_dc, chip_select=tft_cs)
+display_bus = FourWire(spi, command=tft_dc, chip_select=tft_cs)
 display = HX8357(display_bus, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT)
 display.auto_refresh = False
 
@@ -74,21 +72,20 @@ wifi_pw = os.getenv("CIRCUITPY_WIFI_PASSWORD")
 # 300 = 5 mins, 900 = 15 mins, 1800 = 30 mins, 3600 = 1 hour
 sleep_time = 900
 
-# Converts seconds in minutes/hours/days
+# Initalize Wifi, Socket Pool, Request Session
+pool = adafruit_connection_manager.get_radio_socketpool(wifi.radio)
+ssl_context = adafruit_connection_manager.get_radio_ssl_context(wifi.radio)
+requests = adafruit_requests.Session(pool, ssl_context)
+
 def time_calc(input_time):
+    """Converts seconds to minutes/hours/days"""
     if input_time < 60:
-        sleep_int = input_time
-        time_output = f"{sleep_int:.0f} seconds"
-    elif 60 <= input_time < 3600:
-        sleep_int = input_time / 60
-        time_output = f"{sleep_int:.0f} minutes"
-    elif 3600 <= input_time < 86400:
-        sleep_int = input_time / 60 / 60
-        time_output = f"{sleep_int:.0f} hours"
-    else:
-        sleep_int = input_time / 60 / 60 / 24
-        time_output = f"{sleep_int:.1f} days"
-    return time_output
+        return f"{input_time:.0f} seconds"
+    if input_time < 3600:
+        return f"{input_time / 60:.0f} minutes"
+    if input_time < 86400:
+        return f"{input_time / 60 / 60:.0f} hours"
+    return f"{input_time / 60 / 60 / 24:.1f} days"
 
 
 goodtimes16 = bitmap_font.load_font("/fonts/GoodTimesRg-Regular-16.bdf")
@@ -245,12 +242,11 @@ midnight_group.append(midnight_label)
 midnight_group.append(activity_status)
 
 # Combine and Show
-display.show(main_group)
+display.root_group = main_group
 
 # Authenticates Client ID & SHA-256 Token to POST
 fitbit_oauth_header = {"Content-Type": "application/x-www-form-urlencoded"}
 fitbit_oauth_token = "https://api.fitbit.com/oauth2/token"
-requests = adafruit_requests.Session(pool, ssl.create_default_context())
 
 # First run uses settings.toml token
 Refresh_Token = Fitbit_First_Refresh_Token
@@ -262,6 +258,7 @@ if debug:
 new_line = "\n"
 while True:
     # Connect to Wi-Fi
+    board_uptime = time.monotonic()
     print("\n===============================")
     print("Connecting to WiFi...")
     while not wifi.radio.ipv4_address:
@@ -585,7 +582,7 @@ while True:
             else:
                 grandma.hidden = False
                 fitbit_icon.hidden = False
-                midnight_label.text = f"No values for today yet."
+                midnight_label.text = "No values for today yet."
                 print("Waiting for latest sync...")
                 print("Not enough values for today to display yet.")
         except (KeyError) as keyerror:
@@ -619,7 +616,11 @@ while True:
         watch_bat_label.text = f"Battery: {Device_Response}%"
         print("Board Uptime:", time_calc(time.monotonic()))  # Board Up-Time seconds
         print("\nFinished!")
-        print("Next Update in:", time_calc(sleep_time))
+        if board_uptime > 86400:
+            print("24 Hour Uptime Restart")
+            microcontroller.reset()
+        else:
+            print("Next Update in:", time_calc(sleep_time))
         print("===============================")
 
     except (ValueError, RuntimeError) as e:
@@ -656,4 +657,5 @@ while True:
         print("===============================")
         time.sleep(60)
         pass
+
     time.sleep(sleep_time)
