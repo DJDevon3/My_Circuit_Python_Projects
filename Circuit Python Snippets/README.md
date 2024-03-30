@@ -53,7 +53,7 @@ Hello World!
 ```
 
 ## Display RSSI Scan on a TFT
-- Couldn't find an example of showing an Wifi Network scan on a TFT display for Circuit Python... so I made one.
+- Couldn't find an example of a Wifi Network scan on a TFT display for Circuit Python... so I made one.
 ```py
 def make_my_label(font=None, anchor_point=None, anchored_position=None, scale=None, color=None):
     """ Shortens labels to 1 liners """
