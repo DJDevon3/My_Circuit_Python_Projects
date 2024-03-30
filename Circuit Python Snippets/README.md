@@ -24,15 +24,20 @@ output:
 
 ## Make_My_Label (short form label creation function)
 - This is particularly useful when you have tons of labels. Each label requires much fewer lines.
+- updated so all arguments are optional
 ```py
-# Function for minimizing labels to 1 liners
 # Attribution: Anecdata (thanks!)
-def make_my_label(font, anchor_point, anchored_position, scale, color):
-    func_label = label.Label(font)
-    func_label.anchor_point = anchor_point
-    func_label.anchored_position = anchored_position
-    func_label.scale = scale
-    func_label.color = color
+def make_my_label(font=None, anchor_point=None, anchored_position=None, scale=None, color=None):
+    """ Shortens labels to 1 liners """
+    func_label = label.Label(font) if font is not None else label.Label()
+    if anchor_point is not None:
+        func_label.anchor_point = anchor_point
+    if anchored_position is not None:
+        func_label.anchored_position = anchored_position
+    if scale is not None:
+        func_label.scale = scale
+    if color is not None:
+        func_label.color = color
     return func_label
 
 hello_label = make_my_label(terminalio.FONT, (0.5, 1.0), (DISPLAY_WIDTH / 2, 15), 1, TEXT_WHITE)
@@ -48,15 +53,19 @@ Hello World!
 ```
 
 ## Display RSSI Scan on a TFT
-- Couldn't find an example of showing an Wifi Network scan on a TFT display for Circuit Python... so I made one.
+- Couldn't find an example of a Wifi Network scan on a TFT display for Circuit Python... so I made one.
 ```py
-# Shorten Labels to 1 liners
-def make_my_label(font, anchor_point, anchored_position, scale, color):
-    func_label = label.Label(font)
-    func_label.anchor_point = anchor_point
-    func_label.anchored_position = anchored_position
-    func_label.scale = scale
-    func_label.color = color
+def make_my_label(font=None, anchor_point=None, anchored_position=None, scale=None, color=None):
+    """ Shortens labels to 1 liners """
+    func_label = label.Label(font) if font is not None else label.Label()
+    if anchor_point is not None:
+        func_label.anchor_point = anchor_point
+    if anchored_position is not None:
+        func_label.anchored_position = anchored_position
+    if scale is not None:
+        func_label.scale = scale
+    if color is not None:
+        func_label.color = color
     return func_label
 
 # Create Labels
