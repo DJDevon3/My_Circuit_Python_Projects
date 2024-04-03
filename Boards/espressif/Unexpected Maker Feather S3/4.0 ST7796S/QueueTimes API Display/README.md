@@ -8,6 +8,7 @@
 - Shows queue time for the attraction/ride
 - Show Status if the attraction/ride is currently Open/Closed
 
+I filmed this at 4am when no rides were open...  not a great demo. 😓
 
 https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/59248691-cf3c-49de-98f2-35325a2fc8dc
 
