@@ -137,7 +137,7 @@ while True:
         time.sleep(60)
         break
         
-    # Loop infinitely and get updates after the list finishes displaying
+    # Loop infinitely until its time to re-poll
     if time.monotonic() - now <= SLEEP_TIME:
         for land in qtimes_json["lands"]:
             qtimes_lands = str(land["name"])
@@ -163,6 +163,6 @@ while True:
                     print(" |  | Status: Unknown")
                     dontpanic(f"{qtimes_rides}\n{qtimes_queuetime} Minutes (Unknown)")
                     
-                time.sleep(5)
-    else:
+                time.sleep(5)  # delay between list items
+    else:  # When its time to poll, break to top of while True loop.
         break
