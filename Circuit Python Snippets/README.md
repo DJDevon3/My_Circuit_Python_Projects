@@ -513,6 +513,9 @@ timezone_offset = "-14400" # timezone offset in seconds plus or minus
 ## ESPTool.py for Circuit Python Boards
 Windows Command Line Interface (Python, PIP, & ESPTool required)
 ```py
+If you do not have esptool installed for python yet.
+C:\Users\Devon>python -m pip install esptool
+
 # Example factory reset of a Feather ESP32-S2
 # This method ALSO used for a Factory Reset or Manual Installation using a .bin instead of the UF2
 # Download the .bin for your board from CircuitPython.org to your Downloads folder first
