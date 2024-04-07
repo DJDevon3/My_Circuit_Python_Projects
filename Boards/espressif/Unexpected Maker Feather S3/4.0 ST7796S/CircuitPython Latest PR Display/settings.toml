@@ -1,0 +1,4 @@
+CIRCUITPY_WIFI_SSID = "SSID" 
+CIRCUITPY_WIFI_PASSWORD = "password" 
+GITHUB_USERNAME = "Username"
+GITHUB_TOKEN = "long 64bit developer api token"
