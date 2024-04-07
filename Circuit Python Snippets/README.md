@@ -513,6 +513,10 @@ timezone_offset = "-14400" # timezone offset in seconds plus or minus
 ## ESPTool.py for Circuit Python Boards
 Windows Command Line Interface (Python, PIP, & ESPTool required)
 ```py
+# If you do not have esptool installed for python yet.
+C:\Users\Devon>python -m pip install esptool
+```
+```py
 # Example factory reset of a Feather ESP32-S2
 # This method ALSO used for a Factory Reset or Manual Installation using a .bin instead of the UF2
 # Download the .bin for your board from CircuitPython.org to your Downloads folder first
@@ -520,10 +524,13 @@ Windows Command Line Interface (Python, PIP, & ESPTool required)
 
 # Change working directory to Downloads folder
 C:\Users\Devon>cd downloads
+
 # Ensure the board will communicate (change the chip_id, if you get it wrong you'll see a list of chip types)
 C:\Users\Devon\Downloads>esptool.py --chip esp32s2 chip_id
+
 # Erase existing flash memory (all data will be lost)
 C:\Users\Devon\Downloads>esptool.py --chip esp32s2 erase_flash
+
 # Change COM port and use correct .bin for your board
 C:\Users\Devon\Downloads>esptool.py --port COM69 write_flash -z 0x0 feather-esp32-s2-factory-reset-and-bootloader.bin
 
