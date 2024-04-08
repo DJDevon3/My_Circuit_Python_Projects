@@ -54,8 +54,8 @@ DEBUG = False
 pool = adafruit_connection_manager.get_radio_socketpool(wifi.radio)
 ssl_context = adafruit_connection_manager.get_radio_ssl_context(wifi.radio)
 requests = adafruit_requests.Session(pool, ssl_context)
-GITHUB_HEADER = {"Accept: application/vnd.github.raw+json \ Authorization": " token " + token}
-GITHUB_SOURCE = f"https://api.github.com/repos/{repository}/pulls"
+GITHUB_HEADER = {"Accept: application/vnd.github.raw+json Authorization": " token " + token}
+GITHUB_SOURCE = f"https://api.github.com/repos/{repository}/issues?state=closed"
 
 # Quick Colors for Labels
 TEXT_BLACK = 0x000000
@@ -72,37 +72,26 @@ TEXT_WHITE = 0xFFFFFF
 TEXT_YELLOW = 0xFFFF00
 
 Arial12 = bitmap_font.load_font("/fonts/Arial-12.bdf")
+Arial16 = bitmap_font.load_font("/fonts/Arial-16.bdf")
 
 # Label Customizations
-pr_key_label = label.Label(Arial12)
-pr_key_label.anchor_point = (0.0, 0.0)
-pr_key_label.anchored_position = (5, 10)
-pr_key_label.scale = (1)
-pr_key_label.color = TEXT_WHITE
-
-pr_value_label = label.Label(Arial12)
+pr_value_label = label.Label(Arial16)
 pr_value_label.anchor_point = (0.0, 0.0)
-pr_value_label.anchored_position = (110, 10)
+pr_value_label.anchored_position = (5, 10)
 pr_value_label.scale = (1)
-pr_value_label.color = TEXT_LIGHTBLUE
+pr_value_label.color = TEXT_WHITE
 
-author_key_label = label.Label(Arial12)
-author_key_label.anchor_point = (0.0, 0.0)
-author_key_label.anchored_position = (5, 40)
-author_key_label.scale = (1)
-author_key_label.color = TEXT_WHITE
-
-author_value_label = label.Label(Arial12)
-author_value_label.anchor_point = (0.0, 0.0)
-author_value_label.anchored_position = (65, 40)
-author_value_label.scale = (1)
-author_value_label.color = TEXT_LIGHTBLUE
-
-title_value_label = label.Label(terminalio.FONT)
+title_value_label = label.Label(Arial12)
 title_value_label.anchor_point = (0.0, 0.0)
-title_value_label.anchored_position = (5, 60)
+title_value_label.anchored_position = (5, 40)
 title_value_label.scale = (1)
 title_value_label.color = TEXT_LIGHTBLUE
+
+pr_state_label = label.Label(Arial12)
+pr_state_label.anchor_point = (1.0, 0.0)
+pr_state_label.anchored_position = (DISPLAY_WIDTH-5, 10)
+pr_state_label.scale = (1)
+pr_state_label.color = TEXT_LIGHTBLUE
 
 desc_key_label = label.Label(Arial12)
 desc_key_label.anchor_point = (0.0, 0.0)
@@ -118,28 +107,26 @@ desc_value_label.color = TEXT_LIGHTBLUE
 
 # Create Display Groups
 text_group = displayio.Group()
-text_group.append(pr_key_label)
 text_group.append(pr_value_label)
-text_group.append(author_key_label)
-text_group.append(author_value_label)
 text_group.append(title_value_label)
+text_group.append(pr_state_label)
 text_group.append(desc_key_label)
 text_group.append(desc_value_label)
 display.root_group = text_group
 
 # Assigning wrap_text_to_pixels to wordwrap
 wordwrap = wrap_text_to_pixels
-    
+
 def truncate_text_to_lines(text, max_chars_per_line, max_lines):
     lines = text.split('\r\n')
     truncated_lines = []
     total_chars = 0
     total_lines = 0
-    
+
     for line in lines:
         if total_lines >= max_lines:
             break
-        
+
         # Subtract 2 characters for the newline characters at the end of each line
         if len(line) == 0:
             # Treat consecutive newlines as blank lines with 78 characters
@@ -158,18 +145,18 @@ def truncate_text_to_lines(text, max_chars_per_line, max_lines):
             total_chars += max_chars_per_line
             total_chars -= 2
             total_lines += 1
-                
+
     # Add any newlines as 78 characters to the total_chars count
     total_chars += text.count('\r\n\r\n') * 78
-    
+
     # Adjust total_lines for consecutive newlines
     total_lines += text.count('\r\n\r\n')
-    
+
     # Remove blank lines from the truncated text
     truncated_text = '\r\n'.join(line for line in truncated_lines if line.strip())
-    
+
     return truncated_text, min(total_lines, max_lines), total_chars
-    
+
 def time_calc(input_time):
     """Converts seconds to minutes/hours/days"""
     if input_time < 60:
@@ -192,7 +179,7 @@ def print_http_status(code, description):
         print(f" | ❌ Server Code: {code} - {description}")
     else:
         print(f" | Unknown Response Status: {code} - {description}")
-        
+
 github_json = {}
 
 while True:
@@ -216,6 +203,10 @@ while True:
             print("Connection Error:", e)
         print(" | ✅ Github JSON")
         
+        if DEBUG:
+            print("Full API GET URL: ", GITHUB_SOURCE)
+            print(github_json)
+
         STATUS_CODE = str(github_response.status_code)
         STATUS_DESCRIPTION = str(github_response.status_code)
         print_http_status(STATUS_CODE, STATUS_DESCRIPTION)
@@ -230,39 +221,43 @@ while True:
         print(f"Failed to get data, retrying\n {e}")
         time.sleep(60)
         break
-        
+
     if time.monotonic() - now <= SLEEP_TIME:
         for i in range(10):
             # Get the latest submission
-            submission = github_json[i]
+            response_buffer = github_json[i]
             print(f"Index: {i}")
 
-            PR_NUM = submission["number"]
-            print(f" |  | Pull Request: {PR_NUM}")
-            pr_key_label.text = "Pull Request:"
-            pr_value_label.text = f"{PR_NUM}"
-
-            PR_AUTHOR = submission["user"]["login"]
-            print(f" |  | Author: {PR_AUTHOR}")
-            author_key_label.text = "Author:"
-            author_value_label.text = f"{PR_AUTHOR}"
+            PR_NUM = response_buffer["number"]
+            PR_AUTHOR = response_buffer["user"]["login"]
+            PR_STATE = response_buffer["state"]
+            print(f" |  | Pull Request: {PR_NUM}: {PR_AUTHOR}")
+            pr_value_label.text = f"{PR_NUM}: {PR_AUTHOR}"
             
-            PR_TITLE = github_json[1]["title"]
+            if PR_STATE == "Open":
+                pr_state_label.color = TEXT_GREEN
+            elif PR_STATE == "Closed":
+                pr_state_label.color = TEXT_RED
+            elif PR_STATE == "Merged":
+                pr_state_label.color = TEXT_PURPLE
+            else:
+                pr_state_label.color = TEXT_WHITE
+            print(f" |  | Status: {PR_STATE}")
+            pr_state_label.text = f"{PR_STATE}"
+
+            PR_TITLE = response_buffer["title"]
             print(f" |  | Title: {PR_TITLE}")
             truncated_text1, total_lines, total_chars = truncate_text_to_lines(PR_TITLE, 75, 4)
             pixelwrapped1 = "\n".join(wrap_text_to_pixels(truncated_text1, DISPLAY_WIDTH-2, terminalio.FONT))
             title_value_label.text = f"{pixelwrapped1}"
 
-            PR_DESCRIPTION = github_json[1]["body"]
+            PR_DESCRIPTION = response_buffer["body"]
             print(f" |  | Description: {PR_DESCRIPTION}")
-            truncated_text2, total_lines, total_chars = truncate_text_to_lines(PR_DESCRIPTION, 75, 15)
+            truncated_text2, total_lines, total_chars = truncate_text_to_lines(PR_DESCRIPTION, 75, 11)
             desc_key_label.text = "Description:"
             pixelwrapped2 = "\n".join(wrap_text_to_pixels(truncated_text2, DISPLAY_WIDTH-2, terminalio.FONT))
             desc_value_label.text = f"{pixelwrapped2}"
-
-            if DEBUG:
-                print("Full API GET URL: ", GITHUB_SOURCE)
-                print(submission)
+            
             time.sleep(10)
             # Rotate through the submissions
             github_json.append(github_json.pop(0))
