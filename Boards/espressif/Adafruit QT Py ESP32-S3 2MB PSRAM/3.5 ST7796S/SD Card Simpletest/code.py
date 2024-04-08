@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2023 DJDevon3
 # SPDX-License-Identifier: MIT
 # ST7796S TFT display SDCard simpletest
+# Coded with Circuit Python 9.0.3
 
 import time
 import os
@@ -44,8 +45,8 @@ print("Version: ", u_name[3])
 
 # Volume Information Stats
 SD_Card_Size = os.statvfs(virtual_root)
-print("\n")
-print("SD Card Info:")
+
+print("\n🛠️ SD Card Info:")
 print("===========================")
 print("Block Size: ", SD_Card_Size[0])
 print("Fragment Size: ", SD_Card_Size[1])
@@ -62,7 +63,7 @@ if (SD_Card_Size[0] * SD_Card_Size[3] / 1024 / 1024 / 1024) <= 1.0:
     print("Free Space MB: ", SD_Card_Size[0] * SD_Card_Size[3] / 1024 / 1024)
     
 # Small pause (in seconds) on Stats before File Directory is shown
-time.sleep(10.0)
+time.sleep(3.0)
     
 def print_directory(path, tabs=0):
     for file in os.listdir(path):
@@ -89,8 +90,7 @@ def print_directory(path, tabs=0):
         if isdir:
             print_directory(path + "/" + file, tabs + 1)
 
-print("\n")
-print("SD Card Files:")
+print("\n💾 SD Card Files:")
 print("===========================")
 print_directory(virtual_root)
 
