@@ -2,7 +2,7 @@
 - Tests SDCard using built-in sdcardio library
 - prints system and sdcard stats
 - displays system and sdcard stats on a ST7796S display
-- Coded for Circuit Python 8.2.10
+- Coded for Circuit Python 9.0.3
 
 ![IMG_1533](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/c50b3112-3d74-4c38-b4ab-143045a66129)
 
