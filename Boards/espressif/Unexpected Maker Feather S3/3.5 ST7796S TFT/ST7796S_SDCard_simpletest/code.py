@@ -1,12 +1,14 @@
 # SPDX-FileCopyrightText: 2023 DJDevon3
 # SPDX-License-Identifier: MIT
 # ST7796S TFT display SDCard simpletest
+# Coded for Circuit Python 9.0
 
 import os
 import board
 import displayio
 import sdcardio
 import storage
+import fourwire
 from circuitpython_st7796s import ST7796S
 
 displayio.release_displays()
@@ -31,7 +33,7 @@ except Exception as e:
     print("no sd card:", e)
     print("continuing")
 
-display_bus = displayio.FourWire(spi, command=tft_dc, chip_select=tft_cs, reset=tft_rst)
+display_bus = fourwire.FourWire(spi, command=tft_dc, chip_select=tft_cs, reset=tft_rst)
 display = ST7796S(display_bus, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT, rotation=180)
 
 # System Stats
