@@ -4,6 +4,10 @@
 - displays system and sdcard stats on a ST7796S display
 - Coded for Circuit Python 8.2.10
 
+![IMG_1533](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/c50b3112-3d74-4c38-b4ab-143045a66129)
+
+![IMG_1532](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/fc8d0e22-55da-4feb-90b5-efffaa2d6403)
+
 Example serial output:
 ```
 Attempting to mount sd card
