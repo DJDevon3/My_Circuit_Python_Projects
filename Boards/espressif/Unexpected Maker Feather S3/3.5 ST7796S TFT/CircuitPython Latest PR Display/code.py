@@ -5,7 +5,6 @@
 
 import os
 import time
-
 import adafruit_connection_manager
 import board
 import displayio
@@ -129,7 +128,7 @@ Arial16 = bitmap_font.load_font("/fonts/Arial-16.bdf")
 # Label Customizations
 pr_author_label = label.Label(Arial16)
 pr_author_label.anchor_point = (0.0, 0.0)
-pr_author_label.anchored_position = (80, 10)
+pr_author_label.anchored_position = (110, 10)
 pr_author_label.scale = (1)
 pr_author_label.color = TEXT_WHITE
 
@@ -141,7 +140,7 @@ pr_num_label.color = TEXT_WHITE
 
 title_value_label = label.Label(Arial12)
 title_value_label.anchor_point = (0.0, 0.0)
-title_value_label.anchored_position = (5, 80)
+title_value_label.anchored_position = (5, 110)
 title_value_label.scale = (1)
 title_value_label.color = TEXT_LIGHTBLUE
 
@@ -306,25 +305,8 @@ def load_image_from_sd(file_path):
     for item in text_group:
         if isinstance(item, displayio.TileGrid):
             text_group.remove(item)
-    if extension == "bmp" or extension == "gif":
-        with open(file_path, "rb") as f:
-            if extension == "png":
-                # Convert PNG to indexed format
-                image, palette = adafruit_imageload.load(f)
-                if palette is None:
-                    raise ValueError("Indexed PNG format required.")
-            else:
-                # For BMP and GIF, load as usual
-                image, palette = adafruit_imageload.load(f)
-            tile_grid_avatar = displayio.TileGrid(
-                image,
-                pixel_shader=palette,
-                width=1,
-                height=1)
-            text_group.append(tile_grid_avatar)
-            return image, palette
 
-    elif extension == "png":
+    if extension == "png":
         print(f"JPG Path: {file_path}")
         try:
             decoder = JpegDecoder()
@@ -344,12 +326,23 @@ def load_image_from_sd(file_path):
             return None, None
 
     elif extension in ["jpg", "jpeg"]:
-        print(f"JPG Path: {file_path}")
+        print(f"JPEG Path: {file_path}")
         try:
             decoder = JpegDecoder()
             width, height = decoder.open(file_path)
-            image = displayio.Bitmap(width//8, height//8, 65535)
-            decoder.decode(image, scale=3)
+            print(f"Image Width: {width}")
+            print(f"Image Height: {height}")
+            if width > 100 or height > 100:
+                scale_factor = max(width/100, height/100)
+                scale = min(int(scale_factor), 2)  # Ensure scale is within 0-3 range
+                width_scaled = int(width / scale_factor)
+                height_scaled = int(height / scale_factor)
+                image = displayio.Bitmap(width_scaled, height_scaled, 65535)
+                decoder.decode(image, scale=scale)
+            else:
+                image = displayio.Bitmap(width, height, 65535)
+                decoder.decode(image, scale=2)
+                
             tile_grid_avatar = displayio.TileGrid(
                 image,
                 pixel_shader=displayio.ColorConverter(
@@ -361,10 +354,10 @@ def load_image_from_sd(file_path):
         except Exception as e:
             print(f"Error loading JPEG file: {e}")
             return None, None
+
     else:
         print(f"Unsupported image format: {extension}")
-        return None, None  # Return None for both image and palette
-
+        return None, None
 
 
 
