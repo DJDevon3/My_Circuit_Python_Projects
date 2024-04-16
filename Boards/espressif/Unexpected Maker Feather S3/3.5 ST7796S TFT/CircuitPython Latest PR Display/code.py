@@ -19,6 +19,7 @@ from adafruit_bitmap_font import bitmap_font
 import adafruit_requests
 from adafruit_display_text import label, wrap_text_to_pixels
 from circuitpython_st7796s import ST7796S
+from adafruit_bitmapsaver import save_pixels
 from jpegio import JpegDecoder
 
 spi = board.SPI()
@@ -70,6 +71,7 @@ try:
     storage.mount(vfs, '/sd')
     print(f"ListDir: {os.listdir('/sd')}")
     avatar_path = "/sd/Github_Avatars/"
+
 except Exception as e:
     print("Error:", e)
 
@@ -342,7 +344,7 @@ def load_image_from_sd(file_path):
             else:
                 image = displayio.Bitmap(width, height, 65535)
                 decoder.decode(image, scale=2)
-                
+
             tile_grid_avatar = displayio.TileGrid(
                 image,
                 pixel_shader=displayio.ColorConverter(
@@ -408,6 +410,7 @@ while True:
             # Get the latest submission
             response_buffer = github_json[i]
             PR_NUM = response_buffer["number"]
+            PR_URL = response_buffer["html_url"]
             PR_AUTHOR = response_buffer["user"]["login"]
             PR_AUTHOR_URL = response_buffer["user"]["url"]
             PR_AUTHOR_AVATAR = response_buffer["user"]["avatar_url"]
@@ -429,7 +432,7 @@ while True:
                 sprite[0] = 3
 
             print(f"{'-'*40} {PR_NUM} {'-'*40}")
-            print(f" |  | Index: {i}")
+            print(f" |  | Index: {i} PR->{PR_URL}")
             print(f" |  | Author: {PR_AUTHOR} -> {PR_AUTHOR_URL}")
             print(f" |  | Avatar URL: {PR_AUTHOR_AVATAR}")
 
@@ -459,17 +462,17 @@ while True:
                         truncated_text1, DISPLAY_WIDTH-2, terminalio.FONT))
 
             title_value_label.text = f"{pixelwrapped1}"
+            if response_buffer["body"] != None:
+                PR_DESCRIPTION = response_buffer["body"][:800]
+                print(f" |  | Description: {PR_DESCRIPTION}\n\n")
+                truncated_text2, total_lines, total_chars = truncate_text_to_lines(
+                        PR_DESCRIPTION, 75, 11)
+                desc_key_label.text = "Description:"
+                pixelwrapped2 = "\n".join(wrap_text_to_pixels(
+                        truncated_text2, DISPLAY_WIDTH-2, terminalio.FONT))
+                desc_value_label.text = f"{pixelwrapped2}"
 
-            PR_DESCRIPTION = response_buffer["body"][:800]
-            print(f" |  | Description: {PR_DESCRIPTION}\n\n")
-            truncated_text2, total_lines, total_chars = truncate_text_to_lines(
-                    PR_DESCRIPTION, 75, 11)
-            desc_key_label.text = "Description:"
-            pixelwrapped2 = "\n".join(wrap_text_to_pixels(
-                    truncated_text2, DISPLAY_WIDTH-2, terminalio.FONT))
-            desc_value_label.text = f"{pixelwrapped2}"
-
-            time.sleep(3)
+            time.sleep(5)
             # Rotate through the submissions
             github_json.append(github_json.pop(0))
             first_run = False
