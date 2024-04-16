@@ -19,7 +19,6 @@ from adafruit_bitmap_font import bitmap_font
 import adafruit_requests
 from adafruit_display_text import label, wrap_text_to_pixels
 from circuitpython_st7796s import ST7796S
-from adafruit_bitmapsaver import save_pixels
 from jpegio import JpegDecoder
 
 spi = board.SPI()
@@ -89,19 +88,11 @@ TEXT_RED = 0xFF0000
 TEXT_WHITE = 0xFFFFFF
 TEXT_YELLOW = 0xFFFF00
 
-# Load Bitmap to tile grid first (Background layer)
-DiskBMP = displayio.OnDiskBitmap("/images/Astral_Fruit_8bit.bmp")
-tile_grid = displayio.TileGrid(
-    DiskBMP,
-    pixel_shader=DiskBMP.pixel_shader,
-    width=1,
-    height=1,
-    tile_width=DISPLAY_WIDTH,
-    tile_height=DISPLAY_HEIGHT)
-
-# Load battery voltage icons (from 1 sprite sheet image)
+# Load Github Open/Closed/Merged spritesheet icons
 sprite_sheet, palette = adafruit_imageload.load(
-    "/icons/Github_PR_Spritesheet.bmp", bitmap=displayio.Bitmap, palette=displayio.Palette
+    "/icons/Github_PR_Spritesheet.bmp",
+    bitmap=displayio.Bitmap,
+    palette=displayio.Palette
 )
 sprite = displayio.TileGrid(
     sprite_sheet, pixel_shader=palette, width=1, height=1, tile_width=75, tile_height=75
@@ -361,8 +352,6 @@ def load_image_from_sd(file_path):
         print(f"Unsupported image format: {extension}")
         return None, None
 
-
-
 github_json = {}
 first_run = True
 while True:
@@ -449,7 +438,6 @@ while True:
             pr_num_label.text = f"{PR_NUM}"
             pr_author_label.text = f"{PR_AUTHOR}"
 
-
             print(f" |  | Status: {PR_STATE}")
             pr_state_label.text = f"{PR_STATE}"
 
@@ -462,7 +450,7 @@ while True:
                         truncated_text1, DISPLAY_WIDTH-2, terminalio.FONT))
 
             title_value_label.text = f"{pixelwrapped1}"
-            if response_buffer["body"] != None:
+            if response_buffer["body"] is not None:
                 PR_DESCRIPTION = response_buffer["body"][:800]
                 print(f" |  | Description: {PR_DESCRIPTION}\n\n")
                 truncated_text2, total_lines, total_chars = truncate_text_to_lines(
