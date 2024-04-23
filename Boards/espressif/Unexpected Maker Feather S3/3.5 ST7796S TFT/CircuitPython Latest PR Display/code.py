@@ -4,6 +4,7 @@
 """Github API Latest Circuit Python PR's Example"""
 
 import os
+import supervisor
 import time
 import adafruit_connection_manager
 import board
@@ -21,17 +22,29 @@ from adafruit_display_text import label, wrap_text_to_pixels
 from circuitpython_st7796s import ST7796S
 from jpegio import JpegDecoder
 
-spi = board.SPI()
-tft_cs = board.D9
-tft_dc = board.D10
-tft_rst = board.D17
-sd_cs = board.D5
-
+displayio.release_displays()
 # 3.5" ST7796S Display
 DISPLAY_WIDTH = 480
 DISPLAY_HEIGHT = 320
-DW = DISPLAY_WIDTH
-DH = DISPLAY_HEIGHT
+
+tft_cs = board.A0
+tft_dc = board.A1
+tft_rst = board.D17
+sd_cs = board.A3
+
+spi = board.SPI()
+# Initialize SPI SDCard prior to other SPI peripherals!
+try:
+    print("Attempting to mount sd card")
+    sdcard = sdcardio.SDCard(spi, sd_cs)
+    vfs = storage.VfsFat(sdcard)
+    storage.mount(vfs, '/sd')
+    print(f"ListDir: {os.listdir('/sd')}")
+    avatar_path = "/sd/Github_Avatars/"
+
+except Exception as e:
+    print("Error:", e)
+
 
 displayio.release_displays()
 display_bus = fourwire.FourWire(spi, command=tft_dc, chip_select=tft_cs, reset=tft_rst)
@@ -61,18 +74,6 @@ requests = adafruit_requests.Session(pool, ssl_context)
 GITHUB_HEADER = {"Accept: application/vnd.github.raw+json"
                  + "Authorization": " token " + token}
 GITHUB_SOURCE = f"https://api.github.com/repos/{repository}/issues?state=closed"
-
-# Initialize SPI SDCard prior to other SPI peripherals!
-try:
-    print("Attempting to mount sd card")
-    sdcard = sdcardio.SDCard(spi, sd_cs)
-    vfs = storage.VfsFat(sdcard)
-    storage.mount(vfs, '/sd')
-    print(f"ListDir: {os.listdir('/sd')}")
-    avatar_path = "/sd/Github_Avatars/"
-
-except Exception as e:
-    print("Error:", e)
 
 # Quick Colors for Labels
 TEXT_BLACK = 0x000000
@@ -364,6 +365,7 @@ while True:
         except ConnectionError as e:
             print("❌ Connection Error:", e)
             print("Retrying in 10 seconds")
+            time.sleep(10)
     print("✅ Wifi!")
 
     try:
@@ -371,8 +373,8 @@ while True:
         try:
             github_response = requests.get(url=GITHUB_SOURCE, headers=GITHUB_HEADER)
             github_json = github_response.json()
-        except ConnectionError as e:
-            print("Connection Error:", e)
+        except Exception as e:
+            continue
         print(" | ✅ Github JSON")
 
         if DEBUG:
@@ -389,80 +391,86 @@ while True:
         print(f"Board Uptime: {time_calc(time.monotonic())}")
         print(f"Next Update: {time_calc(SLEEP_TIME)}")
         print("===============================\n")
+
+        if time.monotonic() - now <= SLEEP_TIME:
+            for i in range(25):
+                # Get the latest submission
+                response_buffer = github_json[i]
+                PR_NUM = response_buffer["number"]
+                PR_URL = response_buffer["html_url"]
+                PR_AUTHOR = response_buffer["user"]["login"]
+                PR_AUTHOR_URL = response_buffer["user"]["url"]
+                PR_AUTHOR_AVATAR = response_buffer["user"]["avatar_url"]
+                PR_STATE = response_buffer["state"]
+                if PR_STATE == "closed":
+                    pr_state_label.color = TEXT_PURPLE
+                    sprite[0] = 0
+                elif PR_STATE == "draft":
+                    pr_state_label.color = TEXT_RED
+                    sprite[0] = 1
+                elif PR_STATE == "merged":
+                    pr_state_label.color = TEXT_PURPLE
+                    sprite[0] = 2
+                elif PR_STATE == "closed":
+                    pr_state_label.color = TEXT_PURPLE
+                    sprite[0] = 3
+                else:
+                    pr_state_label.color = TEXT_GREEN
+                    sprite[0] = 3
+
+                print(f"{'-'*40} {PR_NUM} {'-'*40}")
+                print(f" |  | Index: {i} PR->{PR_URL}")
+                print(f" |  | Author: {PR_AUTHOR} -> {PR_AUTHOR_URL}")
+                print(f" |  | Avatar URL: {PR_AUTHOR_AVATAR}")
+
+                # If Avatar is not on SD Card yet, download avatar to SD
+                file_name = get_file_name(PR_AUTHOR_AVATAR)
+                try:
+                    sd_file_path = online_image_to_sd(PR_AUTHOR_AVATAR)
+                    print(f" |  | Avatar SD File: {file_name}")
+                    print(f" |  | Avatar SD Path: {sd_file_path}")
+
+                    # Display Avatar from SD Card
+                    sdcard_avatar = load_image_from_sd(sd_file_path)
+
+                    print(f" |  | Pull Request: {PR_NUM}")
+                    pr_num_label.text = f"{PR_NUM}"
+                    pr_author_label.text = f"{PR_AUTHOR}"
+
+                    print(f" |  | Status: {PR_STATE}")
+                    pr_state_label.text = f"{PR_STATE}"
+
+                    PR_TITLE = response_buffer["title"]
+                    print(f" |  | Title: {PR_TITLE}")
+                    truncated_text1, total_lines, total_chars = truncate_text_to_lines(
+                            PR_TITLE, 75, 4)
+                    pixelwrapped1 = "\n".join(
+                            wrap_text_to_pixels(
+                                truncated_text1, DISPLAY_WIDTH-2, terminalio.FONT))
+
+                    title_value_label.text = f"{pixelwrapped1}"
+                    if response_buffer["body"] is not None:
+                        PR_DESCRIPTION = response_buffer["body"][:800]
+                        print(f" |  | Description: {PR_DESCRIPTION}\n\n")
+                        truncated_text2, total_lines, total_chars = truncate_text_to_lines(
+                                PR_DESCRIPTION, 75, 11)
+                        desc_key_label.text = "Description:"
+                        pixelwrapped2 = "\n".join(wrap_text_to_pixels(
+                                truncated_text2, DISPLAY_WIDTH-2, terminalio.FONT))
+                        desc_value_label.text = f"{pixelwrapped2}"
+
+                    time.sleep(5)
+                    # Rotate through the submissions
+                    github_json.append(github_json.pop(0))
+                    first_run = False
+                except (OSError) as e:
+                    print(f"❌ Probably lost WiFi, reloading\n {e}")
+                    supervisor.reload()
+                    
+        else:  # When its time to poll, break to top of while True loop.
+            break
+            
     except (ValueError, RuntimeError) as e:
         print(f"Failed to get data, retrying\n {e}")
         time.sleep(60)
-        break
-
-    if time.monotonic() - now <= SLEEP_TIME:
-        for i in range(25):
-            # Get the latest submission
-            response_buffer = github_json[i]
-            PR_NUM = response_buffer["number"]
-            PR_URL = response_buffer["html_url"]
-            PR_AUTHOR = response_buffer["user"]["login"]
-            PR_AUTHOR_URL = response_buffer["user"]["url"]
-            PR_AUTHOR_AVATAR = response_buffer["user"]["avatar_url"]
-            PR_STATE = response_buffer["state"]
-            if PR_STATE == "closed":
-                pr_state_label.color = TEXT_PURPLE
-                sprite[0] = 0
-            elif PR_STATE == "draft":
-                pr_state_label.color = TEXT_RED
-                sprite[0] = 1
-            elif PR_STATE == "merged":
-                pr_state_label.color = TEXT_PURPLE
-                sprite[0] = 2
-            elif PR_STATE == "closed":
-                pr_state_label.color = TEXT_PURPLE
-                sprite[0] = 3
-            else:
-                pr_state_label.color = TEXT_GREEN
-                sprite[0] = 3
-
-            print(f"{'-'*40} {PR_NUM} {'-'*40}")
-            print(f" |  | Index: {i} PR->{PR_URL}")
-            print(f" |  | Author: {PR_AUTHOR} -> {PR_AUTHOR_URL}")
-            print(f" |  | Avatar URL: {PR_AUTHOR_AVATAR}")
-
-            # If Avatar is not on SD Card yet, download avatar to SD
-            file_name = get_file_name(PR_AUTHOR_AVATAR)
-            sd_file_path = online_image_to_sd(PR_AUTHOR_AVATAR)
-            print(f" |  | Avatar SD File: {file_name}")
-            print(f" |  | Avatar SD Path: {sd_file_path}")
-
-            # Display Avatar from SD Card
-            sdcard_avatar = load_image_from_sd(sd_file_path)
-
-            print(f" |  | Pull Request: {PR_NUM}")
-            pr_num_label.text = f"{PR_NUM}"
-            pr_author_label.text = f"{PR_AUTHOR}"
-
-            print(f" |  | Status: {PR_STATE}")
-            pr_state_label.text = f"{PR_STATE}"
-
-            PR_TITLE = response_buffer["title"]
-            print(f" |  | Title: {PR_TITLE}")
-            truncated_text1, total_lines, total_chars = truncate_text_to_lines(
-                    PR_TITLE, 75, 4)
-            pixelwrapped1 = "\n".join(
-                    wrap_text_to_pixels(
-                        truncated_text1, DISPLAY_WIDTH-2, terminalio.FONT))
-
-            title_value_label.text = f"{pixelwrapped1}"
-            if response_buffer["body"] is not None:
-                PR_DESCRIPTION = response_buffer["body"][:800]
-                print(f" |  | Description: {PR_DESCRIPTION}\n\n")
-                truncated_text2, total_lines, total_chars = truncate_text_to_lines(
-                        PR_DESCRIPTION, 75, 11)
-                desc_key_label.text = "Description:"
-                pixelwrapped2 = "\n".join(wrap_text_to_pixels(
-                        truncated_text2, DISPLAY_WIDTH-2, terminalio.FONT))
-                desc_value_label.text = f"{pixelwrapped2}"
-
-            time.sleep(5)
-            # Rotate through the submissions
-            github_json.append(github_json.pop(0))
-            first_run = False
-    else:  # When its time to poll, break to top of while True loop.
         break
