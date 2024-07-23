@@ -1,0 +1,6 @@
+CIRCUITPY_WIFI_SSID = ""
+CIRCUITPY_WIFI_PASSWORD = ""
+RACHIO_APIKEY = ""
+RACHIO_PERSONID = ""
+timezone = "America/New_York"  # Check http://worldtimeapi.org/timezones
+timezone_offset = "-14400" # timezone offset in seconds plus or minus
