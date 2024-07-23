@@ -10,4 +10,4 @@
 
 ### Software:
 - Adafruit Circuit Python 9.x
-- Libraries are too many to list. Please see /lib directory for libraries (these can be found in the Circuit Python 9.x Bundle)
+- Libraries are too many to list. Please see /lib directory for libraries (these can be found in the [Circuit Python 9.x Bundle](https://circuitpython.org/libraries))
