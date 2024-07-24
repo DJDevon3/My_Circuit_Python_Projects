@@ -1,10 +1,11 @@
-# SPDX-FileCopyrightText: 2023 DJDevon3
+# SPDX-FileCopyrightText: 2024 DJDevon3
 # SPDX-License-Identifier: MIT
-# ESP32-S3 Feather Weather MQTT Touchscreen
-# Coded for Circuit Python 8.2.x
+# Coded for Circuit Python 9.0
+"""ESP32-S3 Feather Weather MQTT Touchscreen"""
 
 import os
 import supervisor
+import microcontroller
 import time
 import board
 import displayio
@@ -22,7 +23,7 @@ import json
 import ulab.numpy as np
 import adafruit_minimqtt.adafruit_minimqtt as MQTT
 from adafruit_minimqtt.adafruit_minimqtt import MMQTTException
-from adafruit_display_text import label
+from adafruit_display_text import label, outlined_label
 from adafruit_display_shapes.roundrect import RoundRect
 from adafruit_bitmap_font import bitmap_font
 from adafruit_lc709203f import LC709203F
@@ -133,34 +134,15 @@ loading_splash.append(splash_label)
 display.root_group = loading_splash
 
 splash_label.text = "Initializing Battery Voltage Monitor..."
-BATTERY_MON_ADDRESS = 0x0B  # Address for ESP32-S3 Feather
-
-
-def hack_for_i2c_issue():
-    """LC709203F Battery Monitor Workaround"""
-    i2c = board.I2C()
-    while not i2c.try_lock():
-        pass
-    running = True
-    try:
-        while running:
-            """
-            print(
-                "I2C addresses found:",
-                [hex(device_address) for device_address in i2c.scan()],
-            )
-            """
-            running = False
-        return i2c
-    finally:  # unlock the i2c bus when ctrl-c'ing out of the loop
-        i2c.unlock()
-
 
 # LC709203F Battery Monitor
 # https://github.com/adafruit/Adafruit_CircuitPython_LC709203F/blob/main/adafruit_lc709203f.py
 # only up to 3000 supported, don't use PackSize if battery larger than 3000mah
-i2c = hack_for_i2c_issue()
-battery_monitor = LC709203F(i2c)
+i2c = board.I2C()
+try:
+    battery_monitor = LC709203F(i2c)
+except OSError:
+    supervisor.reload()
 # battery_monitor.pack_size = PackSize.MAH3000
 battery_monitor.thermistor_bconstant = 3950
 battery_monitor.thermistor_enable = True
@@ -168,8 +150,8 @@ battery_monitor.thermistor_enable = True
 splash_label.text = "Initializing BME280 Sensor..."
 
 # Initialize BME280 Sensor
-i2c = board.STEMMA_I2C()  # uses board.SCL and board.SDA
-bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c)
+i2c2 = board.STEMMA_I2C()  # uses board.SCL and board.SDA
+bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c2)
 # sea_level_pressure should be set in the while true loop
 # bme280.sea_level_pressure = bme280.pressure
 # print("Sea Level Pressure: ", bme280.sea_level_pressure)
@@ -234,16 +216,57 @@ TEXT_YELLOW = 0xFFFF00
 
 splash_label.text = "Loading Labels..."
 
-
-def make_my_label(font, anchor_point, anchored_position, scale, color):
-    """Minimizes labels to 1 liners. Attribution: Anecdata"""
-    func_label = label.Label(font)
-    func_label.anchor_point = anchor_point
-    func_label.anchored_position = anchored_position
-    func_label.scale = scale
-    func_label.color = color
+def make_my_label(font=None,
+                  anchor_point=None,
+                  anchored_position=None,
+                  scale=None,
+                  color=None):
+    """ Shortens labels to 1 liners """
+    func_label = label.Label(font) if font is not None else label.Label()
+    if anchor_point is not None:
+        func_label.anchor_point = anchor_point
+    if anchored_position is not None:
+        func_label.anchored_position = anchored_position
+    if scale is not None:
+        func_label.scale = scale
+    if color is not None:
+        func_label.color = color
     return func_label
 
+def outline_my_label(font=None,
+                     anchor_point=None,
+                     anchored_position=None,
+                     scale=None,
+                     color=None,
+                     outline_color=None,
+                     outline_size=None,
+                     padding_left=None,
+                     padding_right=None,
+                     padding_top=None,
+                     padding_bottom=None):
+    """ Shortens labels to 1 liners """
+    func_label = outlined_label.OutlinedLabel(font) if font is not None else label.Label()
+    if anchor_point is not None:
+        func_label.anchor_point = anchor_point
+    if anchored_position is not None:
+        func_label.anchored_position = anchored_position
+    if scale is not None:
+        func_label.scale = scale
+    if color is not None:
+        func_label.color = color
+    if outline_color is not None:
+        func_label.outline_color = outline_color
+    if outline_size is not None:
+        func_label.outline_size = outline_size
+    if padding_left is not None:
+        func_label.padding_left = padding_left
+    if padding_right is not None:
+        func_label.padding_right = padding_right
+    if padding_top is not None:
+        func_label.padding_top = padding_top
+    if padding_bottom is not None:
+        func_label.padding_bottom = padding_bottom
+    return func_label
 
 # name_label (FONT, (ANCHOR POINT), (ANCHOR POSITION), SCALE, COLOR)
 # loading screen label
@@ -329,9 +352,12 @@ input_lbl = label.Label(
 )
 input_lbl.x = 100
 input_lbl.y = 50
-warning_label = make_my_label(
-    arial_font, (0.5, 0.5), (DISPLAY_WIDTH / 2, DISPLAY_HEIGHT - 103), 1, TEXT_RED
-)
+warning_label = outline_my_label(
+    arial_font,
+    (0.5, 0.5),
+    (DISPLAY_WIDTH / 2, DISPLAY_HEIGHT - 103),
+    1, TEXT_ORANGE, TEXT_BLACK,
+    1,0,0,0,0)
 menu_popout_label = make_my_label(
     terminalio.FONT, (0.5, 0.5), (DISPLAY_WIDTH / 2, 25), 1, TEXT_CYAN
 )
@@ -350,8 +376,9 @@ owm_temp_data_label = make_my_label(
 owm_temp_data_shadow = make_my_label(
     medium_font, (0.5, 0.0), (DISPLAY_WIDTH / 2 + 2, 65 + 2), 1, TEXT_BLACK
 )
-humidity_label = make_my_label(
-    small_font, (0.0, 1.0), (5, DISPLAY_HEIGHT - 40), 1, TEXT_GRAY
+humidity_label = outline_my_label(
+    small_font, (0.0, 1.0), (5, DISPLAY_HEIGHT - 40), 1, TEXT_GRAY, TEXT_BLACK,
+    1,0,0,0,0
 )
 humidity_data_label = make_my_label(
     medium_font, (0.0, 1.0), (5, DISPLAY_HEIGHT), 1, TEXT_ORANGE
@@ -409,9 +436,9 @@ roundrect = RoundRect(
     DISPLAY_WIDTH - 10,
     40,
     10,
-    fill=0x0,
+    fill=None,
     outline=0xFFFFFF,
-    stroke=1,
+    stroke=0,
 )
 
 # Menu RoundRect
@@ -548,6 +575,8 @@ soft_kbd = SoftKeyboard(
     DISPLAY_HEIGHT - 100,
     terminalio.FONT,
     forkawesome_font,
+    keypress_cooldown = 0.1,
+    highlight_duration = 0.1,
     layout_config="mobile_layout.json",
 )
 """
@@ -696,7 +725,7 @@ def usb_battery_monitor(usb_sense):
             sprite[0] = 4
         else:
             vbat_label.color = TEXT_WHITE
-    
+
 def show_menu():
     # Function to display popup menu
     menu_popout_label.text = "Menu Popout"
@@ -758,8 +787,9 @@ def root_group_switch(SHOUTY_REMOVE, SHOUTY_APPEND):
         SHOUTY_REMOVE.remove(soft_kbd)
         SHOUTY_REMOVE.remove(input_lbl)
 
-    # Append order is layer order top to bottom for each page.
-    SHOUTY_APPEND.append(wallpaper_group)  # load wallpaper 1st regardless of page
+    # Page Switching & Layer Loading Order
+    # Append order is layer order background (top) to foreground (bottom).
+    SHOUTY_APPEND.append(wallpaper_group)  # always load wallpaper 1st
     if SHOUTY_APPEND == main_group:
         SHOUTY_APPEND.append(text_group)
         SHOUTY_APPEND.append(warning_group)
@@ -984,11 +1014,11 @@ while True:
         bme280.sea_level_pressure = bme280.pressure
         hello_label.text = "Feather Weather ESP32-S3 MQTT Touch"
         print("===============================")
-        
+
         # Battery voltage label and icon
         usb_sense = supervisor.runtime.usb_connected
         usb_battery_monitor(usb_sense)
-        
+
         # Account for PCB heating bias, gets slightly hotter as ambient increases
         BME280_humidity = round(bme280.relative_humidity, 1)
         relative_humidity = np.interp(
@@ -1186,19 +1216,23 @@ while True:
                 time.sleep(10)
                 continue
             mqtt_client.disconnect()
-            
+
             print(" ✂️ Disconnected from Wifi")
-            print(f"Loading Time: {time.monotonic() - _now}")
             print(f"Board Uptime: {time_calc(time.monotonic())}")
-            print(f"Next Update: {time_calc(SLEEP_TIME)}")
-            print("Finished!")
+            if _now > 86400:
+                print("24 Hour Uptime Restart")
+                print("Finished!")
+                microcontroller.reset()
+            else:
+                print("Next Update:", time_calc(SLEEP_TIME))
+                print("Finished!")
             print("===============================")
-            
+
             if not First_Run and display.root_group is main_group:
                 loading_label.text = f"Next Update\n{time_calc(SLEEP_TIME)}"
                 time.sleep(5)
                 loading_group.remove(loading_label)
-                
+
             if First_Run:
                 First_Run = False
                 display.root_group = main_group
