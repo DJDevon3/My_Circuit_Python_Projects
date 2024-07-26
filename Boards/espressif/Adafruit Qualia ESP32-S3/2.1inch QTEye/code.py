@@ -9,7 +9,7 @@ import adafruit_imageload
 import dotclockframebuffer
 from framebufferio import FramebufferDisplay
 
-init_sequence_tl021wvc02 = bytes((
+init_sequence_TL021WVC02 = bytes((
     0xff, 0x05, 0x77, 0x01, 0x00, 0x00, 0x10,
     0xc0, 0x02, 0x3b, 0x00,
     0xc1, 0x02, 0x0b, 0x02,
@@ -53,30 +53,27 @@ init_sequence_tl021wvc02 = bytes((
 tft_pins = dict(board.TFT_PINS)
 
 tft_timings = {
-    "frequency": 16000000,
-    "width": 720,
-    "height": 720,
-
-    "hsync_pulse_width": 2,
-    "hsync_back_porch": 44,
-    "hsync_front_porch": 46,
+    "frequency": 16_000_000,
+    "width": 480,
+    "height": 480,
+    "hsync_pulse_width": 20,
+    "hsync_front_porch": 40,
+    "hsync_back_porch": 40,
+    "vsync_pulse_width": 10,
+    "vsync_front_porch": 40,
+    "vsync_back_porch": 40,
     "hsync_idle_low": False,
-
-    "vsync_pulse_width": 16,
-    "vsync_back_porch": 16,
-    "vsync_front_porch": 50,
     "vsync_idle_low": False,
-
+    "de_idle_high": False,
     "pclk_active_high": True,
     "pclk_idle_high": False,
-    "de_idle_high": False,
 }
 
 board.I2C().deinit()
 i2c = busio.I2C(board.SCL, board.SDA)
 tft_io_expander = dict(board.TFT_IO_EXPANDER)
 #tft_io_expander['i2c_address'] = 0x38 # uncomment for rev B
-dotclockframebuffer.ioexpander_send_init_sequence(i2c, init_sequence_tl021wvc02, **tft_io_expander)
+dotclockframebuffer.ioexpander_send_init_sequence(i2c, init_sequence_TL021WVC02, **tft_io_expander)
 i2c.deinit()
 
 bitmap = displayio.OnDiskBitmap("/images/eye_ball_720p.bmp")
