@@ -158,6 +158,8 @@ Timestamp: 2024-01-28_14-35-04
 ```
 
 ## Seconds to Minutes/Hours/Days function (good for sleep or update functions)
+- There was an issue where it was rounding up at .6 decimal to whole number
+- Fixed by rounding down instead of up until whole number is met
 ```py
 import time
 import math
@@ -176,7 +178,7 @@ def time_calc(input_time):
         return f"{math.floor(input_time / 3600.0)} hours"
     return f"{math.floor(input_time / 86400.0)} days"
 
-print("Calc Time: ", time_calc(900))  # time conversion testing
+print("Calc Time: ", time_calc(900))  # manual time conversion test
 print("Board Uptime: ", time_calc(time.monotonic())) # example for board uptime
 print("Next Update: ", time_calc(sleep_time))
 time.sleep(sleep_time)
@@ -186,7 +188,6 @@ code.py output:
 Calc Time:  15 minutes
 Board Uptime: 1.2 days
 Next Update: 30 minutes
-(There was an issue where it was rounding up at .6 decimal to whole number. Fixed by rounding down instead of up until whole number is met.)
 ```
 ## Timer update example with time_calc
 This one is meant for finished & refined scripts not debugging.
