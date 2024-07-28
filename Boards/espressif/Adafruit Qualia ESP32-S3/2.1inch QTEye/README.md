@@ -1,5 +1,5 @@
 # Adafruit Qualia Boards
-Circuit Python Projects on Adafruit Qualia boards by DJDevon3
+2.1" Display example contributed by Github User [Iboue](https://github.com/lboue)
 
 - Uses a modified version of [Todbot's QTEye code](https://github.com/todbot/circuitpython-tricks/tree/main/larger-tricks/eyeballs)
 - Each different RGB-666 display size requires a different init sequence.
