@@ -159,21 +159,22 @@ Timestamp: 2024-01-28_14-35-04
 
 ## Seconds to Minutes/Hours/Days function (good for sleep or update functions)
 ```py
-# Attribution: Written by DJDevon3 & refined by Elpekenin
 import time
+import math
 
 # 900=15 mins, 1800=30 mins, 3600=1 hour, 43200=12 hours
 sleep_time = 1800
 
 def time_calc(input_time):
-    """Converts seconds to minutes/hours/days"""
-    if input_time < 60:
-        return f"{input_time:.0f} seconds"
-    if input_time < 3600:
-        return f"{input_time / 60:.0f} minutes"
-    if input_time < 86400:
-        return f"{input_time / 60 / 60:.0f} hours"
-    return f"{input_time / 60 / 60 / 24:.1f} days""
+    """Converts seconds to minutes/hours/days. Whole numbers rounded down."""
+    # Attribution: Elpekenin, Updated 7/8/2024
+    if input_time < 60.0:
+        return f"{math.floor(input_time)} seconds"
+    if input_time < 3600.0:
+        return f"{math.floor(input_time / 60.0)} minutes"
+    if input_time < 86400.0:
+        return f"{math.floor(input_time / 3600.0)} hours"
+    return f"{math.floor(input_time / 86400.0)} days"
 
 print("Calc Time: ", time_calc(900))  # time conversion testing
 print("Board Uptime: ", time_calc(time.monotonic())) # example for board uptime
@@ -185,6 +186,7 @@ code.py output:
 Calc Time:  15 minutes
 Board Uptime: 1.2 days
 Next Update: 30 minutes
+(There was an issue where it was rounding up at .6 decimal to whole number. Fixed by rounding down instead of up until whole number is met.)
 ```
 ## Timer update example with time_calc
 This one is meant for finished & refined scripts not debugging.
