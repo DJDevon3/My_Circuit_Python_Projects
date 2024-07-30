@@ -10,5 +10,5 @@
 - 3.5" ST7796S TFT Display with Resistive Touch or Adafruit 3.5" [Capactive Touchscreen](https://www.adafruit.com/product/5872) or [Resistive Touchscreen](https://www.adafruit.com/product/3651)
 
 ### Software:
-- Adafruit Circuit Python 9.x
-- Libraries are too many to list. Please see /lib directory for libraries (these can be found in the [Circuit Python 9.x Bundle](https://circuitpython.org/libraries))
+- [Adafruit Circuit Python for the Feather ESP32-S3 board](https://circuitpython.org/board/adafruit_feather_esp32s3_4mbflash_2mbpsram/)
+- All libraries used can be found in the [Circuit Python Library Bundle](https://circuitpython.org/libraries))
