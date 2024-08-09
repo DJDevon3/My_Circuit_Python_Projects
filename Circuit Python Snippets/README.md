@@ -488,6 +488,7 @@ pressure = bme280.pressure  # designed for BME280 Pressure sensor
 - animated frames are font characters typed sequentially
 - base frame (gray cloud) can be colored independently of other frames (yellow lightning)
 - base frame is usually statically positioned (x,y) and other frames are overlayed on top for the animation
+- animation is blocking, all other code is only run before or after animation cycle completes.
 - Please see above for the [make_my_label function](https://github.com/DJDevon3/My_Circuit_Python_Projects/edit/main/Circuit%20Python%20Snippets/README.md#make_my_label-short-form-label-creation-function)
   
 ![weather-icons-test-75](https://github.com/user-attachments/assets/f973ec65-9815-49a9-8de8-649ad5fb58e7)
