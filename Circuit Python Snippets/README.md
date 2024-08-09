@@ -483,7 +483,28 @@ pressure = bme280.pressure  # designed for BME280 Pressure sensor
 
 ![pressure_warning](https://github.com/DJDevon3/My_Circuit_Python_Projects/assets/49322231/f8dd297c-9ff0-41eb-8bde-cdd1092f2ced)
 
+## Animated Unicode Font
+- with all other glyphs detached, an optimized symbol font takes less ram than a spritesheet
+- animated frames are font characters typed sequentially
+- base frame (gray cloud) can be colored independently of other frames (yellow lightning)
+- base frame is usually statically positioned (x,y) and other frames are overlayed on top for the animation
+  
+![weather-icons-test-75](https://github.com/user-attachments/assets/f973ec65-9815-49a9-8de8-649ad5fb58e7)
 
+```py
+def animated_font(glyph1, glyph2, glyph3, glyph4, glyph5):
+    weather_icon_base.text = f"{glyph1}"
+    weather_icon_animate.text = f"{glyph2}"
+    time.sleep(0.5)
+    weather_icon_animate.text = f"{glyph3}"
+    time.sleep(0.5)
+    weather_icon_animate.text = f"{glyph4}"
+    time.sleep(0.5)
+    weather_icon_animate.text = f"{glyph5}"
+    time.sleep(0.5)
+
+animated_font("\uF0F1", "\uF0F2", "\uF0F3", "\uF0F4", "\uF0F5")
+```
 
 ## Common Secrets.py Config (does not initate web workflow)
 ```py
