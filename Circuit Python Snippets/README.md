@@ -488,10 +488,15 @@ pressure = bme280.pressure  # designed for BME280 Pressure sensor
 - animated frames are font characters typed sequentially
 - base frame (gray cloud) can be colored independently of other frames (yellow lightning)
 - base frame is usually statically positioned (x,y) and other frames are overlayed on top for the animation
+- Please see above for the [make_my_label function](https://github.com/DJDevon3/My_Circuit_Python_Projects/edit/main/Circuit%20Python%20Snippets/README.md#make_my_label-short-form-label-creation-function)
   
 ![weather-icons-test-75](https://github.com/user-attachments/assets/f973ec65-9815-49a9-8de8-649ad5fb58e7)
 
 ```py
+weather_font = bitmap_font.load_font("/fonts/WeatherIconsAnimated-Regular-75.bdf")
+weather_icon_base = make_my_label(weather_font, (1.0, 1.0), (DISPLAY_WIDTH/2+38, DISPLAY_HEIGHT-60), 1, TEXT_GRAY)
+weather_icon_animate = make_my_label(weather_font, (1.0, 1.0), (DISPLAY_WIDTH/2+38, DISPLAY_HEIGHT-40), 1, TEXT_YELLOW)
+
 def animated_font(glyph1, glyph2, glyph3, glyph4, glyph5):
     weather_icon_base.text = f"{glyph1}"
     weather_icon_animate.text = f"{glyph2}"
