@@ -1,4 +1,4 @@
-This is just a quick demoonstration of a Sparkle.py library change that makes a single sparkle look cleaner.
+This is just a quick demonstration of a Sparkle.py library change that makes a single sparkle look cleaner.
 This is a before and after demonstration with the library change.
 
 
