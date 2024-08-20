@@ -14,7 +14,7 @@
 You cannot drive 5V-12V motors from a 3.3V microcontroller alone.
 
 ### External Power Supply Required:
-- You can drive the motor featherwing with an external 9V or 12V power supply.
+- You can drive the motor featherwing with an external 5V, 9V, or 12V power supply rated for at least 1.5 amps.
 - A female barrel jack adapter is required to get power to the terminals on the featherwing.
 
 ![Motor_FeatherWing](https://github.com/user-attachments/assets/c5faf3c9-ce86-4347-8d9f-8b8e53042343)
