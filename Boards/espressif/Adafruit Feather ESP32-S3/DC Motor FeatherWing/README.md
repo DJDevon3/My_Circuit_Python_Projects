@@ -35,6 +35,8 @@ You cannot drive 5V-12V motors from a 3.3V microcontroller alone.
 - Easily custom code all dispenser logic with Circuit Python
 
 ### Disadvantages:
-- Finding a suitable recharageable battery at higher voltages means going with 1S or 2S RC batteries (7.2V or 8.4V) with Deans Plug for swapping out batteries.
-- 2 separate batteries and voltages (Feather must be 5V USB or 3.7V LiPo powered). Feather cannot use power from high voltage side.
-- This causes board stacking, batteries, PIR sensor, and motor to require a much larger enclosure.
+- Finding a suitable recharageable battery at higher voltages means going with 1S or 2S RC batteries (7.2V or 8.4V) and Deans Plug for swapping out batteries.
+- There is no easy rechargable solution because this setup requires 2 power sources of different voltages.
+- Feather must be 5V USB or 3.7V LiPo powered.
+- Feather cannot use power from high voltage side.
+- This causes a Feather stack, batteries, PIR sensor, and motor to require a much larger enclosure.
