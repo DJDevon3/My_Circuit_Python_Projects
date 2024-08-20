@@ -25,6 +25,11 @@ You cannot drive 5V-12V motors from a 3.3V microcontroller alone.
 
 ![IMG_0072](https://github.com/user-attachments/assets/28b96c72-c33c-4c0f-b874-d79c48edd41e)
 
+## PIR Sensor:
+- Sensitivity & Time should be adjusted to their lowest settings
+- Sensor FOV is 180 degrees
+- Reduce vision of PIR sensor with a housing so it only activates in a small area.
+
 ### Advantages:
 - Every component is easily replaceable or repairable compared to commercial dispensers
 - Easily custom code all dispenser logic with Circuit Python
