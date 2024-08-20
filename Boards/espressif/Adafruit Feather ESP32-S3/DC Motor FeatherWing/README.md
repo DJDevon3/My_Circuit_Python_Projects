@@ -21,6 +21,7 @@ You cannot drive 5V-12V motors from a 3.3V microcontroller alone.
 ![Motor_FeatherWing](https://github.com/user-attachments/assets/c5faf3c9-ce86-4347-8d9f-8b8e53042343)
 
 ### Wiring:
+- Feather must be powered separately from the Featherwing, either with a USB cable or 3.7V LiPo
 - For motors that require more than 3.3V or 500ma load a dedicated motor driver must be used.
 - The Adafruit Motor Featherwing is excellent but also overkill since only 1 motor is used here (it can run up to 4).
 
