@@ -1,4 +1,5 @@
 ## Motion Activated Peristaltic Soap Dispenser
+- Can also be used for motion activated plant watering
 
 ### Hardware:
 - [Adafruit ESP32-S3 Feather 4MB Flash 2MB PSRAM](https://www.adafruit.com/product/5477) (Any feather will work, this is what I had laying around)
