@@ -1,0 +1,132 @@
+{
+  "base_grid_size": [
+    10,
+    4
+  ],
+  "rows": [
+    {
+      "name": "row0",
+      "keys": [
+        {
+          "label": "1"
+        },
+        {
+          "label": "2"
+        },
+        {
+          "label": "3"
+        },
+        {
+          "label": "4"
+        },
+        {
+          "label": "5"
+        },
+        {
+          "label": "6"
+        },
+        {
+          "label": "7"
+        },
+        {
+          "label": "8"
+        },
+        {
+          "label": "9"
+        },
+        {
+          "label": "0"
+        }
+      ]
+    },
+    {
+      "name": "row1",
+      "keys": [
+        {
+          "label": "-"
+        },
+        {
+          "label": "/"
+        },
+        {
+          "label": "\:"
+        },
+        {
+          "label": ";"
+        },
+        {
+          "label": "("
+        },
+        {
+          "label": ")"
+        },
+        {
+          "label": "$"
+        },
+        {
+          "label": "&"
+        },
+        {
+          "label": "@"
+        },
+        {
+          "label": ""
+        }
+      ]
+    },
+    {
+      "name": "row2",
+      "keys": [
+        {
+          "label": "#+="
+        },
+        {
+          "label": "."
+        },
+        {
+          "label": ","
+        },
+        {
+          "label": "?"
+        },
+        {
+          "label": "!"
+        },
+        {
+          "label": "'"
+        },
+        {
+          "label": "\uf191",
+          "key_value": 42,
+          "font": "symbol_font",
+          "scale": 1,
+          "col_span": 4
+        }
+      ]
+    },
+    {
+      "name": "row3",
+      "keys": [
+        {
+          "label": "ABC",
+          "key_value": 225,
+          "col_span": 2
+        },
+        {
+          "label": ":)",
+          "key_value": 226
+        },
+        {
+          "label": "space",
+          "key_value": " ",
+          "col_span": 5
+        },
+        {
+          "label": "return",
+          "key_value": 40,
+          "col_span": 4
+        }
+      ]
+    }
+  ]
+}

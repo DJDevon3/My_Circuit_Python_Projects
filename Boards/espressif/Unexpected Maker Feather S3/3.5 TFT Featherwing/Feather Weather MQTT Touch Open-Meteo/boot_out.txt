@@ -1,0 +1,3 @@
+Adafruit CircuitPython 9.2.1 on 2024-11-20; FeatherS3 with ESP32S3
+Board ID:unexpectedmaker_feathers3
+UID:CEADB314CB40

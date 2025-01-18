@@ -1,0 +1,6 @@
+WIFI_SSID = "YOUR_WIFI_SSID"
+WIFI_PASSWORD = "YOUR_WIFI_PASSWORD" 
+LATITUDE = "40.03" # Defaults to AdafruitHQ
+LONGITUDE = "-76.36"
+ELEVATION = "7"  # in meters
+TIMEZONE = "America/New_York"

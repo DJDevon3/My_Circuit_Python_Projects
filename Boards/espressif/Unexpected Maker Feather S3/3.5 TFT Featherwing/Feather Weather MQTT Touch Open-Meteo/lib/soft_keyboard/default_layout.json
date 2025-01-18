@@ -1,0 +1,232 @@
+{
+  "base_grid_size": [
+    14,
+    5
+  ],
+  "rows": [
+    {
+      "name": "row0",
+      "keys": [
+        {
+          "label": "`"
+        },
+        {
+          "label": "1"
+        },
+        {
+          "label": "2"
+        },
+        {
+          "label": "3"
+        },
+        {
+          "label": "4"
+        },
+        {
+          "label": "5"
+        },
+        {
+          "label": "6"
+        },
+        {
+          "label": "7"
+        },
+        {
+          "label": "8"
+        },
+        {
+          "label": "9"
+        },
+        {
+          "label": "0"
+        },
+        {
+          "label": "-"
+        },
+        {
+          "label": "<-|",
+          "key_value": 42,
+          "col_span": 2
+
+        }
+      ]
+    },
+    {
+      "name": "row1",
+      "keys": [
+        {
+          "label": "Q"
+        },
+        {
+          "label": "W"
+        },
+        {
+          "label": "E"
+        },
+        {
+          "label": "R"
+        },
+        {
+          "label": "T"
+        },
+        {
+          "label": "Y"
+        },
+        {
+          "label": "U"
+        },
+        {
+          "label": "I"
+        },
+        {
+          "label": "O"
+        },
+        {
+          "label": "P"
+        },
+        {
+          "label": "["
+        },
+        {
+          "label": "]"
+        },
+        {
+          "label": "="
+        },
+        {
+          "label": "\\"
+        }
+      ]
+    },
+    {
+      "name": "row2",
+      "keys": [
+        {
+          "label": "A"
+        },
+        {
+          "label": "S"
+        },
+        {
+          "label": "D"
+        },
+        {
+          "label": "F"
+        },
+        {
+          "label": "G"
+        },
+        {
+          "label": "H"
+        },
+        {
+          "label": "J"
+        },
+        {
+          "label": "K"
+        },
+        {
+          "label": "L"
+        },
+        {
+          "label": ";"
+        },
+        {
+          "label": "'"
+        },
+        {
+          "label": "ENTER",
+          "key_value": 40,
+          "col_span": 3
+        }
+      ]
+    },
+    {
+      "name": "row3",
+      "keys": [
+        {
+          "label": "Z"
+        },
+        {
+          "label": "X"
+        },
+        {
+          "label": "C"
+        },
+        {
+          "label": "V"
+        },
+        {
+          "label": "B"
+        },
+        {
+          "label": "N"
+        },
+        {
+          "label": "M"
+        },
+        {
+          "label": ","
+        },
+        {
+          "label": "."
+        },
+        {
+          "label": "/"
+        },
+        {
+          "label": "\""
+        },
+        {
+          "label": "SHIFT",
+          "key_value": 225,
+          "col_span": 3
+        }
+      ]
+    },
+    {
+      "name": "row4",
+      "keys": [
+        {
+          "label": "MOBL",
+          "key_value": "layout:mobile_layout.json",
+          "col_span": 2
+        },
+        {
+          "label": "ALT",
+          "key_value": 226,
+          "col_span": 2
+        },
+        {
+          "label": "SPACE",
+          "key_value": " ",
+          "col_span": 6
+        },
+        {
+          "label": "\uf060",
+          "key_value": 80,
+          "font": "symbol_font",
+          "scale": 1
+        },
+        {
+          "label": "\uf061",
+          "key_value": 81,
+          "font": "symbol_font",
+          "scale": 1
+        },
+        {
+          "label": "\uf062",
+          "key_value": 82,
+          "font": "symbol_font",
+          "scale": 1
+        },
+        {
+          "label": "\uf063",
+          "key_value": 83,
+          "font": "symbol_font",
+          "scale": 1
+        }
+      ]
+    }
+  ]
+}
