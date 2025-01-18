@@ -545,6 +545,8 @@ Windows Command Line Interface (Python, PIP, & ESPTool required)
 ```py
 # If you do not have esptool installed for python yet.
 C:\Users\Devon>python -m pip install esptool
+# If you want to update an existing esptool installation
+C:\Users\Devon>python -m pip install --upgrade esptool
 ```
 ```py
 # Example factory reset of a Feather ESP32-S2
