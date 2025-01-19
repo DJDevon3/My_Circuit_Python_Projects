@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2024 DJDevon3
+# SPDX-FileCopyrightText: 2025 DJDevon3
 # SPDX-License-Identifier: MIT
 # Coded for Circuit Python 9.2.3
 """Matrix Portal S3 NTP Clock"""
@@ -38,8 +38,6 @@ DISPLAY_HEIGHT = 32
 DISPLAY_ROTATION = 0
 BIT_DEPTH = 4
 AUTO_REFRESH = True
-BLINK = False
-DEBUG = False
 
 matrix = rgbmatrix.RGBMatrix(
     width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT, bit_depth=BIT_DEPTH,
@@ -55,7 +53,7 @@ matrix = rgbmatrix.RGBMatrix(
     latch_pin=board.MTX_LAT,
     output_enable_pin=board.MTX_OE,
     doublebuffer=True)
-
+    
 # Associate the RGB matrix with a Display so we can use displayio
 display = framebufferio.FramebufferDisplay(matrix, auto_refresh=AUTO_REFRESH, rotation=DISPLAY_ROTATION)
 
@@ -72,7 +70,7 @@ def time_calc(input_time):
     if input_time < 86400:
         return f"{input_time / 60 / 60:.0f} hours"
     return f"{input_time / 60 / 60 / 24:.1f} days"
-
+    
 def _format_datetime(datetime):
     """ F-String formatted struct time conversion"""
     return (f"{datetime.tm_mon:02}/" +
@@ -87,7 +85,7 @@ def _format_mil_time(datetime):
     return (f"{datetime.tm_hour:02}:" +
             f"{datetime.tm_min:02}")
 
-
+ 
 def _format_time(datetime):
     hour = datetime.tm_hour % 12
     if hour == 0:
@@ -136,7 +134,7 @@ while True:
     clock_label.text = f"{current_time}"
 
     print(f"Current Time: {current_time}")
-
+    
     print("Board Uptime: ", time_calc(board_uptime))
     print("Next Update: ", time_calc(sleep_time))
     print("===============================")
