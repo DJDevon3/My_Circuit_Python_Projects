@@ -1,4 +1,5 @@
 ## Circuit Python Feather Weather for Unexpected Maker FeatherS3
+## Uses Open-Meteo.com for free online weather updates
 
 ![screenshot](https://github.com/user-attachments/assets/d3e02e73-cdfe-4ec6-bc5f-0e70463ea007)
 
