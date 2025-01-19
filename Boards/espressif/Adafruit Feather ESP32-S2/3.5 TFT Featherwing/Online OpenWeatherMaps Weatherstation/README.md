@@ -1,3 +1,6 @@
+# This project no longer works (deprecated) because OpenWeatherMaps API is no longer freely open to the public.
+# Please use [Feather Weather for Open-Meteo](https://github.com/DJDevon3/My_Circuit_Python_Projects/tree/main/Boards/espressif/Unexpected%20Maker%20Feather%20S3/3.5%20TFT%20Featherwing/Feather%20Weather%20MQTT%20Touch%20Open-Meteo) instead. 
+
 ![screenshot](https://user-images.githubusercontent.com/49322231/189921153-f18aa425-7e45-4438-804b-2c6da8016deb.jpg)
 
 # Online OpenWeatherMaps Weatherstation (for ESP32-S2)
