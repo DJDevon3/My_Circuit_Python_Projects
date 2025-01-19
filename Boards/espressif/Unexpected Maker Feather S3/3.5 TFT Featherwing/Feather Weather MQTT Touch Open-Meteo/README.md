@@ -13,7 +13,7 @@
 - Pulls geographic data via latitude/longitude from Open-Meteo (all online elements are labeled in blue except for voltage)
 - Reads Temperature, Humidity, Pressure from a BME280 sensor (all sensor elements are labeled in orange)
 - Publishes sensor data to AdafruitIO (free API) for graphing
-- Built-in battery charger, voltage monitor, and USB 5V sensing for battery recharging
+- Built-in battery charger, voltage monitor, and USB 5V sensing (for showing plug icon)
 - Voltage label changes color & icon depending on charge level
 - Sunrise/Sunset timestamps at the top.
 - Updates every 15 minutes (this is the maximum allowed by Open-Meteo's free api)
