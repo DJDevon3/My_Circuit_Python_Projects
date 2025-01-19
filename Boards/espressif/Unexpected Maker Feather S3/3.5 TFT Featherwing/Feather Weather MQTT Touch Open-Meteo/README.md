@@ -49,3 +49,7 @@ System Information including SD Card details
 Shows currently connected SSID with obfuscated stars
 
 ![wifi_settings](https://github.com/user-attachments/assets/a7cad19a-b8f0-4018-a660-f5ab80f96590)
+
+[Adafruit IO](https://io.adafruit.com) Graphing your published AIO data (browser screenshot)
+
+![AdafruitIO](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/refs/heads/main/Boards/espressif/Unexpected%20Maker%20Feather%20S3/3.5%20TFT%20Featherwing/Feather%20Weather%20MQTT%20Touch%20Open-Meteo/Pictures/AdafruitIO_Dashboard_Graphing.PNG)
