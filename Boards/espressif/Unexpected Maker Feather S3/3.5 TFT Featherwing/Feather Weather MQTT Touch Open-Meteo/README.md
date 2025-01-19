@@ -42,7 +42,7 @@ You can scroll back and forth between Main Page, Page 2, and Page 3 with top rig
 
 ![page3](https://github.com/user-attachments/assets/5e00941e-560d-475d-abd1-08df922b91bb)
 
-Display brightness touch slider
+Display brightness touch slider (preferences work in progress)
 
 ![preferences](https://github.com/user-attachments/assets/3325898a-331b-44fd-907e-d26a43ae8109)
 
