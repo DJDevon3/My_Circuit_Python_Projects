@@ -10,7 +10,7 @@
 - [Sandisk 128GB Micro SD Card](https://www.amazon.com/gp/product/B073JYC4XM)
 
 ### Features
-- Pulls geographic data via latitude/longitude from Open-Meteo (all online elements are labeled in blue except for voltage)
+- Requests geographic weather data via latitude/longitude from Open-Meteo (all online elements are labeled in blue except for voltage)
 - Reads Temperature, Humidity, Pressure from a BME280 sensor (all sensor elements are labeled in orange)
 - Publishes sensor data to AdafruitIO (free API) for graphing
 - Built-in battery charger, voltage monitor, and USB 5V sensing (for showing plug icon)
