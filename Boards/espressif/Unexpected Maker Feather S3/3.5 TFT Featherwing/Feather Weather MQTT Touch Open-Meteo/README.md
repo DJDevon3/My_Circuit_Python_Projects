@@ -30,6 +30,9 @@
 - Current weather description
 - URL for current weather icon (unused)
 
+### Font
+- [Good Times BDF Font](https://github.com/DJDevon3/GoodTimes_BDF_Font)
+
 Touch Menu Popout
 
 ![menu_popout](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/refs/heads/main/Boards/espressif/Unexpected%20Maker%20Feather%20S3/3.5%20TFT%20Featherwing/Feather%20Weather%20MQTT%20Touch%20Open-Meteo/Pictures/menu_popout.png)
