@@ -1,3 +1,6 @@
+# This project no longer works (deprecated) because OpenWeatherMaps API is no longer freely open to the public.
+# Please use [Feather Weather for Open-Meteo](https://github.com/DJDevon3/My_Circuit_Python_Projects/tree/main/Boards/espressif/Unexpected%20Maker%20Feather%20S3/3.5%20TFT%20Featherwing/Feather%20Weather%20MQTT%20Touch%20Open-Meteo) instead. 
+
 ![screenshot](https://user-images.githubusercontent.com/49322231/235323187-4bcce094-0927-4b9e-b5cf-2646f0b6944d.jpg)
 - Labels in blue are from online data (Adafruit HQ in NY), orange is local sensors (Florida).
 - Default online lat/lon is set to Adafruit HQ location, ideally you'd also this this to your location
