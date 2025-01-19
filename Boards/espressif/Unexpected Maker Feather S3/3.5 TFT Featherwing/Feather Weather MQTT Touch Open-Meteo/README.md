@@ -54,7 +54,7 @@ Soft Keyboard for changing WiFi Credentials (work in progress)
 
 ![soft_keyboard](https://github.com/user-attachments/assets/c6bd3da9-2485-4272-b373-84ef50c29fd4)
 
-System Information including SD Card details
+System Information including SD Card details (if you have an SD Card inserted into the TFT Featherwing)
 
 ![system_info](https://github.com/user-attachments/assets/e64be2ca-11db-48eb-b65b-856342e5eb7d)
 
