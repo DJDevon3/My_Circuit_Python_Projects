@@ -1,4 +1,4 @@
-## Circuit Python Feather Weather on Unexpected Maker FeatherS3
+## Circuit Python Feather Weather for Unexpected Maker FeatherS3
 
 ![screenshot](https://github.com/user-attachments/assets/d3e02e73-cdfe-4ec6-bc5f-0e70463ea007)
 
