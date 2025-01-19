@@ -34,11 +34,11 @@ Touch Menu Popout
 
 ![menu_popout](https://raw.githubusercontent.com/DJDevon3/My_Circuit_Python_Projects/refs/heads/main/Boards/espressif/Unexpected%20Maker%20Feather%20S3/3.5%20TFT%20Featherwing/Feather%20Weather%20MQTT%20Touch%20Open-Meteo/Pictures/menu_popout.png)
 
-Customizable blank page 2
+Customizable blank page 2 (top right button)
 
 ![page2](https://github.com/user-attachments/assets/04a1707c-1c26-4d3d-afd7-6dc583d4bfa1)
 
-Customizable blank page 3
+You can scroll back and forth between Main Page, Page 2, and Page 3 with top right navigation buttons. 
 
 ![page3](https://github.com/user-attachments/assets/5e00941e-560d-475d-abd1-08df922b91bb)
 
