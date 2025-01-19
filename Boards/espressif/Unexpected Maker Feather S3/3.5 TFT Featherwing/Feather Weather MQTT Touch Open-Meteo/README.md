@@ -1,10 +1,6 @@
-### My Circuit Python Feather Weather on Unexpected Maker FeatherS3
+## Circuit Python Feather Weather on Unexpected Maker FeatherS3
 
 ![screenshot](https://github.com/user-attachments/assets/d3e02e73-cdfe-4ec6-bc5f-0e70463ea007)
-
-### My Circuit Python Feather Weather on Unexpected Maker FeatherS3
-- MQTT Publishing to AdafruitIO from onboard BME280 sensors
-- Multiple customizable pages designed for the TFT Featherwing touch display
 
 ### Hardware:
 - Unexpected Maker FeatherS3 [Adafruit Store](https://www.adafruit.com/product/5399) or [Unexpected Maker Store](https://unexpectedmaker.com/shop.html#!/FeatherS3/p/577111310)
@@ -21,6 +17,18 @@
 - Sunrise/Sunset timestamps at the top.
 - Updates every 15 minutes (this is the maximum allowed by Open-Meteo's free api)
 - Multi-page touch navigation GUI
+
+### Open-Meteo Endpoints (based on your lattitude/longitude)
+- Timestamp with timezone offset
+- Relative Humidity
+- Barometric Pressure
+- Temperature
+- Wind speed
+- Sunrise
+- Sunset
+- Is day or night boolean
+- Current weather description
+- URL for current weather icon (unused)
 
 Touch Menu Popout
 
