@@ -1,3 +1,6 @@
+# This project no longer works (deprecated) because OpenWeatherMaps API is no longer freely open to the public.
+# Please use [Feather Weather for Open-Meteo](https://github.com/DJDevon3/My_Circuit_Python_Projects/tree/main/Boards/espressif/Unexpected%20Maker%20Feather%20S3/3.5%20TFT%20Featherwing/Feather%20Weather%20MQTT%20Touch%20Open-Meteo) instead. 
+
 ## ESP32-S3 Feather Weather MQTT with Touchscreen
 - pulls data from OpenWeatherMaps API in JSON format to display (including timezone from lat/lon)
 - local environment data from BME280 sensor connected via STEMMA
