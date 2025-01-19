@@ -4,7 +4,7 @@
 
 ### Hardware:
 - Unexpected Maker FeatherS3 [Adafruit Store](https://www.adafruit.com/product/5399) or [Unexpected Maker Store](https://unexpectedmaker.com/shop.html#!/FeatherS3/p/577111310)
-- [Adafruit 3.5" TFT Featherwing](https://www.adafruit.com/product/3651)
+- [Adafruit 3.5" 480x320 TFT Featherwing](https://www.adafruit.com/product/3651)
 - [Adafruit BME280](https://www.adafruit.com/product/2652) I2C Temperature/Humidity/Barometric Pressure Sensor module (shown in orange labels)
 - [Adafruit 10ah Lipo Battery](https://www.adafruit.com/product/5035)
 - [Sandisk 128GB Micro SD Card](https://www.amazon.com/gp/product/B073JYC4XM)
