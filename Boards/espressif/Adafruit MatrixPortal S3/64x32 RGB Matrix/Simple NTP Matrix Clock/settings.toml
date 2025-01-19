@@ -1,0 +1,5 @@
+CIRCUITPY_WIFI_SSID = "YOUR_SSID"
+CIRCUITPY_WIFI_PASSWORD = "YOUR_SSID_PASSWORD"
+AIO_USERNAME = "YOUR_AIO_USERNAME"
+AIO_KEY = "YOUR_AIO_KEY"
+timezone = "America/New_York"  # Check http://worldtimeapi.org/timezones
