@@ -1,3 +1,5 @@
+# This project no longer works (deprecated) because OpenWeatherMaps API is no longer freely open to the public.
+
 # ESP32-S3 Online-Offline Weatherstation
 ## (not recommended until stable S3 release)
 - Connects to OpenWeatherMaps for location and timezone aware weather status
