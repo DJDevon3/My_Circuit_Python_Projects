@@ -27,13 +27,9 @@ requests = adafruit_requests.Session(pool)
 # Use settings.toml for credentials
 ssid = os.getenv("CIRCUITPY_WIFI_SSID")
 password = os.getenv("CIRCUITPY_WIFI_PASSWORD")
-AIO_USERNAME = os.getenv("AIO_USERNAME")
-AIO_KEY = os.getenv("AIO_KEY")
-timezone = os.getenv("timezone")
 TZ_OFFSET = -5  # time zone offset in hours from UTC
 Time_Format = "24"  # 12 hour (AM/PM) or 24 hour (military) clock
-# NTP poll time interval in seconds
-sleep_time = 60
+sleep_time = 60  # NTP poll time interval in seconds
 
 DISPLAY_WIDTH = 64
 DISPLAY_HEIGHT = 32
@@ -41,6 +37,7 @@ DISPLAY_ROTATION = 0
 BIT_DEPTH = 4
 AUTO_REFRESH = True
 
+# Instantiate 64x32 Matrix Panel
 matrix = rgbmatrix.RGBMatrix(
     width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT, bit_depth=BIT_DEPTH,
     rgb_pins=[
@@ -56,10 +53,11 @@ matrix = rgbmatrix.RGBMatrix(
     output_enable_pin=board.MTX_OE,
     doublebuffer=True)
 
-# Associate the RGB matrix with a Display so we can use displayio
+# Associate RGB matrix as a Display so we can use displayio
 display = framebufferio.FramebufferDisplay(matrix, auto_refresh=AUTO_REFRESH, rotation=DISPLAY_ROTATION)
 
-# Publicly Open API (no credentials required)
+# Publicly Open NTP Time Server
+# No AdafruitIO credentials required
 ntp = adafruit_ntp.NTP(pool, tz_offset=TZ_OFFSET)
 rtc.RTC().datetime = ntp.datetime
 
@@ -70,8 +68,8 @@ def time_calc(input_time):
     if input_time < 3600:
         return f"{input_time / 60:.0f} minutes"
     if input_time < 86400:
-        return f"{input_time / 60 / 60:.0f} hours"
-    return f"{input_time / 60 / 60 / 24:.1f} days"
+        return f"{input_time / 60 / 60:.1f} hours"
+    return f"{input_time / 60 / 60 / 24:.2f} days"
 
 def _format_datetime(datetime):
     """ F-String formatted struct time conversion"""
@@ -113,7 +111,7 @@ TEXT_TEAL = 0xB2D8D8
 TEXT_WHITE = 0xFFFFFF
 TEXT_YELLOW = 0xFFFF00
 
-
+# To use custom font uncomment below and change terminalio.FONT
 #font_IBMPlex = bitmap_font.load_font("/fonts/IBMPlexMono-Medium-24_jep.bdf")
 
 clock_label = label.Label(terminalio.FONT)
@@ -139,4 +137,4 @@ while True:
     print("Board Uptime: ", time_calc(board_uptime))
     print("Next Update: ", time_calc(sleep_time))
     print("===============================")
-    time.sleep(sleep_time)
+    time.sleep(sleep_time)  # poll rate is sleep_time
