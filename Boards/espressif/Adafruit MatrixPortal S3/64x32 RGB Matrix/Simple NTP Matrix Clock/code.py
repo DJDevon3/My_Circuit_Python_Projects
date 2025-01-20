@@ -138,7 +138,8 @@ display.root_group = main_group
 print("===============================")
 while True:
     now = time.localtime()
-    print(f"Now: {now}")
+    if DEBUG_TIME:
+        print(f"Now: {now}")
     board_uptime = time.monotonic()
 
     current_time = "{}".format(_format_time(now,format=Time_Format))
