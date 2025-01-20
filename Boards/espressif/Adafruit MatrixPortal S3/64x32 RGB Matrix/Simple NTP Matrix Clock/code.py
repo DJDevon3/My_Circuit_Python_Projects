@@ -7,6 +7,7 @@ import os
 import time
 import board
 import displayio
+import terminalio
 import rgbmatrix
 import framebufferio
 import wifi
@@ -30,8 +31,9 @@ AIO_USERNAME = os.getenv("AIO_USERNAME")
 AIO_KEY = os.getenv("AIO_KEY")
 timezone = os.getenv("timezone")
 TZ_OFFSET = -5  # time zone offset in hours from UTC
+Time_Format = "Civilian"  # Military or Civilian
 # NTP poll time interval in seconds
-sleep_time = 30
+sleep_time = 60
 
 DISPLAY_WIDTH = 64
 DISPLAY_HEIGHT = 32
@@ -53,7 +55,7 @@ matrix = rgbmatrix.RGBMatrix(
     latch_pin=board.MTX_LAT,
     output_enable_pin=board.MTX_OE,
     doublebuffer=True)
-    
+
 # Associate the RGB matrix with a Display so we can use displayio
 display = framebufferio.FramebufferDisplay(matrix, auto_refresh=AUTO_REFRESH, rotation=DISPLAY_ROTATION)
 
@@ -70,7 +72,7 @@ def time_calc(input_time):
     if input_time < 86400:
         return f"{input_time / 60 / 60:.0f} hours"
     return f"{input_time / 60 / 60 / 24:.1f} days"
-    
+
 def _format_datetime(datetime):
     """ F-String formatted struct time conversion"""
     return (f"{datetime.tm_mon:02}/" +
@@ -80,20 +82,20 @@ def _format_datetime(datetime):
             f"{datetime.tm_min:02}:" +
             f"{datetime.tm_sec:02}")
 
-def _format_mil_time(datetime):
-    """ F-String formatted struct time conversion"""
-    return (f"{datetime.tm_hour:02}:" +
-            f"{datetime.tm_min:02}")
-
- 
-def _format_time(datetime):
-    hour = datetime.tm_hour % 12
-    if hour == 0:
-        hour = 12
-    am_pm = "AM"
-    if datetime.tm_hour / 12 >= 1:
-        am_pm = "PM"
-    return "{:d}:{:02d} {}".format(hour, datetime.tm_min, am_pm)
+def _format_time(datetime,format="12"):
+    """ Time is 12 hour or 24 hour format"""
+    if format == "12":
+        hour = datetime.tm_hour % 12
+        if hour == 0:
+            hour = 12
+        am_pm = "AM"
+        if datetime.tm_hour / 12 >= 1:
+            am_pm = "PM"
+        return (f"{hour:d}:" +
+                f"{datetime.tm_min} {am_pm}")
+    if format == "24":
+        return (f"{datetime.tm_hour:02}:" +
+                f"{datetime.tm_min:02}")
 
 
 # Quick Colors for Labels
@@ -112,9 +114,9 @@ TEXT_WHITE = 0xFFFFFF
 TEXT_YELLOW = 0xFFFF00
 
 
-font_IBMPlex = bitmap_font.load_font("/fonts/IBMPlexMono-Medium-24_jep.bdf")
+#font_IBMPlex = bitmap_font.load_font("/fonts/IBMPlexMono-Medium-24_jep.bdf")
 
-clock_label = label.Label(font_IBMPlex)
+clock_label = label.Label(terminalio.FONT)
 clock_label.anchor_point = (0.5, 0.5)
 clock_label.anchored_position = (DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2)
 clock_label.scale = 1
@@ -130,11 +132,11 @@ while True:
     now = time.localtime()
     board_uptime = time.monotonic()
 
-    current_time = "{}".format(_format_mil_time(now))
+    # change to "12" for AM/PM formatting
+    current_time = "{}".format(_format_time(now,format="24"))
     clock_label.text = f"{current_time}"
 
     print(f"Current Time: {current_time}")
-    
     print("Board Uptime: ", time_calc(board_uptime))
     print("Next Update: ", time_calc(sleep_time))
     print("===============================")
