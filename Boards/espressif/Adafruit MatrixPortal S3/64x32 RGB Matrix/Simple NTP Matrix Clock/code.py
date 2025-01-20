@@ -31,7 +31,7 @@ AIO_USERNAME = os.getenv("AIO_USERNAME")
 AIO_KEY = os.getenv("AIO_KEY")
 timezone = os.getenv("timezone")
 TZ_OFFSET = -5  # time zone offset in hours from UTC
-Time_Format = "Civilian"  # Military or Civilian
+Time_Format = "24"  # 12 hour (AM/PM) or 24 hour (military) clock
 # NTP poll time interval in seconds
 sleep_time = 60
 
@@ -132,8 +132,7 @@ while True:
     now = time.localtime()
     board_uptime = time.monotonic()
 
-    # change to "12" for AM/PM formatting
-    current_time = "{}".format(_format_time(now,format="24"))
+    current_time = "{}".format(_format_time(now,format=Time_Format))
     clock_label.text = f"{current_time}"
 
     print(f"Current Time: {current_time}")
