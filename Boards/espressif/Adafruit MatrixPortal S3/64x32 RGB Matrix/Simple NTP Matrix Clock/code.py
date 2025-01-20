@@ -6,6 +6,7 @@
 import os
 import time
 import board
+import microcontroller
 import displayio
 import terminalio
 import rgbmatrix
@@ -60,11 +61,6 @@ display = framebufferio.FramebufferDisplay(matrix, auto_refresh=AUTO_REFRESH, ro
 # Publicly Open NTP Time Server
 # No AdafruitIO credentials required
 ntp = adafruit_ntp.NTP(pool, tz_offset=TZ_OFFSET)
-try:
-    rtc.RTC().datetime = ntp.datetime
-except OSError as e:
-    print(f"NTP Error: {e}")
-    time.sleep(10)
 
 def time_calc(input_time):
     """Converts seconds to minutes/hours/days"""
@@ -135,18 +131,31 @@ main_group = displayio.Group()
 main_group.append(clock_label)
 display.root_group = main_group
 
+last = time.monotonic()
 print("===============================")
 while True:
-    now = time.localtime()
-    if DEBUG_TIME:
-        print(f"Now: {now}")
-    board_uptime = time.monotonic()
+    while (time.monotonic() - last) <= sleep_time:
+        try:
+            rtc.RTC().datetime = ntp.datetime
+        except OSError as e:
+            print(f"NTP Error: {e}")
+            time.sleep(10)
+        
+        now = time.localtime()
+        if DEBUG_TIME:
+            print(f"Now: {now}")
+        board_uptime = time.monotonic()
 
-    current_time = "{}".format(_format_time(now,format=Time_Format))
-    clock_label.text = f"{current_time}"
-
-    print(f"Current Time: {current_time}")
-    print("Board Uptime: ", time_calc(board_uptime))
-    print("Next Update: ", time_calc(sleep_time))
-    print("===============================")
-    time.sleep(sleep_time)  # poll rate is sleep_time
+        current_time = "{}".format(_format_time(now,format=Time_Format))
+        clock_label.text = f"{current_time}"
+        
+        print(f"Current Time: {current_time}")
+        print("Board Uptime: ", time_calc(board_uptime))
+        print("Next Update: ", time_calc(sleep_time))
+        print("===============================")
+        time.sleep(sleep_time)  # poll rate is sleep_time
+        
+        if time.monotonic() >= 86400:
+            print("24 Hour Uptime Restart")
+            microcontroller.reset()
+    last = time.monotonic()
