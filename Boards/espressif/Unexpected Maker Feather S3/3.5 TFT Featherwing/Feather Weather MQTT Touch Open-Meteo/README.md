@@ -4,7 +4,7 @@
 ![screenshot](https://github.com/user-attachments/assets/d3e02e73-cdfe-4ec6-bc5f-0e70463ea007)
 
 ### Hardware:
-- Unexpected Maker FeatherS3 (16MB Flash 8MB RAM) [Adafruit Store](https://www.adafruit.com/product/5399) or [Unexpected Maker Store](https://unexpectedmaker.com/shop.html#!/FeatherS3/p/577111310)
+- Unexpected Maker FeatherS3 (16MB Flash 8MB RAM) [Adafruit Store](https://www.adafruit.com/product/5399) (USA) or [Unexpected Maker Store](https://unexpectedmaker.com/shop.html#!/FeatherS3/p/577111310) (Australia)
 - [Adafruit 3.5" 480x320 TFT Featherwing](https://www.adafruit.com/product/3651)
 - [Adafruit BME280](https://www.adafruit.com/product/2652) I2C Temperature/Humidity/Barometric Pressure Sensor module (shown in orange labels)
 - [Adafruit 10ah Lipo Battery](https://www.adafruit.com/product/5035)
