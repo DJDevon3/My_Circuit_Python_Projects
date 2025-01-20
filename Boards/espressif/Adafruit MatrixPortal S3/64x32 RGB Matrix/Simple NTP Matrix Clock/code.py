@@ -28,7 +28,7 @@ requests = adafruit_requests.Session(pool)
 ssid = os.getenv("CIRCUITPY_WIFI_SSID")
 password = os.getenv("CIRCUITPY_WIFI_PASSWORD")
 TZ_OFFSET = -5  # time zone offset in hours from UTC
-Time_Format = "24"  # 12 hour (AM/PM) or 24 hour (military) clock
+Time_Format = "12"  # 12 hour (AM/PM) or 24 hour (military) clock
 sleep_time = 60  # NTP poll time interval in seconds
 
 DISPLAY_WIDTH = 64
@@ -36,6 +36,7 @@ DISPLAY_HEIGHT = 32
 DISPLAY_ROTATION = 0
 BIT_DEPTH = 4
 AUTO_REFRESH = True
+DEBUG_TIME = False  # For manually testing times
 
 # Instantiate 64x32 Matrix Panel
 matrix = rgbmatrix.RGBMatrix(
@@ -59,7 +60,11 @@ display = framebufferio.FramebufferDisplay(matrix, auto_refresh=AUTO_REFRESH, ro
 # Publicly Open NTP Time Server
 # No AdafruitIO credentials required
 ntp = adafruit_ntp.NTP(pool, tz_offset=TZ_OFFSET)
-rtc.RTC().datetime = ntp.datetime
+try:
+    rtc.RTC().datetime = ntp.datetime
+except OSError as e:
+    print(f"NTP Error: {e}")
+    time.sleep(10)
 
 def time_calc(input_time):
     """Converts seconds to minutes/hours/days"""
@@ -84,16 +89,21 @@ def _format_time(datetime,format="12"):
     """ Time is 12 hour or 24 hour format"""
     if format == "12":
         hour = datetime.tm_hour % 12
+        min = datetime.tm_min
         if hour == 0:
             hour = 12
         am_pm = "AM"
         if datetime.tm_hour / 12 >= 1:
             am_pm = "PM"
-        return (f"{hour:d}:" +
-                f"{datetime.tm_min} {am_pm}")
+        if DEBUG_TIME:
+            # Set debug to True & change these to test different times
+            debug_hour=09
+            debug_min=09
+            return (f"{debug_hour:01}:{debug_min:02} {am_pm}")
+        else:
+            return (f"{hour:01}:{min:02} {am_pm}")
     if format == "24":
-        return (f"{datetime.tm_hour:02}:" +
-                f"{datetime.tm_min:02}")
+        return (f"{datetime.tm_hour:02}:{datetime.tm_min:02}")
 
 
 # Quick Colors for Labels
@@ -128,6 +138,7 @@ display.root_group = main_group
 print("===============================")
 while True:
     now = time.localtime()
+    print(f"Now: {now}")
     board_uptime = time.monotonic()
 
     current_time = "{}".format(_format_time(now,format=Time_Format))
