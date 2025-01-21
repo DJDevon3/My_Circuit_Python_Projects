@@ -153,6 +153,7 @@ while True:
     now = time.localtime()
     if DEBUG_TIME:
         print(f"Now: {now}")
+        time.sleep(0.5)
     board_uptime = time.monotonic()
 
     current_time = "{}".format(_format_time(now, format=Time_Format))
@@ -165,7 +166,6 @@ while True:
     print("Board Uptime: ", time_calc(board_uptime))
     print("Next Update:", time_calc(SLEEP_TIME))
     print("Finished!")
-    time.sleep(0.5)
     print("===============================")
             
     if board_uptime > 86400:
