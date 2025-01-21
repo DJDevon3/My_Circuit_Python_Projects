@@ -130,7 +130,7 @@ clock_label = label.Label(terminalio.FONT)
 clock_label.anchor_point = (0.5, 0.5)
 clock_label.anchored_position = (DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2)
 clock_label.scale = 1
-clock_label.color = TEXT_ORANGE
+clock_label.color = TEXT_RED
 
 # Groups Setup
 main_group = displayio.Group()
