@@ -59,7 +59,10 @@ matrix = rgbmatrix.RGBMatrix(
     doublebuffer=True)
 
 # Associate RGB matrix as a Display so we can use displayio
-display = framebufferio.FramebufferDisplay(matrix, auto_refresh=AUTO_REFRESH, rotation=DISPLAY_ROTATION)
+display = framebufferio.FramebufferDisplay(
+        matrix, auto_refresh=AUTO_REFRESH,
+        rotation=DISPLAY_ROTATION
+)
 
 # Publicly Open NTP Time Server
 # No AdafruitIO credentials required
@@ -87,7 +90,15 @@ def _format_datetime(datetime):
             f"{datetime.tm_min:02}:" +
             f"{datetime.tm_sec:02}")
 
-def _format_time(datetime,format="12"):
+def _format_min(datetime):
+    """ Get the current minute"""
+    return (f"{datetime.tm_min:02}")
+
+def _format_sec(datetime):
+    """ Get the current minute"""
+    return (f"{datetime.tm_sec:02}")
+    
+def _format_time(datetime, format="12"):
     """ Time is 12 hour or 24 hour format"""
     if format == "12":
         hour = datetime.tm_hour % 12
@@ -99,8 +110,8 @@ def _format_time(datetime,format="12"):
             am_pm = "PM"
         if DEBUG_TIME:
             # Set debug to True & change these to test different times
-            debug_hour=09
-            debug_min=09
+            debug_hour = "09"
+            debug_min = "09"
             return (f"{debug_hour:01}:{debug_min:02} {am_pm}")
         else:
             return (f"{hour:01}:{min:02} {am_pm}")
@@ -124,7 +135,7 @@ TEXT_WHITE = 0xFFFFFF
 TEXT_YELLOW = 0xFFFF00
 
 # To use custom font uncomment below and change terminalio.FONT
-#font_IBMPlex = bitmap_font.load_font("/fonts/IBMPlexMono-Medium-24_jep.bdf")
+# font_IBMPlex = bitmap_font.load_font("/fonts/IBMPlexMono-Medium-24_jep.bdf")
 
 clock_label = label.Label(terminalio.FONT)
 clock_label.anchor_point = (0.5, 0.5)
@@ -137,7 +148,6 @@ main_group = displayio.Group()
 main_group.append(clock_label)
 display.root_group = main_group
 
-last = time.monotonic()
 print("===============================")
 while True:
     now = time.localtime()
@@ -145,25 +155,30 @@ while True:
         print(f"Now: {now}")
     board_uptime = time.monotonic()
 
-    current_time = "{}".format(_format_time(now,format=Time_Format))
+    current_time = "{}".format(_format_time(now, format=Time_Format))
+    current_min = "{}".format(_format_min(now))
+    current_sec = "{}".format(_format_sec(now))
     clock_label.text = f"{current_time}"
     
+    print(f"Monotonic: {time.monotonic()}")
+    print(f"Current Time: {current_time}")
+    print("Board Uptime: ", time_calc(board_uptime))
+    print("Next Update:", time_calc(SLEEP_TIME))
+    print("Finished!")
+    time.sleep(0.5)
+    print("===============================")
+            
     if board_uptime > 86400:
         print("24 Hour Uptime Restart")
         microcontroller.reset()
-    if (time.monotonic() - last) < SLEEP_TIME:
-        last = time.monotonic()
-        if DEBUG_TIME:
-            print(f"Monotonic: {time.monotonic()} {last}")
-            print(f"Current Time: {current_time}")
-            print("Board Uptime: ", time_calc(board_uptime))
-            print("Next Update:", time_calc(SLEEP_TIME))
-            print("Finished!")
-            print("===============================")
         
-        # Synchronize RTC from NTP every (SLEEP_TIME) seconds
+    # Synchronize RTC from NTP every 1 hour on the hour
+    print(f"Current Minute: {current_min}:{current_sec}")
+    if current_min is "00" and current_sec is "00":
+        time.sleep(0.5)
         try:
             rtc.RTC().datetime = ntp.datetime
+            print("------------------------------ Synchronized Time")
         except OSError as e:
             print(f"RTC or NTP Error: {e}")
             time.sleep(60)
