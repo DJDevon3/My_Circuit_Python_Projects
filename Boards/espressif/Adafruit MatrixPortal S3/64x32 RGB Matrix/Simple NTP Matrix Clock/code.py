@@ -90,7 +90,7 @@ def _format_min(datetime):
     return (f"{datetime.tm_min:02}")
 
 def _format_sec(datetime):
-    """ Get the current minute"""
+    """ Get the current second"""
     return (f"{datetime.tm_sec:02}")
     
 def _format_time(datetime, format="12"):
