@@ -167,7 +167,7 @@ while True:
         microcontroller.reset()
         
     # Synchronize RTC from NTP every 1 hour on the hour
-    if current_min == "20" and current_sec == "40":
+    if current_min == "00" and current_sec == "00":
         try:
             rtc.RTC().datetime = ntp.datetime
             print(f"Synchronized Time: {current_datestamp}")
