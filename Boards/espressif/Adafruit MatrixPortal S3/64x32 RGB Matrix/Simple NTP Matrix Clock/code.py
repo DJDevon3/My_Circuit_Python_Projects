@@ -29,8 +29,11 @@ requests = adafruit_requests.Session(pool)
 ssid = os.getenv("CIRCUITPY_WIFI_SSID")
 password = os.getenv("CIRCUITPY_WIFI_PASSWORD")
 TZ_OFFSET = -5  # time zone offset in hours from UTC
-Time_Format = "12"  # 12 hour (AM/PM) or 24 hour (military) clock
-sleep_time = 60  # NTP poll time interval in seconds
+Time_Format = "24"  # 12 hour (AM/PM) or 24 hour (military) clock
+
+# Time in seconds between updates (polling)
+# 600 = 10 mins, 900 = 15 mins, 1800 = 30 mins, 3600 = 1 hour
+SLEEP_TIME = 900
 
 DISPLAY_WIDTH = 64
 DISPLAY_HEIGHT = 32
@@ -72,6 +75,9 @@ def time_calc(input_time):
         return f"{input_time / 60 / 60:.1f} hours"
     return f"{input_time / 60 / 60 / 24:.2f} days"
 
+# Custom timestamp functions use struct time format
+# You can easily change them to your preferred format
+# https://docs.circuitpython.org/en/latest/shared-bindings/time/index.html#time.struct_time
 def _format_datetime(datetime):
     """ F-String formatted struct time conversion"""
     return (f"{datetime.tm_mon:02}/" +
@@ -99,7 +105,7 @@ def _format_time(datetime,format="12"):
         else:
             return (f"{hour:01}:{min:02} {am_pm}")
     if format == "24":
-        return (f"{datetime.tm_hour:02}:{datetime.tm_min:02}")
+        return (f"{datetime.tm_hour:02}:{datetime.tm_min:02}:{datetime.tm_sec:02}")
 
 
 # Quick Colors for Labels
@@ -134,28 +140,31 @@ display.root_group = main_group
 last = time.monotonic()
 print("===============================")
 while True:
-    while (time.monotonic() - last) <= sleep_time:
+    now = time.localtime()
+    if DEBUG_TIME:
+        print(f"Now: {now}")
+    board_uptime = time.monotonic()
+
+    current_time = "{}".format(_format_time(now,format=Time_Format))
+    clock_label.text = f"{current_time}"
+    
+    if board_uptime > 86400:
+        print("24 Hour Uptime Restart")
+        microcontroller.reset()
+    if (time.monotonic() - last) < SLEEP_TIME:
+        last = time.monotonic()
+        if DEBUG_TIME:
+            print(f"Monotonic: {time.monotonic()} {last}")
+            print(f"Current Time: {current_time}")
+            print("Board Uptime: ", time_calc(board_uptime))
+            print("Next Update:", time_calc(SLEEP_TIME))
+            print("Finished!")
+            print("===============================")
+        
+        # Synchronize RTC from NTP every (SLEEP_TIME) seconds
         try:
             rtc.RTC().datetime = ntp.datetime
         except OSError as e:
-            print(f"NTP Error: {e}")
-            time.sleep(10)
-        
-        now = time.localtime()
-        if DEBUG_TIME:
-            print(f"Now: {now}")
-        board_uptime = time.monotonic()
-
-        current_time = "{}".format(_format_time(now,format=Time_Format))
-        clock_label.text = f"{current_time}"
-        
-        print(f"Current Time: {current_time}")
-        print("Board Uptime: ", time_calc(board_uptime))
-        print("Next Update: ", time_calc(sleep_time))
-        print("===============================")
-        time.sleep(sleep_time)  # poll rate is sleep_time
-        
-        if time.monotonic() >= 86400:
-            print("24 Hour Uptime Restart")
-            microcontroller.reset()
-    last = time.monotonic()
+            print(f"RTC or NTP Error: {e}")
+            time.sleep(60)
+            continue
