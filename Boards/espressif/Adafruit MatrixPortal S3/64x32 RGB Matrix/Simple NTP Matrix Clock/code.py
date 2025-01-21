@@ -12,7 +12,6 @@ import terminalio
 import rgbmatrix
 import framebufferio
 import wifi
-import socketpool
 import adafruit_connection_manager
 import adafruit_requests
 import rtc
@@ -28,12 +27,6 @@ requests = adafruit_requests.Session(pool)
 # Use settings.toml for credentials
 ssid = os.getenv("CIRCUITPY_WIFI_SSID")
 password = os.getenv("CIRCUITPY_WIFI_PASSWORD")
-TZ_OFFSET = -5  # time zone offset in hours from UTC
-Time_Format = "24"  # 12 hour (AM/PM) or 24 hour (military) clock
-
-# Time in seconds between updates (polling)
-# 600 = 10 mins, 900 = 15 mins, 1800 = 30 mins, 3600 = 1 hour
-SLEEP_TIME = 900
 
 DISPLAY_WIDTH = 64
 DISPLAY_HEIGHT = 32
@@ -41,6 +34,8 @@ DISPLAY_ROTATION = 0
 BIT_DEPTH = 4
 AUTO_REFRESH = True
 DEBUG_TIME = False  # For manually testing times
+TZ_OFFSET = -5  # time zone offset in hours from UTC
+Time_Format = "24"  # 12 hour (AM/PM) or 24 hour (military) clock
 
 # Instantiate 64x32 Matrix Panel
 matrix = rgbmatrix.RGBMatrix(
@@ -155,30 +150,28 @@ while True:
         print(f"Now: {now}")
         time.sleep(0.5)
     board_uptime = time.monotonic()
-
+    current_datestamp = "{}".format(_format_datetime(now))
     current_time = "{}".format(_format_time(now, format=Time_Format))
     current_min = "{}".format(_format_min(now))
     current_sec = "{}".format(_format_sec(now))
     clock_label.text = f"{current_time}"
-    
-    print(f"Monotonic: {time.monotonic()}")
-    print(f"Current Time: {current_time}")
-    print("Board Uptime: ", time_calc(board_uptime))
-    print("Next Update:", time_calc(SLEEP_TIME))
-    print("Finished!")
-    print("===============================")
+    if DEBUG_TIME:
+        print(f"Monotonic: {time.monotonic()}")
+        print(f"Current Time: {current_time}")
+        print(f"Current Min:Sec: {current_min}:{current_sec}")
+        print("Board Uptime: ", time_calc(board_uptime))
+        print("===============================")
             
     if board_uptime > 86400:
         print("24 Hour Uptime Restart")
         microcontroller.reset()
         
     # Synchronize RTC from NTP every 1 hour on the hour
-    print(f"Current Minute: {current_min}:{current_sec}")
-    if current_min is "00" and current_sec is "00":
-        time.sleep(0.5)
+    if current_min == "20" and current_sec == "40":
         try:
             rtc.RTC().datetime = ntp.datetime
-            print("------------------------------ Synchronized Time")
+            print(f"Synchronized Time: {current_datestamp}")
+            time.sleep(1)
         except OSError as e:
             print(f"RTC or NTP Error: {e}")
             time.sleep(60)
