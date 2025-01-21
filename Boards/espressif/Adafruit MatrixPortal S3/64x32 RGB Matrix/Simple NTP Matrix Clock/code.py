@@ -20,7 +20,7 @@ from adafruit_display_text import label
 from adafruit_bitmap_font import bitmap_font
 displayio.release_displays()
 
-# Initalize Wifi, Socket Pool, Request Session
+# Initalize Wifi, Connection Manager, Request Session
 pool = adafruit_connection_manager.get_radio_socketpool(wifi.radio)
 requests = adafruit_requests.Session(pool)
 
