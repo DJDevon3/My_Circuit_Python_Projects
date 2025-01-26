@@ -92,7 +92,7 @@ def _format_min(datetime):
 def _format_sec(datetime):
     """ Get the current second"""
     return (f"{datetime.tm_sec:02}")
-    
+
 def _format_time(datetime, format="12"):
     """ Time is 12 hour or 24 hour format"""
     if format == "12":
@@ -143,6 +143,15 @@ main_group = displayio.Group()
 main_group.append(clock_label)
 display.root_group = main_group
 
+now = time.localtime()
+current_datestamp = "{}".format(_format_datetime(now))
+try:
+    rtc.RTC().datetime = ntp.datetime
+    print(f"Initial Synchronize: {current_datestamp}")
+    time.sleep(1)
+except OSError as e:
+    print(f"RTC or NTP Error: {e}")
+    
 print("===============================")
 while True:
     now = time.localtime()
@@ -161,11 +170,11 @@ while True:
         print(f"Current Min:Sec: {current_min}:{current_sec}")
         print("Board Uptime: ", time_calc(board_uptime))
         print("===============================")
-            
+
     if board_uptime > 86400:
         print("24 Hour Uptime Restart")
         microcontroller.reset()
-        
+
     # Synchronize RTC from NTP every 1 hour on the hour
     if current_min == "00" and current_sec == "00":
         try:
@@ -174,5 +183,3 @@ while True:
             time.sleep(1)
         except OSError as e:
             print(f"RTC or NTP Error: {e}")
-            time.sleep(60)
-            continue
