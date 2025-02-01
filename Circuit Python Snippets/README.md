@@ -157,6 +157,29 @@ Struct Time Format: struct_time(tm_year=2024, tm_mon=1, tm_mday=28, tm_hour=14, 
 Timestamp: 2024-01-28_14-35-04
 ```
 
+## 12 or 24 Hour Clock Format
+```py
+def _format_time(datetime, format="12"):
+    """ 12 or 24 Hour Clock Format """
+    if format == "12":
+        hour = datetime.tm_hour % 12
+        min = datetime.tm_min
+        if hour == 0:
+            hour = 12
+        am_pm = "AM"
+        if datetime.tm_hour / 12 >= 1:
+            am_pm = "PM"
+        if DEBUG_TIME:
+            # Set debug to True & change these to test different times
+            debug_hour = "09"
+            debug_min = "09"
+            return (f"{debug_hour:01}:{debug_min:02} {am_pm}")
+        else:
+            return (f"{hour:01}:{min:02} {am_pm}")
+    if format == "24":
+        return (f"{datetime.tm_hour:02}:{datetime.tm_min:02}:{datetime.tm_sec:02}")
+```
+
 ## Seconds to Minutes/Hours/Days function (good for sleep or update functions)
 - There was an issue where it was rounding up at .6 decimal to whole number
 - Fixed by rounding down instead of up until whole number is met
@@ -225,8 +248,66 @@ code.py output
 Last Updated:  3 minutes
 Next Update:  12 minutes
 ```
+## RTC (Real Time Clock) with Adafruit_NTP (with TimeZone Offset)
+- Optional 2nd additional manual offset (helpful for alarm clocks)
+```py
+import time
+import rtc
+import adafruit_ntp
+import wifi
+import adafruit_connection_manager
+import adafruit_requests
 
-## Get Time from Online (ESP32-S2)
+# Initalize Wifi, Connection Manager, Request Session
+pool = adafruit_connection_manager.get_radio_socketpool(wifi.radio)
+requests = adafruit_requests.Session(pool)
+
+# Use settings.toml for credentials
+ssid = os.getenv("CIRCUITPY_WIFI_SSID")
+password = os.getenv("CIRCUITPY_WIFI_PASSWORD")
+
+# Publicly Open NTP Time Server
+# No AdafruitIO credentials required
+TZ_OFFSET = -5  # time zone offset in hours from UTC
+ntp = adafruit_ntp.NTP(pool, tz_offset=TZ_OFFSET)
+now = time.localtime()
+current_datestamp = "{}".format(_format_datetime(now))
+try:
+    rtc.RTC().datetime = ntp.datetime
+    print(f"Initial Synchronize: {current_datestamp}")
+    time.sleep(1)
+except OSError as e:
+    print(f"RTC or NTP Error: {e}")
+
+def RTC_Offset(rtc_time=ntp.datetime, local_time=time.localtime(), offset=0):
+    """ Return NTP Time & Manually Adjusted Offset Time """
+    rtc_time = ntp.datetime
+    format_rtc_time = "{}".format(_format_datetime(ntp.datetime))
+    local_time = time.localtime()
+    format_local_time = "{}".format(_format_datetime(time.localtime()))
+    
+    struct_time = time.localtime()
+    unix_time = time.mktime(struct_time)
+    new_unix_time = int(unix_time) + int(offset)
+    offset_time = time.localtime(new_unix_time)
+    format_offset_time = "{}".format(_format_datetime(offset_time))
+    print("===============================")
+    print(f"RTC Time: {format_rtc_time}")
+    print(f"Local Time: {format_local_time}")
+    print(f"Offset Time: {format_offset_time}")
+    
+RTC_Offset(offset=-720)  # Secondary Manual Offset (in seconds)
+time.sleep(30)
+RTC_Offset(offset=-720)
+```
+code.py output
+```py
+===============================
+RTC Time: 02/01/2025 16:04:52
+Local Time: 02/01/2025 16:04:51
+Offset Time: 02/01/2025 15:52:51
+```
+## Get Time from World Time API (ESP32-S2)
 For boards with WiFi and no RTC
 ```py
 import gc
