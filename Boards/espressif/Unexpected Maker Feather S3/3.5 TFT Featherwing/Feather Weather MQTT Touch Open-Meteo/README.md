@@ -2,6 +2,7 @@
 ## Uses Open-Meteo.com for free online weather updates
 
 ![screenshot](https://github.com/user-attachments/assets/d3e02e73-cdfe-4ec6-bc5f-0e70463ea007)
+- Labels in blue are online data. Labels in orange are on-board sensor elements.
 
 ### Hardware:
 - Unexpected Maker FeatherS3 (16MB Flash 8MB RAM) [Adafruit Store](https://www.adafruit.com/product/5399) (USA) or [Unexpected Maker Store](https://unexpectedmaker.com/shop.html#!/FeatherS3/p/577111310) (Australia)
